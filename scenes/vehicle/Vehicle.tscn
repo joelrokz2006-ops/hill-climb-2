@@ -1,0 +1,115 @@
+[gd_scene load_steps=7 format=3 uid="uid://vehicle_root_001"]
+
+[ext_resource type="Script" path="res://scripts/vehicle/VehicleController.gd" id="1_controller"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_chassis"]
+friction = 0.5
+bounce = 0.05
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_wheel"]
+friction = 1.6
+bounce = 0.15
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_wheel"]
+radius = 20.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_chassis"]
+size = Vector2(90, 24)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_crash"]
+radius = 14.0
+
+[node name="Vehicle" type="RigidBody2D"]
+collision_layer = 2
+collision_mask = 1
+mass = 8.0
+physics_material_override = SubResource("PhysicsMaterial_chassis")
+center_of_mass_mode = 1
+center_of_mass = Vector2(0, 10)
+script = ExtResource("1_controller")
+
+[node name="ChassisCollision" type="CollisionShape2D" parent="."]
+position = Vector2(0, -6)
+shape = SubResource("RectangleShape2D_chassis")
+
+[node name="ChassisVisual" type="Polygon2D" parent="."]
+color = Color(0.85, 0.25, 0.2, 1)
+polygon = PackedVector2Array(-48, 6, -42, -10, -22, -12, -8, -26, 22, -26, 38, -8, 48, 2, 44, 8, -44, 8)
+
+[node name="CabinVisual" type="Polygon2D" parent="."]
+color = Color(0.2, 0.6, 0.85, 0.75)
+polygon = PackedVector2Array(-6, -24, 18, -24, 32, -8, -6, -8)
+
+[node name="DriverHeadVisual" type="Polygon2D" parent="."]
+color = Color(0.95, 0.8, 0.2, 1)
+polygon = PackedVector2Array(-2, -18, 8, -18, 10, -10, -2, -10)
+
+[node name="CrashDetector" type="Area2D" parent="."]
+position = Vector2(4, -22)
+collision_layer = 0
+collision_mask = 1
+
+[node name="CrashShape" type="CollisionShape2D" parent="CrashDetector"]
+shape = SubResource("CircleShape2D_crash")
+
+[node name="RearWheel" type="RigidBody2D" parent="."]
+position = Vector2(-36, 18)
+collision_layer = 2
+collision_mask = 1
+mass = 2.5
+physics_material_override = SubResource("PhysicsMaterial_wheel")
+contact_monitor = true
+max_contacts_reported = 2
+
+[node name="WheelCollision" type="CollisionShape2D" parent="RearWheel"]
+shape = SubResource("CircleShape2D_wheel")
+
+[node name="WheelVisual" type="Polygon2D" parent="RearWheel"]
+color = Color(0.18, 0.18, 0.2, 1)
+polygon = PackedVector2Array(0, -20, 14, -14, 20, 0, 14, 14, 0, 20, -14, 14, -20, 0, -14, -14)
+
+[node name="RimVisual" type="Polygon2D" parent="RearWheel"]
+color = Color(0.7, 0.7, 0.75, 1)
+polygon = PackedVector2Array(0, -8, 6, -6, 8, 0, 6, 6, 0, 8, -6, 6, -8, 0, -6, -6)
+
+[node name="SpokeLine" type="Line2D" parent="RearWheel"]
+points = PackedVector2Array(-18, 0, 18, 0)
+width = 3.0
+default_color = Color(0.9, 0.9, 0.9, 1)
+
+[node name="FrontWheel" type="RigidBody2D" parent="."]
+position = Vector2(36, 18)
+collision_layer = 2
+collision_mask = 1
+mass = 2.5
+physics_material_override = SubResource("PhysicsMaterial_wheel")
+contact_monitor = true
+max_contacts_reported = 2
+
+[node name="WheelCollision" type="CollisionShape2D" parent="FrontWheel"]
+shape = SubResource("CircleShape2D_wheel")
+
+[node name="WheelVisual" type="Polygon2D" parent="FrontWheel"]
+color = Color(0.18, 0.18, 0.2, 1)
+polygon = PackedVector2Array(0, -20, 14, -14, 20, 0, 14, 14, 0, 20, -14, 14, -20, 0, -14, -14)
+
+[node name="RimVisual" type="Polygon2D" parent="FrontWheel"]
+color = Color(0.7, 0.7, 0.75, 1)
+polygon = PackedVector2Array(0, -8, 6, -6, 8, 0, 6, 6, 0, 8, -6, 6, -8, 0, -6, -6)
+
+[node name="SpokeLine" type="Line2D" parent="FrontWheel"]
+points = PackedVector2Array(-18, 0, 18, 0)
+width = 3.0
+default_color = Color(0.9, 0.9, 0.9, 1)
+
+[node name="RearJoint" type="PinJoint2D" parent="."]
+position = Vector2(-36, 18)
+node_a = NodePath("..")
+node_b = NodePath("../RearWheel")
+softness = 0.6
+
+[node name="FrontJoint" type="PinJoint2D" parent="."]
+position = Vector2(36, 18)
+node_a = NodePath("..")
+node_b = NodePath("../FrontWheel")
+softness = 0.6

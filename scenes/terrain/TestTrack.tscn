@@ -1,0 +1,27 @@
+[gd_scene load_steps=2 format=3 uid="uid://test_track_001"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_ground"]
+friction = 1.0
+rough = true
+
+[node name="TestTrack" type="StaticBody2D"]
+collision_layer = 1
+collision_mask = 2
+physics_material_override = SubResource("PhysicsMaterial_ground")
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
+polygon = PackedVector2Array(-400, 420, 200, 420, 500, 360, 800, 240, 1050, 200, 1300, 250, 1550, 390, 1800, 440, 2100, 320, 2400, 160, 2700, 150, 2950, 240, 3250, 430, 3650, 450, 4200, 380, 4800, 420, 4800, 1000, -400, 1000)
+
+[node name="GroundPolygon" type="Polygon2D" parent="."]
+color = Color(0.32, 0.22, 0.15, 1)
+polygon = PackedVector2Array(-400, 420, 200, 420, 500, 360, 800, 240, 1050, 200, 1300, 250, 1550, 390, 1800, 440, 2100, 320, 2400, 160, 2700, 150, 2950, 240, 3250, 430, 3650, 450, 4200, 380, 4800, 420, 4800, 1000, -400, 1000)
+
+[node name="GrassSurfaceLine" type="Line2D" parent="."]
+points = PackedVector2Array(-400, 420, 200, 420, 500, 360, 800, 240, 1050, 200, 1300, 250, 1550, 390, 1800, 440, 2100, 320, 2400, 160, 2700, 150, 2950, 240, 3250, 430, 3650, 450, 4200, 380, 4800, 420)
+width = 10.0
+default_color = Color(0.3, 0.65, 0.22, 1)
+
+[node name="StartPlatformMark" type="Line2D" parent="."]
+points = PackedVector2Array(0, 420, 0, 350)
+width = 4.0
+default_color = Color(0.9, 0.85, 0.1, 1)
