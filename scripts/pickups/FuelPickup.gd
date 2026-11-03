@@ -2,7 +2,7 @@ class_name FuelPickup
 extends Area2D
 
 ## FuelPickup: Reusable fuel canister pickup providing fuel replenishment.
-## Disables on collection and cleanly resets during run restarts.
+## Disables on collection, triggers fuel vapor burst particles, and cleanly resets during run restarts.
 
 signal collected(amount: float)
 
@@ -13,6 +13,8 @@ signal collected(amount: float)
 @onready var visual: Node2D = $Visual
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
 @onready var popup_label: Label = $PopupLabel
+@onready var vapor_particles: CPUParticles2D = get_node_or_null("VaporParticles")
+@onready var glow_aura: Polygon2D = get_node_or_null("Visual/GlowAura")
 
 var is_collected: bool = false
 var _elapsed: float = 0.0
@@ -26,11 +28,16 @@ func _ready() -> void:
 		_initial_visual_y = visual.position.y
 	if is_instance_valid(popup_label):
 		popup_label.visible = false
+	if is_instance_valid(vapor_particles):
+		vapor_particles.emitting = false
 
 func _process(delta: float) -> void:
 	if not is_collected and is_instance_valid(visual):
 		_elapsed += delta
 		visual.position.y = _initial_visual_y + sin(_elapsed * bob_frequency) * bob_height
+		if is_instance_valid(glow_aura):
+			var pulse := (sin(_elapsed * 4.0) * 0.15) + 0.85
+			glow_aura.scale = Vector2(pulse, pulse)
 
 func _on_body_entered(body: Node2D) -> void:
 	if is_collected:
@@ -63,8 +70,12 @@ func _on_body_entered(body: Node2D) -> void:
 	collision_shape.set_deferred("disabled", true)
 	if is_instance_valid(visual):
 		visual.visible = false
+		
+	if is_instance_valid(vapor_particles):
+		vapor_particles.restart()
+		vapor_particles.emitting = true
 	
-	_show_popup("+%.0f FUEL" % fuel_amount, Color(0.2, 0.9, 0.3))
+	_show_popup("+%.0f FUEL" % fuel_amount, Color(0.2, 0.95, 0.35))
 
 func _show_popup(text_val: String, color_val: Color) -> void:
 	if not is_instance_valid(popup_label):
@@ -75,7 +86,8 @@ func _show_popup(text_val: String, color_val: Color) -> void:
 	popup_label.position = Vector2(-30, -20)
 	
 	var tween := create_tween()
-	tween.tween_property(popup_label, "position:y", -50.0, 0.6)
+	tween.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tween.tween_property(popup_label, "position:y", -54.0, 0.6)
 	tween.parallel().tween_property(popup_label, "modulate:a", 0.0, 0.6)
 	tween.tween_callback(func(): popup_label.visible = false)
 
@@ -86,5 +98,8 @@ func reset_pickup() -> void:
 	if is_instance_valid(visual):
 		visual.visible = true
 		visual.position.y = _initial_visual_y
+		visual.scale = Vector2.ONE
 	if is_instance_valid(popup_label):
 		popup_label.visible = false
+	if is_instance_valid(vapor_particles):
+		vapor_particles.emitting = false

@@ -2,7 +2,7 @@ class_name Coin
 extends Area2D
 
 ## Coin: Collectible coin awarding currency and updating run score.
-## Disables on collection and cleanly resets during run restarts.
+## Disables on collection, triggers sparkle particles, and cleanly resets during run restarts.
 
 signal collected(value: int)
 
@@ -13,6 +13,8 @@ signal collected(value: int)
 @onready var visual: Node2D = $Visual
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
 @onready var popup_label: Label = $PopupLabel
+@onready var sparkle_particles: CPUParticles2D = get_node_or_null("SparkleParticles")
+@onready var glow_aura: Polygon2D = get_node_or_null("Visual/GlowAura")
 
 var is_collected: bool = false
 var _elapsed: float = 0.0
@@ -26,6 +28,8 @@ func _ready() -> void:
 		_initial_visual_y = visual.position.y
 	if is_instance_valid(popup_label):
 		popup_label.visible = false
+	if is_instance_valid(sparkle_particles):
+		sparkle_particles.emitting = false
 
 func _process(delta: float) -> void:
 	if not is_collected and is_instance_valid(visual):
@@ -33,6 +37,9 @@ func _process(delta: float) -> void:
 		visual.position.y = _initial_visual_y + sin(_elapsed * bob_frequency) * bob_height
 		# Subtle horizontal scale shimmer simulating 3D coin spin
 		visual.scale.x = sin(_elapsed * 3.0)
+		if is_instance_valid(glow_aura):
+			var pulse := (sin(_elapsed * 5.0) * 0.15) + 0.85
+			glow_aura.scale = Vector2(pulse, pulse)
 
 func _on_body_entered(body: Node2D) -> void:
 	if is_collected:
@@ -60,8 +67,12 @@ func _on_body_entered(body: Node2D) -> void:
 	collision_shape.set_deferred("disabled", true)
 	if is_instance_valid(visual):
 		visual.visible = false
+		
+	if is_instance_valid(sparkle_particles):
+		sparkle_particles.restart()
+		sparkle_particles.emitting = true
 	
-	_show_popup("+%d" % coin_value, Color(1.0, 0.85, 0.2))
+	_show_popup("+%d" % coin_value, Color(1.0, 0.88, 0.25))
 
 func _show_popup(text_val: String, color_val: Color) -> void:
 	if not is_instance_valid(popup_label):
@@ -72,8 +83,9 @@ func _show_popup(text_val: String, color_val: Color) -> void:
 	popup_label.position = Vector2(-20, -18)
 	
 	var tween := create_tween()
-	tween.tween_property(popup_label, "position:y", -45.0, 0.5)
-	tween.parallel().tween_property(popup_label, "modulate:a", 0.0, 0.5)
+	tween.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tween.tween_property(popup_label, "position:y", -48.0, 0.55)
+	tween.parallel().tween_property(popup_label, "modulate:a", 0.0, 0.55)
 	tween.tween_callback(func(): popup_label.visible = false)
 
 func reset_pickup() -> void:
@@ -86,3 +98,5 @@ func reset_pickup() -> void:
 		visual.scale = Vector2.ONE
 	if is_instance_valid(popup_label):
 		popup_label.visible = false
+	if is_instance_valid(sparkle_particles):
+		sparkle_particles.emitting = false
