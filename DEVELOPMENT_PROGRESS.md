@@ -17,8 +17,9 @@
 | **Phase 3** | Terrain Progression | Member 3 | PLANNED | Procedural or segmented endless terrain generation |
 | **Phase 4** | Pickups and Rewards | Member 2 & 3 | PLANNED | Fuel cans, coins, score persistence |
 | **Phase 5** | UI & Menus | Member 1 & 3 | PLANNED | Main menu, settings, pause menu, results overlay |
-| **Phase 6** | Art, Audio & Polish | Team | PLANNED | Audio integration, sprite visual polish, particle effects |
+| **Phase 6** | Art, Audio & Polish | Team | **IN PROGRESS (Member 2 Vehicle Polish Complete)** | Dynamic RPM engine audio, landing thuds, tire skid audio, exhaust/dust particles, suspension struts |
 | **Phase 7** | QA & Release Preparation | Team | PLANNED | Cross-platform export testing, release packaging |
+| **Phase 8** | Optional Enhancements | Member 2 | **IN PROGRESS (Vehicle Systems Complete)** | 4-stat 5-tier upgrade system, Monster Truck & Dune Buggy variations, VehicleRegistry catalog |
 
 ---
 
@@ -60,6 +61,19 @@
 - [x] **Member 1**: Reusable fuel pickup (`scenes/pickups/FuelPickup.tscn`) and coin pickup (`scenes/pickups/Coin.tscn`).
 - [x] **Member 1**: Safe restart flow resetting vehicle, metrics, UI, and test track pickups.
 - [x] **Member 1**: Automated Phase 2 test suite (`tests/test_phase2_core_loop.gd` passed 100%).
+
+### Phase 6 & Phase 8 — Member 2 Vehicle Polish, Upgrades & Roster
+- [x] **Member 2**: Implement 4-stat 5-tier upgrade system (`engine_power`, `tire_grip`, `suspension`, `fuel_tank`).
+- [x] **Member 2**: Expose `get_stats() -> Dictionary`, `apply_upgrade(stat_name, level)`, and `signal upgraded`.
+- [x] **Member 2**: Dynamic engine RPM pitch audio modulation (`engine_audio.pitch_scale = lerpf(0.8, 2.2, speed_ratio)`).
+- [x] **Member 2**: Tire screech audio (`SkidAudio`) triggering dynamically on hard braking and wheel burnouts.
+- [x] **Member 2**: Dynamic suspension shock struts (`Line2D`) visually connecting chassis to wheel hubs with real-time compression.
+- [x] **Member 2**: Stunt detection: 360° Frontflips and Backflips (`signal trick_performed(name, coins)`).
+- [x] **Member 2**: Big airtime detection (`signal airtime_landed(duration, coins)`).
+- [x] **Member 2**: Physical low-fuel throttle sputtering warning (< 15% fuel).
+- [x] **Member 2**: Additional vehicle variations: `scenes/vehicle/MonsterTruck.tscn` and `scenes/vehicle/DuneBuggy.tscn`.
+- [x] **Member 2**: Static vehicle registry contract: `scripts/vehicle/VehicleRegistry.gd`.
+- [x] **Member 2**: Full automated verification suite (`tests/test_vehicle_physics.gd` passed 100%).
 
 ---
 

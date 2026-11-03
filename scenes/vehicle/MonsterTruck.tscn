@@ -1,10 +1,11 @@
-[gd_scene load_steps=11 format=3 uid="uid://monster_truck_001"]
+[gd_scene load_steps=12 format=3 uid="uid://monster_truck_001"]
 
 [ext_resource type="Script" path="res://scripts/vehicle/VehicleController.gd" id="1_controller"]
 [ext_resource type="Texture2D" path="res://assets/vehicles/effects/exhaust_smoke_particle_01.png" id="2_smoke"]
 [ext_resource type="Texture2D" path="res://assets/vehicles/effects/dust_effects/ground_movement_dust/ground_dust_01.png" id="3_dust"]
 [ext_resource type="AudioStream" path="res://assets/audio/sfx/engine/engine_idle_loop.wav" id="4_engine"]
 [ext_resource type="AudioStream" path="res://assets/audio/sfx/vehicle/vehicle_landing_thud.wav" id="5_landing"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/vehicle/tire_rolling_skid_loop.wav" id="6_skid"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_truck_chassis"]
 friction = 0.6
@@ -42,6 +43,16 @@ air_tilt_torque = 32000.0
 [node name="ChassisCollision" type="CollisionShape2D" parent="."]
 position = Vector2(0, -8)
 shape = SubResource("RectangleShape2D_truck_chassis")
+
+[node name="RearStrutVisual" type="Line2D" parent="."]
+points = PackedVector2Array(-42, 6, -42, 22)
+width = 5.0
+default_color = Color(0.85, 0.45, 0.1, 1)
+
+[node name="FrontStrutVisual" type="Line2D" parent="."]
+points = PackedVector2Array(42, 6, 42, 22)
+width = 5.0
+default_color = Color(0.85, 0.45, 0.1, 1)
 
 [node name="ChassisVisual" type="Polygon2D" parent="."]
 color = Color(0.12, 0.35, 0.75, 1)
@@ -96,6 +107,10 @@ volume_db = -4.0
 [node name="LandingAudio" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource("5_landing")
 volume_db = -2.0
+
+[node name="SkidAudio" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("6_skid")
+volume_db = -80.0
 
 [node name="CrashDetector" type="Area2D" parent="."]
 position = Vector2(6, -26)

@@ -143,10 +143,10 @@
 
 - [ ] Audit and assign final sprites.
 - [ ] Confirm sprite scale and transparent margins.
-- [ ] Align vehicle body and wheel visuals with physics.
+- [x] Align vehicle body and wheel visuals with physics (Member 2: Dynamic suspension shock struts Line2D on Vehicle, MonsterTruck, and DuneBuggy).
 - [ ] Add background/parallax.
-- [ ] Add engine, pickup, crash, and UI sounds as appropriate.
-- [ ] Add subtle effects/animations.
+- [x] Add engine, pickup, crash, and UI sounds as appropriate (Member 2: Dynamic RPM engine pitch modulation, landing thud audio, and tire skid/screech audio).
+- [x] Add subtle effects/animations (Member 2: Throttle exhaust particles, grounded wheel dust kickup, low-fuel physical engine sputter, and stunt/airtime tracking).
 - [ ] Tune camera smoothing and visual feedback.
 - [ ] Check performance and remove unused assets.
 
@@ -171,8 +171,8 @@
 # PHASE 8 — OPTIONAL APPROVED ENHANCEMENTS
 **Only after MVP is stable**
 
-- [ ] Vehicle upgrades.
-- [ ] Additional vehicles.
+- [x] Vehicle upgrades (Member 2: 4-stat 5-tier system: Engine Power, Tire Grip, Suspension, and Fuel Tank with get_stats(), apply_upgrade(), and upgraded signal).
+- [x] Additional vehicles (Member 2: Added MonsterTruck.tscn and DuneBuggy.tscn variations, plus static VehicleRegistry.gd catalog).
 - [ ] Additional terrain themes.
 - [ ] Achievements or missions.
 - [ ] Mobile-specific polish.

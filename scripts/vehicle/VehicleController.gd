@@ -2,11 +2,13 @@ class_name VehicleController
 extends RigidBody2D
 
 ## VehicleController: 2D physics-based vehicle controller.
-## Built using RigidBody2D with dual-wheel suspension joints, dynamic RPM audio, air tilt flips, and upgrade tiers.
+## Dual-wheel suspension joints, dynamic RPM audio, air tilt flips, stunts & airtime detection, and upgrade tiers.
 
 signal crashed
 signal fuel_changed(current: float, max_fuel: float)
 signal upgraded(stat_name: String, level: int)
+signal trick_performed(trick_name: String, reward_coins: int)
+signal airtime_landed(duration: float, reward_coins: int)
 
 @export_group("Upgrade Levels (1-5)")
 ## Engine Power level (1 to 5)
@@ -72,12 +74,21 @@ signal upgraded(stat_name: String, level: int)
 @onready var rear_dust: CPUParticles2D = get_node_or_null("RearDust")
 @onready var engine_audio: AudioStreamPlayer2D = get_node_or_null("EngineAudio")
 @onready var landing_audio: AudioStreamPlayer2D = get_node_or_null("LandingAudio")
+@onready var skid_audio: AudioStreamPlayer2D = get_node_or_null("SkidAudio")
+@onready var rear_strut: Line2D = get_node_or_null("RearStrutVisual")
+@onready var front_strut: Line2D = get_node_or_null("FrontStrutVisual")
 
 var current_fuel: float = 100.0
 var is_grounded: bool = false
 var was_grounded: bool = false
 var is_active: bool = true
 var _previous_linear_velocity: Vector2 = Vector2.ZERO
+
+# Stunt and airtime tracking
+var air_time: float = 0.0
+var air_rotation_accum: float = 0.0
+var _last_air_rotation: float = 0.0
+var wheelie_time: float = 0.0
 
 func _ready() -> void:
 	current_fuel = max_fuel
@@ -89,12 +100,16 @@ func _ready() -> void:
 	if engine_audio and not engine_audio.playing:
 		engine_audio.play()
 
+func _process(_delta: float) -> void:
+	_update_struts()
+
 func _physics_process(delta: float) -> void:
 	if not is_active:
 		_stop_effects()
 		return
 	
 	_check_ground_contact()
+	_track_stunts(delta)
 	_handle_input(delta)
 	_update_audio(delta)
 	_update_particles()
@@ -111,9 +126,52 @@ func _check_ground_contact() -> void:
 	if not was_grounded and is_grounded and _previous_linear_velocity.y > 140.0:
 		_play_landing_sound()
 
+func _track_stunts(delta: float) -> void:
+	var rear_contact: bool = (rear_wheel.contact_monitor and rear_wheel.get_colliding_bodies().size() > 0) if rear_wheel else false
+	var front_contact: bool = (front_wheel.contact_monitor and front_wheel.get_colliding_bodies().size() > 0) if front_wheel else false
+
+	if not is_grounded:
+		air_time += delta
+		var delta_rot: float = wrapf(rotation - _last_air_rotation, -PI, PI)
+		air_rotation_accum += delta_rot
+		_last_air_rotation = rotation
+		
+		# Check completed 360 degree flips (TAU radians)
+		if air_rotation_accum >= TAU * 0.95:
+			air_rotation_accum -= TAU
+			trick_performed.emit("Backflip", 20)
+		elif air_rotation_accum <= -TAU * 0.95:
+			air_rotation_accum += TAU
+			trick_performed.emit("Frontflip", 20)
+		wheelie_time = 0.0
+	else:
+		# Vehicle just landed cleanly from substantial airborne time
+		if not was_grounded and is_active:
+			if air_time >= 1.2:
+				var air_reward: int = int(air_time * 10)
+				airtime_landed.emit(air_time, air_reward)
+		
+		air_time = 0.0
+		air_rotation_accum = 0.0
+		_last_air_rotation = rotation
+		
+		# Wheelie detection: rear wheel grounded, front wheel in the air, driving forward
+		if rear_contact and not front_contact and linear_velocity.x > 50.0 and is_active:
+			wheelie_time += delta
+			if wheelie_time >= 1.0:
+				wheelie_time = 0.0
+				trick_performed.emit("Wheelie", 10)
+		else:
+			wheelie_time = 0.0
+
 func _handle_input(delta: float) -> void:
 	var accel_input: float = Input.get_axis("brake_reverse", "accelerate")
 	var tilt_input: float = Input.get_axis("tilt_left", "tilt_right")
+	
+	# Low fuel sputtering physical warning when tank < 15%
+	var sputter_mult: float = 1.0
+	if consumes_fuel and current_fuel < 15.0 and current_fuel > 0.0:
+		sputter_mult = 0.5 + 0.5 * sin(Time.get_ticks_msec() * 0.015)
 	
 	if accel_input > 0.05:
 		if consumes_fuel and current_fuel <= 0.0:
@@ -121,10 +179,11 @@ func _handle_input(delta: float) -> void:
 			pass
 		else:
 			# Drive forward (apply torque to wheels)
+			var effective_accel: float = accel_input * sputter_mult
 			if rear_wheel and rear_wheel.angular_velocity < max_wheel_speed:
-				rear_wheel.apply_torque(motor_torque * accel_input)
+				rear_wheel.apply_torque(motor_torque * effective_accel)
 			if front_wheel and front_wheel.angular_velocity < max_wheel_speed:
-				front_wheel.apply_torque(motor_torque * 0.75 * accel_input)
+				front_wheel.apply_torque(motor_torque * 0.75 * effective_accel)
 			
 			if consumes_fuel:
 				current_fuel = maxf(0.0, current_fuel - fuel_burn_rate * delta)
@@ -152,6 +211,14 @@ func _handle_input(delta: float) -> void:
 		# Minor ground pitch assist
 		apply_torque(air_tilt_torque * 0.3 * tilt_input)
 
+func _update_struts() -> void:
+	if rear_strut and rear_wheel:
+		var local_rear: Vector2 = to_local(rear_wheel.global_position)
+		rear_strut.points = PackedVector2Array([Vector2(-36, 4), local_rear])
+	if front_strut and front_wheel:
+		var local_front: Vector2 = to_local(front_wheel.global_position)
+		front_strut.points = PackedVector2Array([Vector2(36, 4), local_front])
+
 func _update_particles() -> void:
 	var accel_input: float = Input.get_axis("brake_reverse", "accelerate")
 	var is_accelerating: bool = accel_input > 0.05 and (not consumes_fuel or current_fuel > 0.0)
@@ -165,21 +232,34 @@ func _update_particles() -> void:
 
 ## Modulate engine pitch (RPM) dynamically based on wheel angular velocity and throttle
 func _update_audio(delta: float) -> void:
-	if not engine_audio:
-		return
-	if not engine_audio.playing and is_active:
-		engine_audio.play()
+	if engine_audio:
+		if not engine_audio.playing and is_active:
+			engine_audio.play()
+		
+		var rear_ratio: float = absf(rear_wheel.angular_velocity) / max_wheel_speed if rear_wheel else 0.0
+		var front_ratio: float = absf(front_wheel.angular_velocity) / max_wheel_speed if front_wheel else 0.0
+		var wheel_speed_ratio: float = clampf(maxf(rear_ratio, front_ratio), 0.0, 1.0)
+		var throttle_ratio: float = clampf(Input.get_action_strength("accelerate"), 0.0, 1.0)
+		
+		# Blend physical wheel speed with throttle response for authentic revving
+		var speed_ratio: float = clampf((wheel_speed_ratio * 0.65) + (throttle_ratio * 0.35), 0.0, 1.0)
+		var target_pitch: float = lerpf(0.8, 2.2, speed_ratio)
+		engine_audio.pitch_scale = lerpf(engine_audio.pitch_scale, target_pitch, 12.0 * delta)
 	
-	var rear_ratio: float = absf(rear_wheel.angular_velocity) / max_wheel_speed if rear_wheel else 0.0
-	var front_ratio: float = absf(front_wheel.angular_velocity) / max_wheel_speed if front_wheel else 0.0
-	var wheel_speed_ratio: float = clampf(maxf(rear_ratio, front_ratio), 0.0, 1.0)
-	var throttle_ratio: float = clampf(Input.get_action_strength("accelerate"), 0.0, 1.0)
-	
-	# Blend physical wheel speed with throttle response for authentic revving
-	var speed_ratio: float = clampf((wheel_speed_ratio * 0.65) + (throttle_ratio * 0.35), 0.0, 1.0)
-	var target_pitch: float = lerpf(0.8, 2.2, speed_ratio)
-	
-	engine_audio.pitch_scale = lerpf(engine_audio.pitch_scale, target_pitch, 12.0 * delta)
+	# Tire Skid / Screech audio
+	if skid_audio:
+		var accel_input: float = Input.get_axis("brake_reverse", "accelerate")
+		var is_braking_hard: bool = accel_input < -0.15 and is_grounded and linear_velocity.length() > 60.0
+		var is_wheel_spinning: bool = is_grounded and rear_wheel and absf(rear_wheel.angular_velocity) > 40.0 and linear_velocity.length() < 70.0
+		
+		if (is_braking_hard or is_wheel_spinning) and is_active:
+			if not skid_audio.playing:
+				skid_audio.play()
+			skid_audio.volume_db = lerpf(skid_audio.volume_db, -6.0, 10.0 * delta)
+		else:
+			skid_audio.volume_db = lerpf(skid_audio.volume_db, -80.0, 10.0 * delta)
+			if skid_audio.volume_db < -50.0 and skid_audio.playing:
+				skid_audio.stop()
 
 func _play_landing_sound() -> void:
 	if landing_audio and not landing_audio.playing:
@@ -192,6 +272,8 @@ func _stop_effects() -> void:
 		rear_dust.emitting = false
 	if engine_audio and engine_audio.playing:
 		engine_audio.stop()
+	if skid_audio and skid_audio.playing:
+		skid_audio.stop()
 
 func _on_crash_detector_body_entered(body: Node) -> void:
 	if not is_active:
@@ -200,6 +282,8 @@ func _on_crash_detector_body_entered(body: Node) -> void:
 		return
 	
 	is_active = false
+	air_time = 0.0
+	air_rotation_accum = 0.0
 	_stop_effects()
 	crashed.emit()
 
@@ -301,6 +385,27 @@ func apply_upgrade(stat_name: String, level: int) -> void:
 	_recalculate_upgrades()
 	upgraded.emit(canonical_name, target_level)
 
+## Serializes current upgrade levels into a Dictionary for SaveManager persistence
+func serialize_upgrades() -> Dictionary:
+	return {
+		"engine_level": engine_level,
+		"grip_level": grip_level,
+		"suspension_level": suspension_level,
+		"fuel_tank_level": fuel_tank_level
+	}
+
+## Restores upgrade levels from a Dictionary provided by SaveManager
+func deserialize_upgrades(data: Dictionary) -> void:
+	if data.has("engine_level"):
+		engine_level = clampi(int(data["engine_level"]), 1, 5)
+	if data.has("grip_level"):
+		grip_level = clampi(int(data["grip_level"]), 1, 5)
+	if data.has("suspension_level"):
+		suspension_level = clampi(int(data["suspension_level"]), 1, 5)
+	if data.has("fuel_tank_level"):
+		fuel_tank_level = clampi(int(data["fuel_tank_level"]), 1, 5)
+	_recalculate_upgrades()
+
 func refuel(amount: float) -> void:
 	current_fuel = minf(max_fuel, current_fuel + amount)
 	fuel_changed.emit(current_fuel, max_fuel)
@@ -311,6 +416,9 @@ func get_speed_kmh() -> float:
 func reset_vehicle(at_position: Vector2) -> void:
 	is_active = true
 	current_fuel = max_fuel
+	air_time = 0.0
+	air_rotation_accum = 0.0
+	_last_air_rotation = 0.0
 	fuel_changed.emit(current_fuel, max_fuel)
 	
 	global_position = at_position
@@ -337,3 +445,5 @@ func reset_vehicle(at_position: Vector2) -> void:
 	
 	if engine_audio and not engine_audio.playing:
 		engine_audio.play()
+	if skid_audio and skid_audio.playing:
+		skid_audio.stop()
