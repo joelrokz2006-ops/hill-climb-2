@@ -15,6 +15,13 @@ func _init() -> void:
 		await process_frame
 		await physics_frame
 	
+	# Transition into Game scene if starting in menu
+	if main_scene.has_method("load_game") and not main_scene.get_node_or_null("SceneContainer/Game"):
+		main_scene.load_game()
+		for i in range(5):
+			await process_frame
+			await physics_frame
+	
 	var game: GameScene = main_scene.get_node_or_null("SceneContainer/Game")
 	assert(game != null, "Game node must exist in SceneContainer")
 	print("✓ Game scene loaded inside Main")

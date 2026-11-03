@@ -14,6 +14,12 @@ func _init() -> void:
 	for i in range(10):
 		await process_frame
 	
+	# Transition into Game scene if starting in menu
+	if main_scene.has_method("load_game") and not main_scene.get_node_or_null("SceneContainer/Game"):
+		main_scene.load_game()
+		for i in range(5):
+			await process_frame
+	
 	var game = main_scene.get_node_or_null("SceneContainer/Game")
 	assert(game != null, "Game node must be instantiated inside SceneContainer")
 	print("✓ Main.tscn loaded and instantiated Game into SceneContainer")

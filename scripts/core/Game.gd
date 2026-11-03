@@ -6,6 +6,8 @@ extends Node2D
 
 const GameManagerScript = preload("res://scripts/core/GameManager.gd")
 
+signal return_to_main_menu_requested
+
 @export var spawn_position: Vector2 = Vector2(0.0, 360.0)
 
 @onready var game_manager: Node = $GameManager
@@ -126,3 +128,8 @@ func restart_game() -> void:
 		game_manager.restart_run()
 	else:
 		_on_run_restarted()
+
+func exit_to_main_menu() -> void:
+	if is_instance_valid(game_manager):
+		game_manager.pause_run(false)
+	return_to_main_menu_requested.emit()

@@ -61,6 +61,13 @@
 - [x] **Member 1**: Safe restart flow resetting vehicle, metrics, UI, and test track pickups.
 - [x] **Member 1**: Automated Phase 2 test suite (`tests/test_phase2_core_loop.gd` passed 100%).
 
+### Phase 4 & 5 (Member 1 Architecture) — Main Menu & Save Persistence
+- [x] **Member 1**: Save & persistence manager (`scripts/core/SaveManager.gd`) with JSON serialization in `user://savegame.json`.
+- [x] **Member 1**: Persistent high scores (`best_distance`), total coins, and run count.
+- [x] **Member 1**: Responsive Main Menu scene (`scenes/main/MainMenu.tscn` and `scripts/core/MainMenuController.gd`) with live stats display.
+- [x] **Member 1**: Clean bidirectional scene flow in `Main.gd` (MainMenu -> Game -> MainMenu).
+- [x] **Member 1**: Automated Main Menu & Save test suite (`tests/test_main_menu_and_save.gd` passed 100%).
+
 ---
 
 ## Verification Logs
@@ -71,3 +78,4 @@
 - Member 2 vehicle standalone suite: `godot --headless -s tests/test_vehicle_physics.gd` -> **Exit code 0**
 - Member 3 terrain & HUD suite: `godot --headless -s tests/test_terrain_and_hud.gd` -> **Exit code 0**
 - Phase 2 core run loop suite: `godot --headless -s tests/test_phase2_core_loop.gd` -> **Exit code 0**
+- Main Menu & Persistence suite: `godot --headless -s tests/test_main_menu_and_save.gd` -> **Exit code 0**

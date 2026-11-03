@@ -4,6 +4,8 @@ extends Node
 ## GameManager: Central coordinator for run states, scoring, and high-level game events.
 ## Designed to keep vehicle physics and UI decoupled via clean signals.
 
+const SaveManager = preload("res://scripts/core/SaveManager.gd")
+
 enum RunState {
 	READY,
 	PLAYING,
@@ -32,6 +34,7 @@ var is_new_record: bool = false
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	_ensure_input_actions()
+	best_distance = SaveManager.get_best_distance()
 
 func _process(delta: float) -> void:
 	if current_state == RunState.PLAYING:
@@ -72,11 +75,9 @@ func finish_run(reason: String = "") -> void:
 	current_state = RunState.FINISHED
 	finish_reason = reason
 	
-	if current_distance > best_distance:
-		best_distance = current_distance
-		is_new_record = true
-	else:
-		is_new_record = false
+	var save_result := SaveManager.record_run(current_distance, coins_collected)
+	best_distance = float(save_result["best_distance"])
+	is_new_record = bool(save_result["is_new_record"])
 	
 	run_finished.emit(current_distance, coins_collected, finish_reason)
 

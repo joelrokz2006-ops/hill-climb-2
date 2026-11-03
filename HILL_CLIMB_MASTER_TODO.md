@@ -115,27 +115,29 @@
 **Exit criteria:** Terrain continues during play with no visible/collision gaps in a sustained test.
 
 # PHASE 4 — PICKUPS AND REWARDS
+**Pickups completed in Phase 2; Save Persistence completed by Member 1**
 
-- [ ] Add coin/reward pickup.
-- [ ] Add pickup collision and collection feedback.
-- [ ] Update reward counter.
-- [ ] Prevent double collection.
-- [ ] Add local save for currency and best distance.
-- [ ] Test save/load across game restarts.
+- [x] Add coin/reward pickup (`scenes/pickups/Coin.tscn`).
+- [x] Add pickup collision and collection feedback.
+- [x] Update reward counter (Tracked in `GameManager.gd` and HUD).
+- [x] Prevent double collection (`collected` boolean lock).
+- [x] Add local save for currency and best distance (`scripts/core/SaveManager.gd`).
+- [x] Test save/load across game restarts (`tests/test_main_menu_and_save.gd` passed 100%).
 
-**Exit criteria:** Pickups collect once and saved values persist.
+**Exit criteria:** Pickups collect once and saved values persist. (COMPLETED)
 
 # PHASE 5 — UI AND GAME FLOW
+**Core architecture completed by Member 1; Mobile Touch Controls owned by Member 3**
 
-- [ ] Create main menu.
-- [ ] Add Start Game button.
-- [ ] Add pause/resume.
-- [ ] Add restart.
-- [ ] Add results screen.
-- [ ] Add HUD for distance, fuel, and currency.
-- [ ] Apply consistent UI styling.
-- [ ] Test UI at chosen resolution/aspect ratio.
-- [ ] If Android is selected, add and test touch controls.
+- [x] Create main menu (`scenes/main/MainMenu.tscn`, `scripts/core/MainMenuController.gd`).
+- [x] Add Start Game button (Emits `start_game_requested` to load `Game.tscn`).
+- [x] Add pause/resume (`scenes/ui/PauseMenu.tscn`).
+- [x] Add restart (Hotkey `R` and retry button on results screen).
+- [x] Add results screen (`scenes/ui/ResultsScreen.tscn`).
+- [x] Add HUD for distance, fuel, and currency (`scenes/ui/HUD.tscn`).
+- [x] Apply consistent UI styling (Flat styles, responsive anchors at 1280x720).
+- [x] Test UI at chosen resolution/aspect ratio.
+- [ ] If Android is selected, add and test touch controls (Assigned to Member 3).
 
 **Exit criteria:** Player can navigate the game without editor controls and UI remains readable.
 
