@@ -1,0 +1,183 @@
+[gd_scene load_steps=12 format=3 uid="uid://monster_truck_001"]
+
+[ext_resource type="Script" path="res://scripts/vehicle/VehicleController.gd" id="1_controller"]
+[ext_resource type="Texture2D" path="res://assets/vehicles/effects/exhaust_smoke_particle_01.png" id="2_smoke"]
+[ext_resource type="Texture2D" path="res://assets/vehicles/effects/dust_effects/ground_movement_dust/ground_dust_01.png" id="3_dust"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/engine/engine_idle_loop.wav" id="4_engine"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/vehicle/vehicle_landing_thud.wav" id="5_landing"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/vehicle/tire_rolling_skid_loop.wav" id="6_skid"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_truck_chassis"]
+friction = 0.6
+bounce = 0.08
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_truck_wheel"]
+friction = 1.85
+bounce = 0.2
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_monster_wheel"]
+radius = 28.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_truck_chassis"]
+size = Vector2(106, 30)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_truck_crash"]
+radius = 16.0
+
+[node name="MonsterTruck" type="RigidBody2D"]
+collision_layer = 2
+collision_mask = 1
+mass = 12.0
+physics_material_override = SubResource("PhysicsMaterial_truck_chassis")
+center_of_mass_mode = 1
+center_of_mass = Vector2(0, 14)
+script = ExtResource("1_controller")
+base_motor_torque = 28000.0
+base_brake_torque = 16000.0
+base_wheel_friction = 1.85
+base_suspension_softness = 0.75
+motor_torque = 28000.0
+brake_torque = 16000.0
+air_tilt_torque = 32000.0
+
+[node name="ChassisCollision" type="CollisionShape2D" parent="."]
+position = Vector2(0, -8)
+shape = SubResource("RectangleShape2D_truck_chassis")
+
+[node name="RearStrutVisual" type="Line2D" parent="."]
+points = PackedVector2Array(-42, 6, -42, 22)
+width = 5.0
+default_color = Color(0.85, 0.45, 0.1, 1)
+
+[node name="FrontStrutVisual" type="Line2D" parent="."]
+points = PackedVector2Array(42, 6, 42, 22)
+width = 5.0
+default_color = Color(0.85, 0.45, 0.1, 1)
+
+[node name="ChassisVisual" type="Polygon2D" parent="."]
+color = Color(0.12, 0.35, 0.75, 1)
+polygon = PackedVector2Array(-54, 8, -48, -14, -28, -16, -10, -32, 28, -32, 46, -12, 56, 2, 52, 10, -50, 10)
+
+[node name="DecalStripe" type="Polygon2D" parent="."]
+color = Color(0.95, 0.45, 0.1, 1)
+polygon = PackedVector2Array(-46, 2, 44, 2, 42, -4, -44, -4)
+
+[node name="CabinVisual" type="Polygon2D" parent="."]
+color = Color(0.15, 0.7, 0.9, 0.75)
+polygon = PackedVector2Array(-8, -30, 24, -30, 38, -12, -8, -12)
+
+[node name="DriverHeadVisual" type="Polygon2D" parent="."]
+color = Color(0.95, 0.8, 0.2, 1)
+polygon = PackedVector2Array(-3, -22, 9, -22, 11, -14, -3, -14)
+
+[node name="ExhaustParticles" type="CPUParticles2D" parent="."]
+position = Vector2(-52, 8)
+emitting = false
+amount = 16
+lifetime = 0.7
+texture = ExtResource("2_smoke")
+direction = Vector2(-1, -0.4)
+spread = 22.0
+gravity = Vector2(0, -60)
+initial_velocity_min = 50.0
+initial_velocity_max = 110.0
+scale_amount_min = 0.05
+scale_amount_max = 0.1
+color = Color(0.8, 0.8, 0.8, 0.7)
+
+[node name="RearDust" type="CPUParticles2D" parent="."]
+position = Vector2(-42, 34)
+emitting = false
+amount = 12
+lifetime = 0.45
+texture = ExtResource("3_dust")
+direction = Vector2(-1, -0.2)
+spread = 30.0
+gravity = Vector2(0, 90)
+initial_velocity_min = 40.0
+initial_velocity_max = 85.0
+scale_amount_min = 0.05
+scale_amount_max = 0.1
+color = Color(0.8, 0.7, 0.55, 0.75)
+
+[node name="EngineAudio" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("4_engine")
+volume_db = -4.0
+
+[node name="LandingAudio" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("5_landing")
+volume_db = -2.0
+
+[node name="SkidAudio" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("6_skid")
+volume_db = -80.0
+
+[node name="CrashDetector" type="Area2D" parent="."]
+position = Vector2(6, -26)
+collision_layer = 0
+collision_mask = 1
+
+[node name="CrashShape" type="CollisionShape2D" parent="CrashDetector"]
+shape = SubResource("CircleShape2D_truck_crash")
+
+[node name="RearWheel" type="RigidBody2D" parent="."]
+position = Vector2(-42, 22)
+collision_layer = 2
+collision_mask = 1
+mass = 3.5
+physics_material_override = SubResource("PhysicsMaterial_truck_wheel")
+contact_monitor = true
+max_contacts_reported = 2
+
+[node name="WheelCollision" type="CollisionShape2D" parent="RearWheel"]
+shape = SubResource("CircleShape2D_monster_wheel")
+
+[node name="WheelVisual" type="Polygon2D" parent="RearWheel"]
+color = Color(0.12, 0.12, 0.14, 1)
+polygon = PackedVector2Array(0, -28, 20, -20, 28, 0, 20, 20, 0, 28, -20, 20, -28, 0, -20, -20)
+
+[node name="RimVisual" type="Polygon2D" parent="RearWheel"]
+color = Color(0.9, 0.5, 0.1, 1)
+polygon = PackedVector2Array(0, -12, 8, -8, 12, 0, 8, 8, 0, 12, -8, 8, -12, 0, -8, -8)
+
+[node name="SpokeLine" type="Line2D" parent="RearWheel"]
+points = PackedVector2Array(-24, 0, 24, 0)
+width = 4.0
+default_color = Color(0.95, 0.95, 0.95, 1)
+
+[node name="FrontWheel" type="RigidBody2D" parent="."]
+position = Vector2(42, 22)
+collision_layer = 2
+collision_mask = 1
+mass = 3.5
+physics_material_override = SubResource("PhysicsMaterial_truck_wheel")
+contact_monitor = true
+max_contacts_reported = 2
+
+[node name="WheelCollision" type="CollisionShape2D" parent="FrontWheel"]
+shape = SubResource("CircleShape2D_monster_wheel")
+
+[node name="WheelVisual" type="Polygon2D" parent="FrontWheel"]
+color = Color(0.12, 0.12, 0.14, 1)
+polygon = PackedVector2Array(0, -28, 20, -20, 28, 0, 20, 20, 0, 28, -20, 20, -28, 0, -20, -20)
+
+[node name="RimVisual" type="Polygon2D" parent="FrontWheel"]
+color = Color(0.9, 0.5, 0.1, 1)
+polygon = PackedVector2Array(0, -12, 8, -8, 12, 0, 8, 8, 0, 12, -8, 8, -12, 0, -8, -8)
+
+[node name="SpokeLine" type="Line2D" parent="FrontWheel"]
+points = PackedVector2Array(-24, 0, 24, 0)
+width = 4.0
+default_color = Color(0.95, 0.95, 0.95, 1)
+
+[node name="RearJoint" type="PinJoint2D" parent="."]
+position = Vector2(-42, 22)
+node_a = NodePath("..")
+node_b = NodePath("../RearWheel")
+softness = 0.75
+
+[node name="FrontJoint" type="PinJoint2D" parent="."]
+position = Vector2(42, 22)
+node_a = NodePath("..")
+node_b = NodePath("../FrontWheel")
+softness = 0.75

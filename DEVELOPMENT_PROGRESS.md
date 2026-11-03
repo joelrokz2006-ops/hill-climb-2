@@ -17,8 +17,11 @@
 | **Phase 3** | Terrain Progression & Procedural System | Member 3 | **COMPLETED** | Endless procedural terrain, 9 segment types, 0-gap boundary tangents, segment object pooling, adaptive difficulty |
 | **Phase 4** | Pickups and Rewards (Visuals & Distribution) | Member 2 & 3 | **IN PROGRESS / M3 COMPLETE** | Member 3 procedural placement, contour trails, air arcs, sparkle and vapor CPU particles, above-ground safety |
 | **Phase 5** | UI & Menus (In-Game HUD) | Member 1 & 3 | **IN PROGRESS / M3 COMPLETE** | Member 3 responsive glassmorphic HUD, low-fuel flashing beacon, dynamic fuel bar, animated coin counter |
-| **Phase 6** | Art, Audio & Polish | Team | PLANNED | Audio integration, sprite visual polish, particle effects |
+| **Phase 6** | Art, Audio & Polish | Team | **IN PROGRESS (Member 2 Vehicle Polish Complete)** | Dynamic RPM engine audio, landing thuds, tire skid audio, exhaust/dust particles, suspension struts |
 | **Phase 7** | QA & Release Preparation | Team | PLANNED | Cross-platform export testing, release packaging |
+| **Phase 8** | Optional Enhancements | Member 2 | **IN PROGRESS (Vehicle Systems Complete)** | 4-stat 5-tier upgrade system, Monster Truck & Dune Buggy variations, VehicleRegistry catalog |
+| **Phase 7** | QA & Release Preparation | Team | PLANNED | Cross-platform export testing, release packaging |
+| **Phase 8** | Optional Enhancements | Member 2 | **IN PROGRESS (Vehicle Systems Complete)** | 4-stat 5-tier upgrade system, Monster Truck & Dune Buggy variations, VehicleRegistry catalog |
 
 ---
 
@@ -88,6 +91,19 @@
 ### Environment & Parallax (Member 3 Completed)
 - [x] **Member 3**: Fix parallax layer boundary seams (distant mountains, mid hills, near hills) to loop seamlessly with 0 vertical gap.
 - [x] **Member 3**: Add atmospheric haze, glowing sun corona, drifting clouds, and layered foreground terrain decorations.
+
+### Phase 6 & Phase 8 — Member 2 Vehicle Polish, Upgrades & Roster
+- [x] **Member 2**: Implement 4-stat 5-tier upgrade system (`engine_power`, `tire_grip`, `suspension`, `fuel_tank`).
+- [x] **Member 2**: Expose `get_stats() -> Dictionary`, `apply_upgrade(stat_name, level)`, and `signal upgraded`.
+- [x] **Member 2**: Dynamic engine RPM pitch audio modulation (`engine_audio.pitch_scale = lerpf(0.8, 2.2, speed_ratio)`).
+- [x] **Member 2**: Tire screech audio (`SkidAudio`) triggering dynamically on hard braking and wheel burnouts.
+- [x] **Member 2**: Dynamic suspension shock struts (`Line2D`) visually connecting chassis to wheel hubs with real-time compression.
+- [x] **Member 2**: Stunt detection: 360° Frontflips and Backflips (`signal trick_performed(name, coins)`).
+- [x] **Member 2**: Big airtime detection (`signal airtime_landed(duration, coins)`).
+- [x] **Member 2**: Physical low-fuel throttle sputtering warning (< 15% fuel).
+- [x] **Member 2**: Additional vehicle variations: `scenes/vehicle/MonsterTruck.tscn` and `scenes/vehicle/DuneBuggy.tscn`.
+- [x] **Member 2**: Static vehicle registry contract: `scripts/vehicle/VehicleRegistry.gd`.
+- [x] **Member 2**: Full automated verification suite (`tests/test_vehicle_physics.gd` passed 100%).
 
 ---
 
