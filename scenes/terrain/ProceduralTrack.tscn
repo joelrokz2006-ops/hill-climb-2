@@ -1,0 +1,32 @@
+[gd_scene load_steps=7 format=3 uid="uid://procedural_track_001"]
+
+[ext_resource type="Script" path="res://scripts/core/GameManager.gd" id="1_game_manager"]
+[ext_resource type="PackedScene" uid="uid://parallax_environment_001" path="res://scenes/environment/ParallaxEnvironment.tscn" id="2_parallax_env"]
+[ext_resource type="Script" path="res://scripts/terrain/TerrainGenerator.gd" id="3_terrain_generator"]
+[ext_resource type="PackedScene" uid="uid://vehicle_root_001" path="res://scenes/vehicle/Vehicle.tscn" id="4_vehicle"]
+[ext_resource type="Script" path="res://scripts/core/FollowCamera.gd" id="5_follow_cam"]
+[ext_resource type="PackedScene" uid="uid://hud_scene_001" path="res://scenes/ui/HUD.tscn" id="6_hud"]
+
+[node name="ProceduralTrack" type="Node2D"]
+
+[node name="GameManager" type="Node" parent="."]
+script = ExtResource("1_game_manager")
+
+[node name="ParallaxEnvironment" parent="." instance=ExtResource("2_parallax_env")]
+
+[node name="TerrainGenerator" type="Node2D" parent="." node_paths=PackedStringArray("target")]
+script = ExtResource("3_terrain_generator")
+target = NodePath("../Vehicle")
+
+[node name="Vehicle" parent="." instance=ExtResource("4_vehicle")]
+position = Vector2(0, 360)
+
+[node name="FollowCamera" type="Camera2D" parent="." node_paths=PackedStringArray("target")]
+position = Vector2(0, 360)
+zoom = Vector2(1.1, 1.1)
+script = ExtResource("5_follow_cam")
+target = NodePath("../Vehicle")
+
+[node name="UILayer" type="CanvasLayer" parent="."]
+
+[node name="HUD" parent="UILayer" instance=ExtResource("6_hud")]

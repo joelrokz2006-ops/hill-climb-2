@@ -1,0 +1,39 @@
+[gd_scene load_steps=3 format=3 uid="uid://terrain_segment_001"]
+
+[ext_resource type="Script" path="res://scripts/terrain/TerrainSegment.gd" id="1_terrain_segment_script"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_terrain"]
+friction = 1.0
+rough = true
+
+[node name="TerrainSegment" type="StaticBody2D"]
+collision_layer = 1
+collision_mask = 2
+physics_material_override = SubResource("PhysicsMaterial_terrain")
+script = ExtResource("1_terrain_segment_script")
+
+[node name="SubsoilPolygon" type="Polygon2D" parent="."]
+color = Color(0.18, 0.12, 0.08, 1)
+
+[node name="GroundPolygon" type="Polygon2D" parent="."]
+color = Color(0.28, 0.19, 0.13, 1)
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
+
+[node name="GrassLine" type="Line2D" parent="."]
+width = 12.0
+default_color = Color(0.3, 0.68, 0.22, 1)
+joint_mode = 2
+begin_cap_mode = 2
+end_cap_mode = 2
+antialiased = true
+
+[node name="GrassHighlightLine" type="Line2D" parent="."]
+width = 4.0
+default_color = Color(0.46, 0.82, 0.3, 1)
+joint_mode = 2
+begin_cap_mode = 2
+end_cap_mode = 2
+antialiased = true
+
+[node name="DecorationsRoot" type="Node2D" parent="."]

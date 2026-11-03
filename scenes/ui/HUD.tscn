@@ -1,21 +1,54 @@
-[gd_scene load_steps=4 format=3 uid="uid://hud_scene_001"]
+[gd_scene load_steps=7 format=3 uid="uid://hud_scene_001"]
 
 [ext_resource type="Script" path="res://scripts/ui/HUDController.gd" id="1_hud_controller"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hud_bg"]
-bg_color = Color(0.1, 0.12, 0.15, 0.75)
-corner_radius_top_left = 8
-corner_radius_top_right = 8
-corner_radius_bottom_right = 8
-corner_radius_bottom_left = 8
+bg_color = Color(0.08, 0.1, 0.14, 0.8)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.2, 0.26, 0.35, 0.6)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fuel_bg"]
+bg_color = Color(0.12, 0.14, 0.18, 0.9)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fuel_fill"]
+bg_color = Color(0.24, 0.78, 0.32, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_banner"]
-bg_color = Color(0.12, 0.14, 0.18, 0.9)
-border_width_left = 3
-border_width_top = 3
-border_width_right = 3
-border_width_bottom = 3
-border_color = Color(0.9, 0.35, 0.2, 1)
+bg_color = Color(0.08, 0.1, 0.14, 0.95)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.3, 0.5, 0.8, 0.8)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+shadow_color = Color(0, 0, 0, 0.4)
+shadow_size = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pause"]
+bg_color = Color(0.05, 0.07, 0.1, 0.9)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.85, 0.7, 0.2, 0.8)
 corner_radius_top_left = 12
 corner_radius_top_right = 12
 corner_radius_bottom_right = 12
@@ -33,52 +66,153 @@ script = ExtResource("1_hud_controller")
 
 [node name="TopStatsPanel" type="PanelContainer" parent="."]
 layout_mode = 0
-offset_left = 20.0
-offset_top = 20.0
-offset_right = 280.0
-offset_bottom = 125.0
+offset_left = 24.0
+offset_top = 24.0
+offset_right = 320.0
+offset_bottom = 155.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_hud_bg")
 
-[node name="MarginContainer" type="MarginContainer" parent="TopStatsPanel"]
+[node name="Margin" type="MarginContainer" parent="TopStatsPanel"]
 layout_mode = 2
-theme_override_constants/margin_left = 12
-theme_override_constants/margin_top = 10
-theme_override_constants/margin_right = 12
-theme_override_constants/margin_bottom = 10
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 12
 
-[node name="VBox" type="VBoxContainer" parent="TopStatsPanel/MarginContainer"]
-layout_mode = 2
-theme_override_constants/separation = 6
-
-[node name="DistanceLabel" type="Label" parent="TopStatsPanel/MarginContainer/VBox"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_font_sizes/font_size = 20
-text = "Distance: 0 m"
-
-[node name="BestDistanceLabel" type="Label" parent="TopStatsPanel/MarginContainer/VBox"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 1)
-theme_override_font_sizes/font_size = 14
-text = "Best: 0 m"
-
-[node name="FuelBox" type="HBoxContainer" parent="TopStatsPanel/MarginContainer/VBox"]
+[node name="VBox" type="VBoxContainer" parent="TopStatsPanel/Margin"]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="FuelText" type="Label" parent="TopStatsPanel/MarginContainer/VBox/FuelBox"]
+[node name="DistanceRow" type="HBoxContainer" parent="TopStatsPanel/Margin/VBox"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 14
-text = "Fuel:"
+theme_override_constants/separation = 12
 
-[node name="FuelBar" type="ProgressBar" parent="TopStatsPanel/MarginContainer/VBox/FuelBox"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(160, 16)
+[node name="DistanceTitle" type="Label" parent="TopStatsPanel/Margin/VBox/DistanceRow"]
 layout_mode = 2
-size_flags_vertical = 4
+theme_override_colors/font_color = Color(0.7, 0.78, 0.9, 1)
+theme_override_font_sizes/font_size = 13
+text = "DISTANCE"
+
+[node name="DistanceLabel" type="Label" parent="TopStatsPanel/Margin/VBox/DistanceRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 22
+text = "0 m"
+horizontal_alignment = 2
+
+[node name="BestDistanceRow" type="HBoxContainer" parent="TopStatsPanel/Margin/VBox"]
+layout_mode = 2
+
+[node name="BestDistanceLabel" type="Label" parent="TopStatsPanel/Margin/VBox/BestDistanceRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.65, 0.72, 0.82, 0.9)
+theme_override_font_sizes/font_size = 13
+text = "Best: 0 m"
+
+[node name="HSeparator" type="HSeparator" parent="TopStatsPanel/Margin/VBox"]
+layout_mode = 2
+
+[node name="FuelSection" type="VBoxContainer" parent="TopStatsPanel/Margin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="FuelHeader" type="HBoxContainer" parent="TopStatsPanel/Margin/VBox/FuelSection"]
+layout_mode = 2
+
+[node name="FuelTitle" type="Label" parent="TopStatsPanel/Margin/VBox/FuelSection/FuelHeader"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.78, 0.9, 1)
+theme_override_font_sizes/font_size = 12
+text = "FUEL"
+
+[node name="LowFuelIndicator" type="Label" parent="TopStatsPanel/Margin/VBox/FuelSection/FuelHeader"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 0.28, 0.22, 1)
+theme_override_font_sizes/font_size = 11
+text = "! LOW FUEL !"
+horizontal_alignment = 1
+
+[node name="FuelPercentageLabel" type="Label" parent="TopStatsPanel/Margin/VBox/FuelSection/FuelHeader"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.85, 0.9, 0.95, 1)
+theme_override_font_sizes/font_size = 12
+text = "100%"
+horizontal_alignment = 2
+
+[node name="FuelBar" type="ProgressBar" parent="TopStatsPanel/Margin/VBox/FuelSection"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(240, 14)
+layout_mode = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_fuel_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_fuel_fill")
 value = 100.0
 show_percentage = false
+
+[node name="CoinsPanel" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -170.0
+offset_top = 24.0
+offset_right = -24.0
+offset_bottom = 68.0
+grow_horizontal = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_hud_bg")
+
+[node name="Margin" type="MarginContainer" parent="CoinsPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 8
+
+[node name="HBox" type="HBoxContainer" parent="CoinsPanel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="CoinIconRoot" type="Control" parent="CoinsPanel/Margin/HBox"]
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 2
+
+[node name="CoinOuter" type="Polygon2D" parent="CoinsPanel/Margin/HBox/CoinIconRoot"]
+position = Vector2(10, 10)
+color = Color(1, 0.8, 0.1, 1)
+polygon = PackedVector2Array(0, -9, 6, -6, 9, 0, 6, 6, 0, 9, -6, 6, -9, 0, -6, -6)
+
+[node name="CoinInner" type="Polygon2D" parent="CoinsPanel/Margin/HBox/CoinIconRoot"]
+position = Vector2(10, 10)
+color = Color(0.95, 0.65, 0.05, 1)
+polygon = PackedVector2Array(0, -6, 4, -4, 6, 0, 4, 4, 0, 6, -4, 4, -6, 0, -4, -4)
+
+[node name="CoinText" type="Label" parent="CoinsPanel/Margin/HBox/CoinIconRoot"]
+layout_mode = 0
+offset_top = -1.0
+offset_right = 20.0
+offset_bottom = 20.0
+theme_override_colors/font_color = Color(0.4, 0.25, 0, 1)
+theme_override_font_sizes/font_size = 12
+text = "$"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="CoinsLabel" type="Label" parent="CoinsPanel/Margin/HBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(1, 0.9, 0.4, 1)
+theme_override_font_sizes/font_size = 18
+text = "0"
+horizontal_alignment = 2
 
 [node name="ControlsTip" type="Label" parent="."]
 layout_mode = 1
@@ -87,15 +221,15 @@ anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -280.0
-offset_top = -42.0
-offset_right = 280.0
+offset_left = -320.0
+offset_top = -44.0
+offset_right = 320.0
 offset_bottom = -16.0
 grow_horizontal = 2
 grow_vertical = 0
-theme_override_colors/font_color = Color(0.9, 0.9, 0.9, 0.85)
-theme_override_font_sizes/font_size = 14
-text = "Drive: [D / ->]  |  Brake: [A / <-]  |  Air Tilt: [A/D]  |  Restart: [R]"
+theme_override_colors/font_color = Color(0.88, 0.92, 0.98, 0.85)
+theme_override_font_sizes/font_size = 13
+text = "Drive: [D / ->]   |   Brake: [A / <-]   |   Air Tilt: [A/D]   |   Restart: [R]   |   Pause: [Esc]"
 horizontal_alignment = 1
 
 [node name="MessageBanner" type="PanelContainer" parent="."]
@@ -107,27 +241,92 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -160.0
-offset_top = -70.0
-offset_right = 160.0
-offset_bottom = 70.0
+offset_left = -190.0
+offset_top = -100.0
+offset_right = 190.0
+offset_bottom = 100.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_banner")
 
 [node name="Margin" type="MarginContainer" parent="MessageBanner"]
 layout_mode = 2
-theme_override_constants/margin_left = 20
-theme_override_constants/margin_top = 20
-theme_override_constants/margin_right = 20
-theme_override_constants/margin_bottom = 20
+theme_override_constants/margin_left = 28
+theme_override_constants/margin_top = 22
+theme_override_constants/margin_right = 28
+theme_override_constants/margin_bottom = 22
 
-[node name="MessageLabel" type="Label" parent="MessageBanner/Margin"]
+[node name="VBox" type="VBoxContainer" parent="MessageBanner/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="MessageTitleLabel" type="Label" parent="MessageBanner/Margin/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 18
-text = "RUN FINISHED!
-Distance: 0 m
-Press [R] to Retry"
+theme_override_font_sizes/font_size = 22
+text = "RUN FINISHED!"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="MessageBanner/Margin/VBox"]
+layout_mode = 2
+
+[node name="MessageLabel" type="Label" parent="MessageBanner/Margin/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.94, 0.98, 1)
+theme_override_font_sizes/font_size = 16
+text = "Distance: 0 m
+Coins: 0
+Best: 0 m"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="RetryHintLabel" type="Label" parent="MessageBanner/Margin/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.8, 0.25, 0.95)
+theme_override_font_sizes/font_size = 14
+text = "Press [R] to Retry"
+horizontal_alignment = 1
+
+[node name="PauseBanner" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -160.0
+offset_top = -60.0
+offset_right = 160.0
+offset_bottom = 60.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_pause")
+
+[node name="Margin" type="MarginContainer" parent="PauseBanner"]
+layout_mode = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 18
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 18
+
+[node name="VBox" type="VBoxContainer" parent="PauseBanner/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="PauseTitle" type="Label" parent="PauseBanner/Margin/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
+theme_override_font_sizes/font_size = 20
+text = "GAME PAUSED"
+horizontal_alignment = 1
+
+[node name="PauseHint" type="Label" parent="PauseBanner/Margin/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.9, 0.95, 0.9)
+theme_override_font_sizes/font_size = 13
+text = "Press [Esc / P] to Resume"
+horizontal_alignment = 1

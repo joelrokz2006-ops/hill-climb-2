@@ -1,4 +1,4 @@
-[gd_scene load_steps=2 format=3 uid="uid://test_track_001"]
+[gd_scene load_steps=3 format=3 uid="uid://test_track_001"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_ground"]
 friction = 1.0
@@ -10,18 +10,208 @@ collision_mask = 2
 physics_material_override = SubResource("PhysicsMaterial_ground")
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
-polygon = PackedVector2Array(-400, 420, 200, 420, 500, 360, 800, 240, 1050, 200, 1300, 250, 1550, 390, 1800, 440, 2100, 320, 2400, 160, 2700, 150, 2950, 240, 3250, 430, 3650, 450, 4200, 380, 4800, 420, 4800, 1000, -400, 1000)
+polygon = PackedVector2Array(-400, 420, 200, 420, 500, 360, 800, 240, 1050, 200, 1300, 250, 1550, 390, 1800, 440, 2100, 320, 2400, 160, 2700, 150, 2950, 240, 3250, 430, 3650, 450, 4200, 380, 4800, 420, 4800, 1200, -400, 1200)
+
+[node name="SubsoilPolygon" type="Polygon2D" parent="."]
+color = Color(0.18, 0.12, 0.08, 1)
+polygon = PackedVector2Array(-400, 460, 200, 460, 500, 400, 800, 280, 1050, 240, 1300, 290, 1550, 430, 1800, 480, 2100, 360, 2400, 200, 2700, 190, 2950, 280, 3250, 470, 3650, 490, 4200, 420, 4800, 460, 4800, 1200, -400, 1200)
 
 [node name="GroundPolygon" type="Polygon2D" parent="."]
-color = Color(0.32, 0.22, 0.15, 1)
-polygon = PackedVector2Array(-400, 420, 200, 420, 500, 360, 800, 240, 1050, 200, 1300, 250, 1550, 390, 1800, 440, 2100, 320, 2400, 160, 2700, 150, 2950, 240, 3250, 430, 3650, 450, 4200, 380, 4800, 420, 4800, 1000, -400, 1000)
+color = Color(0.28, 0.19, 0.13, 1)
+polygon = PackedVector2Array(-400, 420, 200, 420, 500, 360, 800, 240, 1050, 200, 1300, 250, 1550, 390, 1800, 440, 2100, 320, 2400, 160, 2700, 150, 2950, 240, 3250, 430, 3650, 450, 4200, 380, 4800, 420, 4800, 1200, -400, 1200)
+
+[node name="UndergroundStrata" type="Node2D" parent="."]
+
+[node name="StrataRock1" type="Polygon2D" parent="UndergroundStrata"]
+color = Color(0.24, 0.16, 0.11, 1)
+polygon = PackedVector2Array(-100, 550, 400, 520, 900, 420, 1400, 470, 2000, 440, 2600, 320, 3200, 540, 3800, 560, 4400, 510, 4400, 580, 3800, 630, 3200, 600, 2600, 390, 2000, 500, 1400, 530, 900, 490, 400, 580, -100, 610)
+
+[node name="StrataRock2" type="Polygon2D" parent="UndergroundStrata"]
+color = Color(0.14, 0.09, 0.06, 1)
+polygon = PackedVector2Array(200, 700, 800, 650, 1500, 680, 2200, 610, 2900, 590, 3600, 690, 4200, 680, 4200, 760, 3600, 770, 2900, 660, 2200, 680, 1500, 750, 800, 730, 200, 770)
 
 [node name="GrassSurfaceLine" type="Line2D" parent="."]
 points = PackedVector2Array(-400, 420, 200, 420, 500, 360, 800, 240, 1050, 200, 1300, 250, 1550, 390, 1800, 440, 2100, 320, 2400, 160, 2700, 150, 2950, 240, 3250, 430, 3650, 450, 4200, 380, 4800, 420)
-width = 10.0
-default_color = Color(0.3, 0.65, 0.22, 1)
+width = 12.0
+default_color = Color(0.3, 0.68, 0.22, 1)
+joint_mode = 2
+begin_cap_mode = 2
+end_cap_mode = 2
+antialiased = true
 
-[node name="StartPlatformMark" type="Line2D" parent="."]
-points = PackedVector2Array(0, 420, 0, 350)
+[node name="GrassHighlightLine" type="Line2D" parent="."]
+points = PackedVector2Array(-400, 418, 200, 418, 500, 358, 800, 238, 1050, 198, 1300, 248, 1550, 388, 1800, 438, 2100, 318, 2400, 158, 2700, 148, 2950, 238, 3250, 428, 3650, 448, 4200, 378, 4800, 418)
 width = 4.0
-default_color = Color(0.9, 0.85, 0.1, 1)
+default_color = Color(0.48, 0.82, 0.3, 1)
+joint_mode = 2
+begin_cap_mode = 2
+end_cap_mode = 2
+antialiased = true
+
+[node name="EnvironmentDecorations" type="Node2D" parent="."]
+
+[node name="SurfaceRocks" type="Node2D" parent="EnvironmentDecorations"]
+
+[node name="Rock1" type="Polygon2D" parent="EnvironmentDecorations/SurfaceRocks"]
+position = Vector2(350, 385)
+color = Color(0.5, 0.46, 0.42, 1)
+polygon = PackedVector2Array(-10, 0, -6, -8, 4, -10, 12, -4, 10, 0)
+
+[node name="Rock2" type="Polygon2D" parent="EnvironmentDecorations/SurfaceRocks"]
+position = Vector2(1150, 220)
+color = Color(0.44, 0.4, 0.37, 1)
+polygon = PackedVector2Array(-8, 0, -4, -7, 6, -6, 9, 0)
+
+[node name="Rock3" type="Polygon2D" parent="EnvironmentDecorations/SurfaceRocks"]
+position = Vector2(2250, 235)
+color = Color(0.52, 0.48, 0.43, 1)
+polygon = PackedVector2Array(-12, 0, -8, -11, 4, -12, 14, -5, 12, 0)
+
+[node name="Rock4" type="Polygon2D" parent="EnvironmentDecorations/SurfaceRocks"]
+position = Vector2(3450, 442)
+color = Color(0.46, 0.42, 0.38, 1)
+polygon = PackedVector2Array(-9, 0, -5, -8, 5, -9, 10, 0)
+
+[node name="SurfaceGrassTufts" type="Node2D" parent="EnvironmentDecorations"]
+
+[node name="Tuft1" type="Line2D" parent="EnvironmentDecorations/SurfaceGrassTufts"]
+points = PackedVector2Array(620, 310, 616, 296, 620, 310, 624, 298)
+width = 2.5
+default_color = Color(0.38, 0.76, 0.26, 0.9)
+begin_cap_mode = 2
+end_cap_mode = 2
+
+[node name="Tuft2" type="Line2D" parent="EnvironmentDecorations/SurfaceGrassTufts"]
+points = PackedVector2Array(1680, 415, 1675, 402, 1680, 415, 1686, 404)
+width = 2.5
+default_color = Color(0.38, 0.76, 0.26, 0.9)
+begin_cap_mode = 2
+end_cap_mode = 2
+
+[node name="Tuft3" type="Line2D" parent="EnvironmentDecorations/SurfaceGrassTufts"]
+points = PackedVector2Array(2550, 155, 2546, 142, 2550, 155, 2555, 143)
+width = 2.5
+default_color = Color(0.38, 0.76, 0.26, 0.9)
+begin_cap_mode = 2
+end_cap_mode = 2
+
+[node name="TrackSignposts" type="Node2D" parent="."]
+
+[node name="StartArch" type="Node2D" parent="TrackSignposts"]
+position = Vector2(0, 420)
+
+[node name="PoleLeft" type="Line2D" parent="TrackSignposts/StartArch"]
+points = PackedVector2Array(-24, 0, -24, -90)
+width = 4.0
+default_color = Color(0.85, 0.85, 0.88, 1)
+
+[node name="PoleRight" type="Line2D" parent="TrackSignposts/StartArch"]
+points = PackedVector2Array(24, 0, 24, -90)
+width = 4.0
+default_color = Color(0.85, 0.85, 0.88, 1)
+
+[node name="Banner" type="Polygon2D" parent="TrackSignposts/StartArch"]
+color = Color(0.9, 0.2, 0.2, 1)
+polygon = PackedVector2Array(-28, -90, 28, -90, 28, -70, -28, -70)
+
+[node name="BannerText" type="Label" parent="TrackSignposts/StartArch"]
+offset_left = -28.0
+offset_top = -88.0
+offset_right = 28.0
+offset_bottom = -68.0
+theme_override_font_sizes/font_size = 11
+text = "START"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Sign10m" type="Node2D" parent="TrackSignposts"]
+position = Vector2(1000, 210)
+
+[node name="Pole" type="Line2D" parent="TrackSignposts/Sign10m"]
+points = PackedVector2Array(0, 0, 0, -45)
+width = 3.0
+default_color = Color(0.7, 0.65, 0.55, 1)
+
+[node name="SignBoard" type="Polygon2D" parent="TrackSignposts/Sign10m"]
+color = Color(0.95, 0.88, 0.72, 1)
+polygon = PackedVector2Array(-20, -62, 20, -62, 20, -42, -20, -42)
+
+[node name="SignLabel" type="Label" parent="TrackSignposts/Sign10m"]
+offset_left = -20.0
+offset_top = -62.0
+offset_right = 20.0
+offset_bottom = -42.0
+theme_override_colors/font_color = Color(0.2, 0.15, 0.1, 1)
+theme_override_font_sizes/font_size = 11
+text = "10 m"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Sign20m" type="Node2D" parent="TrackSignposts"]
+position = Vector2(2000, 360)
+
+[node name="Pole" type="Line2D" parent="TrackSignposts/Sign20m"]
+points = PackedVector2Array(0, 0, 0, -45)
+width = 3.0
+default_color = Color(0.7, 0.65, 0.55, 1)
+
+[node name="SignBoard" type="Polygon2D" parent="TrackSignposts/Sign20m"]
+color = Color(0.95, 0.88, 0.72, 1)
+polygon = PackedVector2Array(-20, -62, 20, -62, 20, -42, -20, -42)
+
+[node name="SignLabel" type="Label" parent="TrackSignposts/Sign20m"]
+offset_left = -20.0
+offset_top = -62.0
+offset_right = 20.0
+offset_bottom = -42.0
+theme_override_colors/font_color = Color(0.2, 0.15, 0.1, 1)
+theme_override_font_sizes/font_size = 11
+text = "20 m"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Sign30m" type="Node2D" parent="TrackSignposts"]
+position = Vector2(3000, 260)
+
+[node name="Pole" type="Line2D" parent="TrackSignposts/Sign30m"]
+points = PackedVector2Array(0, 0, 0, -45)
+width = 3.0
+default_color = Color(0.7, 0.65, 0.55, 1)
+
+[node name="SignBoard" type="Polygon2D" parent="TrackSignposts/Sign30m"]
+color = Color(0.95, 0.88, 0.72, 1)
+polygon = PackedVector2Array(-20, -62, 20, -62, 20, -42, -20, -42)
+
+[node name="SignLabel" type="Label" parent="TrackSignposts/Sign30m"]
+offset_left = -20.0
+offset_top = -62.0
+offset_right = 20.0
+offset_bottom = -42.0
+theme_override_colors/font_color = Color(0.2, 0.15, 0.1, 1)
+theme_override_font_sizes/font_size = 11
+text = "30 m"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Sign40m" type="Node2D" parent="TrackSignposts"]
+position = Vector2(4000, 410)
+
+[node name="Pole" type="Line2D" parent="TrackSignposts/Sign40m"]
+points = PackedVector2Array(0, 0, 0, -45)
+width = 3.0
+default_color = Color(0.7, 0.65, 0.55, 1)
+
+[node name="SignBoard" type="Polygon2D" parent="TrackSignposts/Sign40m"]
+color = Color(0.95, 0.88, 0.72, 1)
+polygon = PackedVector2Array(-20, -62, 20, -62, 20, -42, -20, -42)
+
+[node name="SignLabel" type="Label" parent="TrackSignposts/Sign40m"]
+offset_left = -20.0
+offset_top = -62.0
+offset_right = 20.0
+offset_bottom = -42.0
+theme_override_colors/font_color = Color(0.2, 0.15, 0.1, 1)
+theme_override_font_sizes/font_size = 11
+text = "40 m"
+horizontal_alignment = 1
+vertical_alignment = 1
