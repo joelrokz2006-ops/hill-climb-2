@@ -85,17 +85,19 @@
 **Exit criteria:** Vehicle drives reliably across the fixed test hill; no critical physics or scene errors. (ALL MEMBERS COMPLETE)
 
 # PHASE 2 — CORE RUN LOOP
-**Current Active Phase — Owned by Member 1 (Lead)**
+**Owned by Member 1 (Lead) — COMPLETED & VERIFIED**
 
-- [ ] Create run states: playing, paused, finished.
-- [ ] Add distance tracking.
-- [ ] Add restart action/button.
-- [ ] Add basic results display.
-- [ ] Add fuel value and depletion.
-- [ ] Add fuel pickup.
-- [ ] Add game-over condition.
-- [ ] Verify restarting resets the run correctly.
-- [ ] Verify a run can start, progress, end, and restart.
+- [x] Create run states: playing, paused, finished (`GameManager.gd` state machine).
+- [x] Add distance tracking (Meters tracked and real-time HUD updates).
+- [x] Add restart action/button (`R` key and UI Retry buttons).
+- [x] Add basic results display (`scenes/ui/ResultsScreen.tscn` with distance, records, coins, and retry button).
+- [x] Add fuel value and depletion (Vehicle burns fuel on acceleration, dynamic fuel gauge).
+- [x] Add fuel pickup (`scenes/pickups/FuelPickup.tscn` refuels vehicle and resets on new run).
+- [x] Add game-over condition (Fatal crash impact & out-of-fuel vehicle stop).
+- [x] Verify restarting resets the run correctly (Physics transform, fuel, distance, pickups reset).
+- [x] Verify a run can start, progress, end, and restart (`tests/test_phase2_core_loop.gd` passed 100%).
+
+**Exit criteria:** Complete run loop works. (COMPLETED)
 
 **Exit criteria:** Complete run loop works.
 
@@ -215,4 +217,4 @@
 - [x] Change is committed and reviewed before merging to `main`.
 
 ## Current next action
-**Member 1 (Team Leader):** Phase 1 is fully completed and verified across all 3 members. Member 1 now begins **Phase 2 — Core Run Loop**: implementing run state coordination (`READY` -> `PLAYING` -> `PAUSED` -> `FINISHED`), end-of-run results screen, game-over handlers (crashed & out of fuel), and restart reset flows.
+**Member 1 (Team Leader):** Phase 2 (Core Run Loop) is completed and tested across all test suites. All changes are held locally awaiting user permission to push. Next phase in roadmap: Phase 3 (Terrain Progression) and Phase 4 (Pickups & Rewards).

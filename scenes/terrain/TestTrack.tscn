@@ -1,4 +1,7 @@
-[gd_scene load_steps=3 format=3 uid="uid://test_track_001"]
+[gd_scene load_steps=5 format=3 uid="uid://test_track_001"]
+
+[ext_resource type="PackedScene" uid="uid://coin_pickup_001" path="res://scenes/pickups/Coin.tscn" id="2_coin"]
+[ext_resource type="PackedScene" uid="uid://fuel_pickup_001" path="res://scenes/pickups/FuelPickup.tscn" id="3_fuel"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_ground"]
 friction = 1.0
@@ -215,3 +218,32 @@ theme_override_font_sizes/font_size = 11
 text = "40 m"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="Pickups" type="Node2D" parent="."]
+
+[node name="Coin1" parent="Pickups" instance=ExtResource("2_coin")]
+position = Vector2(500, 320)
+
+[node name="Coin2" parent="Pickups" instance=ExtResource("2_coin")]
+position = Vector2(750, 230)
+
+[node name="Fuel1" parent="Pickups" instance=ExtResource("3_fuel")]
+position = Vector2(1050, 160)
+
+[node name="Coin3" parent="Pickups" instance=ExtResource("2_coin")]
+position = Vector2(1550, 350)
+
+[node name="Coin4" parent="Pickups" instance=ExtResource("2_coin")]
+position = Vector2(1800, 400)
+
+[node name="Coin5" parent="Pickups" instance=ExtResource("2_coin")]
+position = Vector2(2400, 120)
+
+[node name="Fuel2" parent="Pickups" instance=ExtResource("3_fuel")]
+position = Vector2(2700, 110)
+
+[node name="Coin6" parent="Pickups" instance=ExtResource("2_coin")]
+position = Vector2(3250, 390)
+
+[node name="Fuel3" parent="Pickups" instance=ExtResource("3_fuel")]
+position = Vector2(4200, 340)

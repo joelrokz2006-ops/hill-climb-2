@@ -159,6 +159,12 @@ func reset_vehicle(at_position: Vector2) -> void:
 	current_fuel = max_fuel
 	fuel_changed.emit(current_fuel, max_fuel)
 	
+	# Immediately update Node2D transform properties
+	global_position = at_position
+	rotation = 0.0
+	linear_velocity = Vector2.ZERO
+	angular_velocity = 0.0
+	
 	# Reset chassis physics transform and velocities via PhysicsServer2D
 	var chassis_transform := Transform2D(0.0, at_position)
 	PhysicsServer2D.body_set_state(get_rid(), PhysicsServer2D.BODY_STATE_TRANSFORM, chassis_transform)

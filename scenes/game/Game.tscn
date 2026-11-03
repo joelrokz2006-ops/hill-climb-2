@@ -1,12 +1,14 @@
-[gd_scene load_steps=8 format=3 uid="uid://game_scene_001"]
+[gd_scene load_steps=10 format=3 uid="uid://game_scene_001"]
 
 [ext_resource type="Script" path="res://scripts/core/Game.gd" id="1_game_script"]
 [ext_resource type="Script" path="res://scripts/core/GameManager.gd" id="2_manager_script"]
 [ext_resource type="PackedScene" uid="uid://parallax_environment_001" path="res://scenes/environment/ParallaxEnvironment.tscn" id="3_parallax_env"]
 [ext_resource type="Script" path="res://scripts/core/FollowCamera.gd" id="4_camera_script"]
-[ext_resource type="PackedScene" path="res://scenes/terrain/TestTrack.tscn" id="5_test_track"]
-[ext_resource type="PackedScene" path="res://scenes/vehicle/Vehicle.tscn" id="6_vehicle"]
-[ext_resource type="PackedScene" path="res://scenes/ui/HUD.tscn" id="7_hud"]
+[ext_resource type="PackedScene" uid="uid://test_track_001" path="res://scenes/terrain/TestTrack.tscn" id="5_test_track"]
+[ext_resource type="PackedScene" uid="uid://vehicle_root_001" path="res://scenes/vehicle/Vehicle.tscn" id="6_vehicle"]
+[ext_resource type="PackedScene" uid="uid://hud_scene_001" path="res://scenes/ui/HUD.tscn" id="7_hud"]
+[ext_resource type="PackedScene" uid="uid://pause_menu_001" path="res://scenes/ui/PauseMenu.tscn" id="8_pause_menu"]
+[ext_resource type="PackedScene" uid="uid://results_screen_001" path="res://scenes/ui/ResultsScreen.tscn" id="9_results_screen"]
 
 [node name="Game" type="Node2D"]
 script = ExtResource("1_game_script")
@@ -34,3 +36,9 @@ script = ExtResource("4_camera_script")
 [node name="UILayer" type="CanvasLayer" parent="."]
 
 [node name="HUD" parent="UILayer" instance=ExtResource("7_hud")]
+
+[node name="PauseMenu" parent="UILayer" instance=ExtResource("8_pause_menu")]
+visible = false
+
+[node name="ResultsScreen" parent="UILayer" instance=ExtResource("9_results_screen")]
+visible = false

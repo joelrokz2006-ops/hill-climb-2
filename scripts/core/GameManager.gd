@@ -13,7 +13,7 @@ enum RunState {
 
 signal run_started
 signal run_paused(is_paused: bool)
-signal run_finished(final_distance: float, coins: int)
+signal run_finished(final_distance: float, coins: int, reason: String)
 signal run_restarted
 signal distance_updated(new_distance: float)
 signal fuel_updated(current: float, max_fuel: float)
@@ -26,6 +26,8 @@ var current_fuel: float = 100.0
 var max_fuel: float = 100.0
 var coins_collected: int = 0
 var run_time: float = 0.0
+var finish_reason: String = ""
+var is_new_record: bool = false
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -41,6 +43,9 @@ func start_run() -> void:
 	current_fuel = max_fuel
 	coins_collected = 0
 	run_time = 0.0
+	finish_reason = ""
+	is_new_record = false
+	
 	run_started.emit()
 	fuel_updated.emit(current_fuel, max_fuel)
 	distance_updated.emit(current_distance)
@@ -65,10 +70,15 @@ func finish_run(reason: String = "") -> void:
 		return
 	
 	current_state = RunState.FINISHED
+	finish_reason = reason
+	
 	if current_distance > best_distance:
 		best_distance = current_distance
+		is_new_record = true
+	else:
+		is_new_record = false
 	
-	run_finished.emit(current_distance, coins_collected)
+	run_finished.emit(current_distance, coins_collected, finish_reason)
 
 func restart_run() -> void:
 	get_tree().paused = false
@@ -88,8 +98,8 @@ func consume_fuel(amount: float) -> void:
 		return
 	current_fuel = maxf(0.0, current_fuel - amount)
 	fuel_updated.emit(current_fuel, max_fuel)
-	if current_fuel <= 0.0:
-		finish_run("out_of_fuel")
+	# Note: We do not abruptly finish immediately here;
+	# GameScene checks when fuel <= 0 and vehicle comes to a stop.
 
 func add_fuel(amount: float) -> void:
 	current_fuel = minf(max_fuel, current_fuel + amount)

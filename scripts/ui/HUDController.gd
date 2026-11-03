@@ -164,7 +164,7 @@ func _on_vehicle_crashed() -> void:
 	if retry_hint_label:
 		retry_hint_label.text = "Press [R] to Retry"
 
-func _on_run_finished(final_distance: float, coins: int) -> void:
+func _on_run_finished(final_distance: float, coins: int = 0, reason: String = "") -> void:
 	if message_banner:
 		message_banner.visible = true
 	if message_title_label:

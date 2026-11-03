@@ -2,8 +2,8 @@
 
 **Project:** Hill Climb 2D  
 **Engine:** Godot 4.3 (GDScript)  
-**Status:** Phase 1 Complete / Phase 2 (Core Run Loop) Active  
-**Last Updated:** Phase 1 Full Integration Verified (Members 1, 2, 3)  
+**Status:** Phase 2 Complete (Core Run Loop Verified)  
+**Last Updated:** Phase 2 Core Run Loop Implemented & Verified  
 
 ---
 
@@ -13,7 +13,7 @@
 |---|---|---|---|---|
 | **Phase 0** | Project & Team Setup | Member 1 | **COMPLETED** | Repo, structure, project.godot, input map, Godot 4.3 verified |
 | **Phase 1** | Vehicle on Test Hill (First Playable) | Member 1 (Lead), 2, 3 | **COMPLETED** | Main & Game skeletons, tuned vehicle physics, test hill, particle effects, parallax environment, HUD |
-| **Phase 2** | Core Run Loop | Member 1 (Lead) / Team | **IN PROGRESS** | Run states, game-over triggers, results overlay, restart flow |
+| **Phase 2** | Core Run Loop | Member 1 (Lead) | **COMPLETED** | Run states, game-over triggers, results overlay, pickups, full restart cycle |
 | **Phase 3** | Terrain Progression | Member 3 | PLANNED | Procedural or segmented endless terrain generation |
 | **Phase 4** | Pickups and Rewards | Member 2 & 3 | PLANNED | Fuel cans, coins, score persistence |
 | **Phase 5** | UI & Menus | Member 1 & 3 | PLANNED | Main menu, settings, pause menu, results overlay |
@@ -51,6 +51,16 @@
 - [x] Run a clean test from the project entry scene (`tests/test_game_loop.gd` passed 100%).
 - [x] Run dedicated vehicle physics test suite (`tests/test_vehicle_physics.gd` passed 100%).
 
+### Phase 2 — Core Run Loop
+- [x] **Member 1**: Run state machine (`READY`, `PLAYING`, `PAUSED`, `FINISHED`) in `GameManager.gd`.
+- [x] **Member 1**: Distance tracking and live telemetry.
+- [x] **Member 1**: Game over triggers for vehicle crash and out-of-fuel coasting stop.
+- [x] **Member 1**: Results screen overlay (`scenes/ui/ResultsScreen.tscn`) displaying distance, record, coins, and retry button.
+- [x] **Member 1**: Pause menu overlay (`scenes/ui/PauseMenu.tscn`) with resume and restart options.
+- [x] **Member 1**: Reusable fuel pickup (`scenes/pickups/FuelPickup.tscn`) and coin pickup (`scenes/pickups/Coin.tscn`).
+- [x] **Member 1**: Safe restart flow resetting vehicle, metrics, UI, and test track pickups.
+- [x] **Member 1**: Automated Phase 2 test suite (`tests/test_phase2_core_loop.gd` passed 100%).
+
 ---
 
 ## Verification Logs
@@ -59,3 +69,5 @@
 - Entry Scene execution: `godot --headless scenes/main/Main.tscn --quit-after 60` -> **Exit code 0**
 - Full automated integration suite: `godot --headless -s tests/test_game_loop.gd` -> **Exit code 0**
 - Member 2 vehicle standalone suite: `godot --headless -s tests/test_vehicle_physics.gd` -> **Exit code 0**
+- Member 3 terrain & HUD suite: `godot --headless -s tests/test_terrain_and_hud.gd` -> **Exit code 0**
+- Phase 2 core run loop suite: `godot --headless -s tests/test_phase2_core_loop.gd` -> **Exit code 0**
