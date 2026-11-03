@@ -1,5 +1,7 @@
 extends SceneTree
 
+const VehicleRegistry = preload("res://scripts/vehicle/VehicleRegistry.gd")
+
 func _init() -> void:
 	print("========================================")
 	print("--- BEGIN MEMBER 2 VEHICLE FULL TEST ---")
