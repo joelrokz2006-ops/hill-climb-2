@@ -1,0 +1,133 @@
+[gd_scene load_steps=2 format=3 uid="uid://parallax_environment_001"]
+
+[ext_resource type="Script" path="res://scripts/environment/ParallaxEnvironment.gd" id="1_parallax_script"]
+
+[node name="ParallaxEnvironment" type="ParallaxBackground"]
+script = ExtResource("1_parallax_script")
+enable_cloud_drift = true
+cloud_drift_speed = 10.0
+
+[node name="SkyLayer" type="ParallaxLayer" parent="."]
+motion_scale = Vector2(0, 0)
+
+[node name="SkyBackground" type="ColorRect" parent="SkyLayer"]
+offset_left = -6000.0
+offset_top = -3000.0
+offset_right = 30000.0
+offset_bottom = 3000.0
+color = Color(0.42, 0.68, 0.92, 1)
+
+[node name="SunGlow" type="Polygon2D" parent="SkyLayer"]
+position = Vector2(980, 100)
+color = Color(1, 0.95, 0.7, 0.3)
+polygon = PackedVector2Array(0, -60, 42, -42, 60, 0, 42, 42, 0, 60, -42, 42, -60, 0, -42, -42)
+
+[node name="SunCore" type="Polygon2D" parent="SkyLayer"]
+position = Vector2(980, 100)
+color = Color(1, 0.98, 0.85, 0.95)
+polygon = PackedVector2Array(0, -32, 22, -22, 32, 0, 22, 22, 0, 32, -22, 22, -32, 0, -22, -22)
+
+[node name="DistantCloudsLayer" type="ParallaxLayer" parent="."]
+motion_scale = Vector2(0.03, 0.015)
+motion_mirroring = Vector2(2400, 0)
+
+[node name="WispyCloud1" type="Polygon2D" parent="DistantCloudsLayer"]
+position = Vector2(200, 40)
+color = Color(1, 1, 1, 0.35)
+polygon = PackedVector2Array(0, 15, 60, 0, 150, 0, 220, 10, 300, 5, 360, 18, 280, 28, 120, 28, 40, 24)
+
+[node name="WispyCloud2" type="Polygon2D" parent="DistantCloudsLayer"]
+position = Vector2(1000, 60)
+color = Color(1, 1, 1, 0.3)
+polygon = PackedVector2Array(0, 12, 80, -5, 180, -2, 260, 12, 340, 6, 420, 20, 320, 30, 150, 28, 40, 22)
+
+[node name="WispyCloud3" type="Polygon2D" parent="DistantCloudsLayer"]
+position = Vector2(1700, 30)
+color = Color(1, 1, 1, 0.35)
+polygon = PackedVector2Array(0, 15, 70, 0, 160, 2, 240, 14, 310, 8, 380, 22, 270, 32, 110, 30, 30, 25)
+
+[node name="DistantMountainsLayer" type="ParallaxLayer" parent="."]
+motion_scale = Vector2(0.08, 0.04)
+motion_mirroring = Vector2(2560, 0)
+
+[node name="MountainRange" type="Polygon2D" parent="DistantMountainsLayer"]
+color = Color(0.42, 0.52, 0.66, 0.85)
+polygon = PackedVector2Array(0, 600, 0, 320, 240, 140, 480, 300, 680, 220, 920, 90, 1160, 270, 1400, 180, 1680, 80, 1920, 240, 2180, 160, 2400, 280, 2560, 210, 2560, 600)
+
+[node name="SnowCap1" type="Polygon2D" parent="DistantMountainsLayer"]
+color = Color(0.92, 0.95, 1, 0.9)
+polygon = PackedVector2Array(240, 140, 200, 175, 225, 180, 240, 170, 255, 180, 280, 175)
+
+[node name="SnowCap2" type="Polygon2D" parent="DistantMountainsLayer"]
+color = Color(0.92, 0.95, 1, 0.9)
+polygon = PackedVector2Array(920, 90, 860, 145, 900, 150, 920, 138, 945, 152, 980, 145)
+
+[node name="SnowCap3" type="Polygon2D" parent="DistantMountainsLayer"]
+color = Color(0.92, 0.95, 1, 0.9)
+polygon = PackedVector2Array(1680, 80, 1620, 135, 1660, 140, 1680, 128, 1700, 142, 1740, 135)
+
+[node name="MidHillsLayer" type="ParallaxLayer" parent="."]
+motion_scale = Vector2(0.2, 0.1)
+motion_mirroring = Vector2(2048, 0)
+
+[node name="HillsBody" type="Polygon2D" parent="MidHillsLayer"]
+color = Color(0.24, 0.44, 0.36, 0.9)
+polygon = PackedVector2Array(0, 650, 0, 380, 220, 330, 460, 370, 720, 290, 980, 350, 1240, 270, 1520, 340, 1780, 280, 2048, 360, 2048, 650)
+
+[node name="DistantTrees" type="Node2D" parent="MidHillsLayer"]
+
+[node name="PineTree1" type="Polygon2D" parent="MidHillsLayer/DistantTrees"]
+position = Vector2(220, 330)
+color = Color(0.18, 0.34, 0.28, 0.9)
+polygon = PackedVector2Array(0, -35, 12, -10, 6, -10, 16, 10, -16, 10, -6, -10, -12, -10)
+
+[node name="PineTree2" type="Polygon2D" parent="MidHillsLayer/DistantTrees"]
+position = Vector2(720, 290)
+color = Color(0.18, 0.34, 0.28, 0.9)
+polygon = PackedVector2Array(0, -40, 14, -12, 7, -12, 18, 12, -18, 12, -7, -12, -14, -12)
+
+[node name="PineTree3" type="Polygon2D" parent="MidHillsLayer/DistantTrees"]
+position = Vector2(1240, 270)
+color = Color(0.18, 0.34, 0.28, 0.9)
+polygon = PackedVector2Array(0, -45, 16, -14, 8, -14, 20, 14, -20, 14, -8, -14, -16, -14)
+
+[node name="PineTree4" type="Polygon2D" parent="MidHillsLayer/DistantTrees"]
+position = Vector2(1780, 280)
+color = Color(0.18, 0.34, 0.28, 0.9)
+polygon = PackedVector2Array(0, -38, 13, -11, 7, -11, 17, 11, -17, 11, -7, -11, -13, -11)
+
+[node name="CloudsLayer" type="ParallaxLayer" parent="."]
+motion_scale = Vector2(0.12, 0.05)
+motion_mirroring = Vector2(1800, 0)
+
+[node name="Cloud1" type="Polygon2D" parent="CloudsLayer"]
+position = Vector2(250, 110)
+color = Color(1, 1, 1, 0.65)
+polygon = PackedVector2Array(0, 30, 20, 10, 50, 0, 90, 0, 120, 12, 150, 6, 190, 15, 210, 35, 180, 55, 30, 55)
+
+[node name="Cloud2" type="Polygon2D" parent="CloudsLayer"]
+position = Vector2(850, 80)
+color = Color(1, 1, 1, 0.6)
+polygon = PackedVector2Array(0, 25, 25, 8, 60, 0, 100, 2, 135, 16, 170, 8, 210, 20, 230, 42, 190, 50, 30, 50)
+
+[node name="Cloud3" type="Polygon2D" parent="CloudsLayer"]
+position = Vector2(1400, 130)
+color = Color(1, 1, 1, 0.65)
+polygon = PackedVector2Array(0, 28, 22, 12, 55, 2, 95, 0, 125, 14, 155, 8, 195, 18, 220, 38, 185, 52, 25, 52)
+
+[node name="NearHillsLayer" type="ParallaxLayer" parent="."]
+motion_scale = Vector2(0.4, 0.18)
+motion_mirroring = Vector2(1920, 0)
+
+[node name="NearHillsBody" type="Polygon2D" parent="NearHillsLayer"]
+color = Color(0.28, 0.54, 0.26, 0.95)
+polygon = PackedVector2Array(0, 680, 0, 420, 280, 360, 540, 410, 860, 340, 1160, 390, 1480, 330, 1720, 380, 1920, 350, 1920, 680)
+
+[node name="NearHillHighlight" type="Line2D" parent="NearHillsLayer"]
+points = PackedVector2Array(0, 420, 280, 360, 540, 410, 860, 340, 1160, 390, 1480, 330, 1720, 380, 1920, 350)
+width = 6.0
+default_color = Color(0.38, 0.68, 0.32, 1)
+joint_mode = 2
+begin_cap_mode = 2
+end_cap_mode = 2
+antialiased = true
