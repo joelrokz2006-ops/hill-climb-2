@@ -12,7 +12,7 @@
 | Phase | Description | Owner | Status | Notes |
 |---|---|---|---|---|
 | **Phase 0** | Project & Team Setup | Member 1 | **COMPLETED** | Repo, structure, project.godot, input map, Godot 4.3 verified |
-| **Phase 1** | Vehicle on Test Hill (First Playable) | Member 1 (Lead), 2, 3 | **COMPLETED (Member 1 Foundation)** | Main & Game skeletons, vehicle physics stub, test hill, camera, HUD integrated |
+| **Phase 1** | Vehicle on Test Hill (First Playable) | Member 1 (Lead), 2, 3 | **COMPLETED** | Main & Game skeletons, tuned vehicle physics, test hill, particle effects, test bench, camera, HUD |
 | **Phase 2** | Core Run Loop | Team | PLANNED | Extended states, results screen, coin collectibles |
 | **Phase 3** | Terrain Progression | Member 3 | PLANNED | Procedural or segmented endless terrain generation |
 | **Phase 4** | Pickups and Rewards | Member 2 & 3 | PLANNED | Fuel cans, coins, score persistence |
@@ -40,11 +40,16 @@
 - [x] **Member 1 / 2**: Create first vehicle physics prototype (`scenes/vehicle/Vehicle.tscn`, `scripts/vehicle/VehicleController.gd`).
 - [x] **Member 1**: Add smooth camera follow (`scripts/core/FollowCamera.gd`).
 - [x] **Member 1 / 2**: Add accelerate, brake/reverse, and air tilt controls.
+- [x] **Member 2**: Implement particle feedback (exhaust smoke on acceleration, wheel dust kickup on terrain contact).
+- [x] **Member 2**: Implement engine audio pitch scaling and landing thud audio triggers.
+- [x] **Member 2**: Create standalone isolated test bench with varied slopes (`scenes/vehicle/VehicleTest.tscn`).
+- [x] **Member 2**: Document exported tuning properties (`docs/VEHICLE_TUNING_GUIDE.md`).
 - [x] Test driving up and down the hill (Verified via automated physics test).
 - [x] Test vehicle landing and rotation behavior.
 - [x] Tune physics to prevent constant flipping or jitter.
 - [x] Integrate all parts into one playable scene (`scenes/game/Game.tscn`).
 - [x] Run a clean test from the project entry scene (`tests/test_game_loop.gd` passed 100%).
+- [x] Run dedicated vehicle physics test suite (`tests/test_vehicle_physics.gd` passed 100%).
 
 ---
 
@@ -53,3 +58,4 @@
 - Headless Godot Editor check: `godot --headless --editor --quit` -> **0 errors**
 - Entry Scene execution: `godot --headless scenes/main/Main.tscn --quit-after 60` -> **Exit code 0**
 - Full automated integration suite: `godot --headless -s tests/test_game_loop.gd` -> **Exit code 0**
+- Member 2 vehicle standalone suite: `godot --headless -s tests/test_vehicle_physics.gd` -> **Exit code 0**
