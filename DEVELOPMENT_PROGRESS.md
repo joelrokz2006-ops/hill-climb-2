@@ -2,8 +2,8 @@
 
 **Project:** Hill Climb 2D  
 **Engine:** Godot 4.3 (GDScript)  
-**Status:** Phase 2 Complete (Core Run Loop Verified)  
-**Last Updated:** Phase 2 Core Run Loop Implemented & Verified  
+**Status:** Member 3 Complete & Production-Ready (Phases 1, 2, and 3 Verified)  
+**Last Updated:** Member 3 Complete Development & Expanded Verification Suite  
 
 ---
 
@@ -14,11 +14,14 @@
 | **Phase 0** | Project & Team Setup | Member 1 | **COMPLETED** | Repo, structure, project.godot, input map, Godot 4.3 verified |
 | **Phase 1** | Vehicle on Test Hill (First Playable) | Member 1 (Lead), 2, 3 | **COMPLETED** | Main & Game skeletons, tuned vehicle physics, test hill, particle effects, parallax environment, HUD |
 | **Phase 2** | Core Run Loop | Member 1 (Lead) | **COMPLETED** | Run states, game-over triggers, results overlay, pickups, full restart cycle |
-| **Phase 3** | Terrain Progression | Member 3 | PLANNED | Procedural or segmented endless terrain generation |
-| **Phase 4** | Pickups and Rewards | Member 2 & 3 | PLANNED | Fuel cans, coins, score persistence |
-| **Phase 5** | UI & Menus | Member 1 & 3 | PLANNED | Main menu, settings, pause menu, results overlay |
-| **Phase 6** | Art, Audio & Polish | Team | PLANNED | Audio integration, sprite visual polish, particle effects |
+| **Phase 3** | Terrain Progression & Procedural System | Member 3 | **COMPLETED** | Endless procedural terrain, 9 segment types, 0-gap boundary tangents, segment object pooling, adaptive difficulty |
+| **Phase 4** | Pickups and Rewards (Visuals & Distribution) | Member 2 & 3 | **IN PROGRESS / M3 COMPLETE** | Member 3 procedural placement, contour trails, air arcs, sparkle and vapor CPU particles, above-ground safety |
+| **Phase 5** | UI & Menus (In-Game HUD) | Member 1 & 3 | **IN PROGRESS / M3 COMPLETE** | Member 3 responsive glassmorphic HUD, low-fuel flashing beacon, dynamic fuel bar, animated coin counter |
+| **Phase 6** | Art, Audio & Polish | Team | **IN PROGRESS (Member 2 Vehicle Polish Complete)** | Dynamic RPM engine audio, landing thuds, tire skid audio, exhaust/dust particles, suspension struts |
 | **Phase 7** | QA & Release Preparation | Team | PLANNED | Cross-platform export testing, release packaging |
+| **Phase 8** | Optional Enhancements | Member 2 | **IN PROGRESS (Vehicle Systems Complete)** | 4-stat 5-tier upgrade system, Monster Truck & Dune Buggy variations, VehicleRegistry catalog |
+| **Phase 7** | QA & Release Preparation | Team | PLANNED | Cross-platform export testing, release packaging |
+| **Phase 8** | Optional Enhancements | Member 2 | **IN PROGRESS (Vehicle Systems Complete)** | 4-stat 5-tier upgrade system, Monster Truck & Dune Buggy variations, VehicleRegistry catalog |
 
 ---
 
@@ -61,12 +64,50 @@
 - [x] **Member 1**: Safe restart flow resetting vehicle, metrics, UI, and test track pickups.
 - [x] **Member 1**: Automated Phase 2 test suite (`tests/test_phase2_core_loop.gd` passed 100%).
 
-### Phase 4 & 5 (Member 1 Architecture) — Main Menu & Save Persistence
+### Phase 3 — Terrain Progression (Member 3 Completed)
+- [x] **Member 3**: Implement endless procedural terrain generator (`scripts/terrain/TerrainGenerator.gd`).
+- [x] **Member 3**: Expand terrain archetypes (Flat, Gentle Hills, Steep Climb, Valley Dip, Jump Ramp, Rolling Waves, Plateau Drop, Bumpy Washboard, Double Crest).
+- [x] **Member 3**: Implement continuous zero-derivative boundary tangent matching at segment joins, eliminating collision kinks.
+- [x] **Member 3**: Implement high-performance segment object pooling to prevent memory allocation and garbage collection stalls.
+- [x] **Member 3**: Implement dynamic difficulty progression scaling amplitude and segment type weights over distance.
+- [x] **Member 3**: Add center-restoring spring bias to keep procedural terrain within playable world boundaries.
+- [x] **Member 3**: Add surface point and normal query API (`get_surface_point_and_normal_at()`) for exact placement.
+
+### Phase 4 — Pickups Visual, Distribution & Save Persistence (Members 1 & 3 Completed)
+- [x] **Member 3**: Integrate procedural coin and fuel canister distribution into `TerrainGenerator.gd`.
+- [x] **Member 3**: Generate air arcs for jump ramps, contour trails for hills, and strategic fuel canisters every ~130 meters.
+- [x] **Member 3**: Guarantee 100% surface safety: all pickups positioned strictly above terrain collision normal (+32px to +38px), never underground.
+- [x] **Member 3**: Add sparkling gold burst CPU particles and pulsating aura to `Coin.tscn` and `Coin.gd`.
+- [x] **Member 3**: Add emerald fuel vapor burst CPU particles and canister glow to `FuelPickup.tscn` and `FuelPickup.gd`.
+- [x] **Member 3**: Implement smooth floating popup value animations with bounce-out easing.
 - [x] **Member 1**: Save & persistence manager (`scripts/core/SaveManager.gd`) with JSON serialization in `user://savegame.json`.
 - [x] **Member 1**: Persistent high scores (`best_distance`), total coins, and run count.
+
+### Phase 5 — Menus & In-Game HUD (Members 1 & 3 Completed)
 - [x] **Member 1**: Responsive Main Menu scene (`scenes/main/MainMenu.tscn` and `scripts/core/MainMenuController.gd`) with live stats display.
 - [x] **Member 1**: Clean bidirectional scene flow in `Main.gd` (MainMenu -> Game -> MainMenu).
-- [x] **Member 1**: Automated Main Menu & Save test suite (`tests/test_main_menu_and_save.gd` passed 100%).
+- [x] **Member 3**: Upgrade `HUD.tscn` with modern responsive anchors and glassmorphic panels.
+- [x] **Member 3**: Add live distance odometer, best distance record, animated coin badge, and graduated fuel bar.
+- [x] **Member 3**: Implement pulsating low-fuel warning alert beacon and dynamic fuel bar color shifts (green > amber > red).
+- [x] **Member 3**: Implement smooth fuel value interpolation (lerping) for realistic meter feedback.
+- [x] **Member 3**: Add standalone auto-discovery fallback for `GameManager` and `Vehicle` bindings.
+
+### Environment & Parallax (Member 3 Completed)
+- [x] **Member 3**: Fix parallax layer boundary seams (distant mountains, mid hills, near hills) to loop seamlessly with 0 vertical gap.
+- [x] **Member 3**: Add atmospheric haze, glowing sun corona, drifting clouds, and layered foreground terrain decorations.
+
+### Phase 6 & Phase 8 — Member 2 Vehicle Polish, Upgrades & Roster
+- [x] **Member 2**: Implement 4-stat 5-tier upgrade system (`engine_power`, `tire_grip`, `suspension`, `fuel_tank`).
+- [x] **Member 2**: Expose `get_stats() -> Dictionary`, `apply_upgrade(stat_name, level)`, and `signal upgraded`.
+- [x] **Member 2**: Dynamic engine RPM pitch audio modulation (`engine_audio.pitch_scale = lerpf(0.8, 2.2, speed_ratio)`).
+- [x] **Member 2**: Tire screech audio (`SkidAudio`) triggering dynamically on hard braking and wheel burnouts.
+- [x] **Member 2**: Dynamic suspension shock struts (`Line2D`) visually connecting chassis to wheel hubs with real-time compression.
+- [x] **Member 2**: Stunt detection: 360° Frontflips and Backflips (`signal trick_performed(name, coins)`).
+- [x] **Member 2**: Big airtime detection (`signal airtime_landed(duration, coins)`).
+- [x] **Member 2**: Physical low-fuel throttle sputtering warning (< 15% fuel).
+- [x] **Member 2**: Additional vehicle variations: `scenes/vehicle/MonsterTruck.tscn` and `scenes/vehicle/DuneBuggy.tscn`.
+- [x] **Member 2**: Static vehicle registry contract: `scripts/vehicle/VehicleRegistry.gd`.
+- [x] **Member 2**: Full automated verification suite (`tests/test_vehicle_physics.gd` passed 100%).
 
 ---
 
@@ -74,8 +115,9 @@
 
 - Headless Godot Editor check: `godot --headless --editor --quit` -> **0 errors**
 - Entry Scene execution: `godot --headless scenes/main/Main.tscn --quit-after 60` -> **Exit code 0**
+- Procedural Track execution: `godot --headless scenes/terrain/ProceduralTrack.tscn --quit-after 60` -> **Exit code 0**
 - Full automated integration suite: `godot --headless -s tests/test_game_loop.gd` -> **Exit code 0**
 - Member 2 vehicle standalone suite: `godot --headless -s tests/test_vehicle_physics.gd` -> **Exit code 0**
-- Member 3 terrain & HUD suite: `godot --headless -s tests/test_terrain_and_hud.gd` -> **Exit code 0**
+- Member 3 expanded suite (8/8 test categories): `godot --headless -s tests/test_terrain_and_hud.gd` -> **Exit code 0**
 - Phase 2 core run loop suite: `godot --headless -s tests/test_phase2_core_loop.gd` -> **Exit code 0**
 - Main Menu & Persistence suite: `godot --headless -s tests/test_main_menu_and_save.gd` -> **Exit code 0**

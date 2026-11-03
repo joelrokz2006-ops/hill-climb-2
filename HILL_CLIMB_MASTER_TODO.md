@@ -102,42 +102,44 @@
 **Exit criteria:** Complete run loop works.
 
 # PHASE 3 — TERRAIN PROGRESSION
-**Primary owner: Member 3; integration/review: Member 1**
+**Primary owner: Member 3; integration/review: Member 1 — COMPLETED & VERIFIED**
 
-- [ ] Decide fixed segments or procedural terrain after prototype testing.
-- [ ] Create reusable terrain segments.
-- [ ] Extend terrain ahead of the vehicle.
-- [ ] Remove/recycle terrain behind the vehicle safely.
-- [ ] Ensure collision joins have no gaps or unintended sharp edges.
-- [ ] Add fair terrain variation.
-- [ ] Test long runs for performance and stability.
+- [x] Decide fixed segments or procedural terrain after prototype testing (Implemented both: fixed TestTrack & procedural TerrainGenerator).
+- [x] Create reusable terrain segments (9 segment archetypes with synchronized visuals and collision).
+- [x] Extend terrain ahead of the vehicle (Continuous procedural generation ahead of moving target).
+- [x] Remove/recycle terrain behind the vehicle safely (High-performance segment object pooling).
+- [x] Ensure collision joins have no gaps or unintended sharp edges (Continuous zero-derivative boundary tangents).
+- [x] Add fair terrain variation (Dynamic difficulty progression and restoring center bias).
+- [x] Test long runs for performance and stability (Tested over 25,000+ pixels without degradation).
 
-**Exit criteria:** Terrain continues during play with no visible/collision gaps in a sustained test.
+**Exit criteria:** Terrain continues during play with no visible/collision gaps in a sustained test. (COMPLETED)
 
 # PHASE 4 — PICKUPS AND REWARDS
-**Pickups completed in Phase 2; Save Persistence completed by Member 1**
+# PHASE 4 — PICKUPS AND REWARDS
+**Pickups visual & procedural placement: Member 3; Currency mechanics & Save Persistence: Member 1 & 2 — COMPLETED & VERIFIED**
 
-- [x] Add coin/reward pickup (`scenes/pickups/Coin.tscn`).
-- [x] Add pickup collision and collection feedback.
-- [x] Update reward counter (Tracked in `GameManager.gd` and HUD).
-- [x] Prevent double collection (`collected` boolean lock).
+- [x] Add coin/reward pickup (`scenes/pickups/Coin.tscn` with gold aura and sparkle burst particles).
+- [x] Add pickup collision and collection feedback (Floating animated popup value, visual hide, vehicle refuel & currency add).
+- [x] Procedural pickup placement on generated terrain (Member 3: air arcs, contour trails, safe surface offset).
+- [x] Update reward counter (HUD coins display and GameManager coins tracking).
+- [x] Prevent double collection (`is_collected` flag and deferred collision disable).
 - [x] Add local save for currency and best distance (`scripts/core/SaveManager.gd`).
 - [x] Test save/load across game restarts (`tests/test_main_menu_and_save.gd` passed 100%).
 
 **Exit criteria:** Pickups collect once and saved values persist. (COMPLETED)
 
 # PHASE 5 — UI AND GAME FLOW
-**Core architecture completed by Member 1; Mobile Touch Controls owned by Member 3**
+**Game flow, Save & Main Menu: Member 1; In-game HUD: Member 3**
 
 - [x] Create main menu (`scenes/main/MainMenu.tscn`, `scripts/core/MainMenuController.gd`).
 - [x] Add Start Game button (Emits `start_game_requested` to load `Game.tscn`).
-- [x] Add pause/resume (`scenes/ui/PauseMenu.tscn`).
-- [x] Add restart (Hotkey `R` and retry button on results screen).
-- [x] Add results screen (`scenes/ui/ResultsScreen.tscn`).
-- [x] Add HUD for distance, fuel, and currency (`scenes/ui/HUD.tscn`).
-- [x] Apply consistent UI styling (Flat styles, responsive anchors at 1280x720).
-- [x] Test UI at chosen resolution/aspect ratio.
-- [ ] If Android is selected, add and test touch controls (Assigned to Member 3).
+- [x] Add pause/resume (`scenes/ui/PauseMenu.tscn` & HUD pause banner).
+- [x] Add restart (`scenes/ui/ResultsScreen.tscn` & R key restart).
+- [x] Add results screen (Member 1 completed in Phase 2).
+- [x] Add HUD for distance, fuel, and currency (`scenes/ui/HUD.tscn` with glassmorphic cards, low-fuel beacon, animated coin counter).
+- [x] Apply consistent UI styling (Glassmorphism, high contrast typography, matching color palette).
+- [x] Test UI at chosen resolution/aspect ratio (Tested responsive full rect anchors).
+- [ ] If Android is selected, add and test touch controls (Pending target platform confirmation).
 
 **Exit criteria:** Player can navigate the game without editor controls and UI remains readable.
 
@@ -145,10 +147,10 @@
 
 - [ ] Audit and assign final sprites.
 - [ ] Confirm sprite scale and transparent margins.
-- [ ] Align vehicle body and wheel visuals with physics.
+- [x] Align vehicle body and wheel visuals with physics (Member 2: Dynamic suspension shock struts Line2D on Vehicle, MonsterTruck, and DuneBuggy).
 - [ ] Add background/parallax.
-- [ ] Add engine, pickup, crash, and UI sounds as appropriate.
-- [ ] Add subtle effects/animations.
+- [x] Add engine, pickup, crash, and UI sounds as appropriate (Member 2: Dynamic RPM engine pitch modulation, landing thud audio, and tire skid/screech audio).
+- [x] Add subtle effects/animations (Member 2: Throttle exhaust particles, grounded wheel dust kickup, low-fuel physical engine sputter, and stunt/airtime tracking).
 - [ ] Tune camera smoothing and visual feedback.
 - [ ] Check performance and remove unused assets.
 
@@ -173,8 +175,8 @@
 # PHASE 8 — OPTIONAL APPROVED ENHANCEMENTS
 **Only after MVP is stable**
 
-- [ ] Vehicle upgrades.
-- [ ] Additional vehicles.
+- [x] Vehicle upgrades (Member 2: 4-stat 5-tier system: Engine Power, Tire Grip, Suspension, and Fuel Tank with get_stats(), apply_upgrade(), and upgraded signal).
+- [x] Additional vehicles (Member 2: Added MonsterTruck.tscn and DuneBuggy.tscn variations, plus static VehicleRegistry.gd catalog).
 - [ ] Additional terrain themes.
 - [ ] Achievements or missions.
 - [ ] Mobile-specific polish.

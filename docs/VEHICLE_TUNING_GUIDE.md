@@ -1,74 +1,84 @@
-# Member 2: Vehicle Physics & Tuning Guide
+# Member 2: Vehicle Physics, Upgrades, Stunts & Roster Guide
 
 **Project:** Hill Climb 2D  
 **Owner:** Member 2 (Vehicle Gameplay & Physics)  
-**Branch:** `feature/vehicle-physics`  
+**Branch:** `feature/member-2-vehicle-upgrades`  
 **Engine:** Godot 4.3 (GDScript)  
 
 ---
 
 ## 1. Overview & Architecture
 
-The vehicle is modeled as a 2D composite physics assembly:
-* **Chassis (`RigidBody2D`):** Mass = `8.0`, Center of Mass offset = `Vector2(0, 10)` (low center of gravity for anti-rollover stability).
-* **Rear & Front Wheels (`RigidBody2D`):** Mass = `2.5` each, high-friction physics material (`1.6` friction, `0.15` bounce).
-* **Suspension (`PinJoint2D`):** Dual joints anchoring wheels to chassis with soft compliance (`softness = 0.6`).
-* **Roof Crash Area (`Area2D`):** Detects driver head/roof impact against ground collision (Layer 1).
-* **Dynamic Feedback:**
-  * Exhaust smoke (`CPUParticles2D`) emits when accelerating.
-  * Ground dust (`CPUParticles2D`) kicks up when wheels have ground contact and spin.
-  * Dynamic engine pitch scale responds to driving speed and throttle.
-  * Landing thud audio triggers on firm ground impact.
+The vehicle system is a modular, signal-driven 2D physics assembly providing realistic driving, suspension compliance, stunt trick rewards, dynamic audio, and upgrade tiers:
+* **Chassis (`RigidBody2D`):** Mass = `8.0` (standard) / `12.0` (monster truck) / `6.0` (buggy), low center of gravity for anti-rollover balance.
+* **Dual Wheels (`RigidBody2D`):** Connected via `PinJoint2D` with configurable softness.
+* **Dynamic Shock Struts (`Line2D`):** Visually bridges chassis anchors to wheel hubs with dynamic compression and extension.
+* **Roof Crash Area (`Area2D`):** Detects driver head/roof impacts with ground terrain (Collision Layer 1).
+* **Audio & Effects:**
+  * **Dynamic Engine RPM:** Pitch scales smoothly `0.8 - 2.2` based on physical wheel speed and throttle.
+  * **Tire Skid Audio:** Fades in during hard braking or high-wheel-spin burnouts.
+  * **Low-Fuel Sputter:** Sputters throttle and engine power when tank drops below 15% as physical/audible feedback.
+  * **Exhaust Smoke & Tire Dust:** Visual particle emissions when driving.
 
 ---
 
-## 2. Exported Tuning Parameters Reference
+## 2. Stunt & Trick Detection System
 
-These parameters are exposed on `VehicleController` for real-time editor tuning:
+VehicleController tracks angular rotation and duration while airborne (`is_grounded == false`):
 
-| Group | Parameter | Type | Default | Description |
+| Stunt Event | Condition | Signal Emitted | Reward |
+|---|---|---|---|
+| **Backflip** | 360° clockwise air rotation | `trick_performed("Backflip", 20)` | 20 coins |
+| **Frontflip** | 360° counter-clockwise air rotation | `trick_performed("Frontflip", 20)` | 20 coins |
+| **Big Air Landing** | Airborne time ≥ 1.2 seconds, followed by clean wheel landing | `airtime_landed(duration, reward)` | 10 coins / second |
+
+*Crash Protection:* If the vehicle crashes on its roof, all pending stunts and airtime rewards are cancelled.
+
+---
+
+## 3. Vehicle Upgrade System (4 Stats, Levels 1–5)
+
+| Stat Name | Config Key | Formula / Effect | Level 1 (Base) | Level 5 (Max) |
 |---|---|---|---|---|
-| **Motor & Drive** | `motor_torque` | `float` | `18000.0` | Forward drive torque applied to wheels during acceleration. |
-| | `brake_torque` | `float` | `12000.0` | Reverse / braking torque applied when pressing brake/reverse. |
-| | `max_wheel_speed` | `float` | `80.0` | Maximum rotational velocity of wheels in radians/sec. |
-| | `air_tilt_torque` | `float` | `12000.0` | Rotational torque applied for mid-air balancing and tilting. |
-| | `airborne_angular_damping` | `float` | `1.5` | Rotational damping applied while airborne to stabilize landings. |
-| **Fuel** | `consumes_fuel` | `bool` | `true` | Enables or disables fuel depletion during acceleration. |
-| | `max_fuel` | `float` | `100.0` | Fuel tank capacity. |
-| | `fuel_burn_rate` | `float` | `4.0` | Units of fuel consumed per second under full acceleration. |
+| **Engine Power** | `engine_power` | `+20% torque, +12% top speed` per lvl | `18,000 Nm` | `32,400 Nm` |
+| **Tire Grip** | `tire_grip` | `+22% friction` on PhysicsMaterial | `1.60 friction` | `3.01 friction` |
+| **Suspension** | `suspension` | `-0.08 softness` (firmer damping) | `0.60 softness` | `0.28 softness` |
+| **Fuel Tank** | `fuel_tank` | `+25% capacity` per lvl | `100.0 units` | `200.0 units` |
+
+*Methods:*
+* `get_stats() -> Dictionary`
+* `apply_upgrade(stat_name: String, level: int) -> void`
+* `signal upgraded(stat_name: String, level: int)`
 
 ---
 
-## 3. Public Interface & Contract
+## 4. Vehicle Catalog (`VehicleRegistry.gd`)
 
-Member 2 strictly adheres to the team interface contract:
+Static decoupled registry providing metadata and instantiators for all playable vehicles:
 
-### Signals
-* `signal crashed`: Emitted when the driver head/roof strikes terrain.
-* `signal fuel_changed(current: float, max_fuel: float)`: Emitted when fuel burns or refuels.
+```gdscript
+# Examples:
+var all_vehicles: Array[Dictionary] = VehicleRegistry.get_all_vehicles()
+var truck_info: Dictionary = VehicleRegistry.get_vehicle("monster_truck")
+var vehicle_node: VehicleController = VehicleRegistry.instantiate_vehicle("dune_buggy")
+var cost: int = VehicleRegistry.get_upgrade_cost(1) # -> 50 coins
+```
 
-### Public Methods
-* `reset_vehicle(at_position: Vector2) -> void`: Full physics reset via `PhysicsServer2D` restoring transform and clearing velocities.
-* `refuel(amount: float) -> void`: Replenishes vehicle fuel tank (up to `max_fuel`).
-* `get_speed_kmh() -> float`: Telemetry helper returning vehicle speed in km/h.
+### Vehicle Roster:
+1. **Classic Hill Climber (`Vehicle.tscn`):** Balanced, agile roadster.
+2. **Beast Monster Truck (`MonsterTruck.tscn`):** Heavy duty (`mass = 12.0`), massive 28px tires, high clearance.
+3. **Electric Dune Buggy (`DuneBuggy.tscn`):** Ultralight (`mass = 6.0`), high air tilt speed, roll cage design for stunt flips.
 
 ---
 
-## 4. Isolated Test Bench (`VehicleTest.tscn`)
+## 5. Verification Commands
 
-Located at: `scenes/vehicle/VehicleTest.tscn`
+```bash
+# Member 2 full suite:
+godot --headless -s tests/test_vehicle_physics.gd
 
-Includes:
-1. Flat start platform (`0m - 20m`)
-2. `15°` Gentle Incline
-3. `30°` Steep Hill Climb
-4. Crest & Downhill ski-ramp
-5. Jump Lip & Airborne landing gap
-6. Suspension ripple bumps
-
-### How to Run:
-* In editor: Open and press **F6** on `scenes/vehicle/VehicleTest.tscn`.
-* Automated test:
-  ```bash
-  godot --headless -s tests/test_vehicle_physics.gd
-  ```
+# Full project regression check:
+godot --headless -s tests/test_game_loop.gd
+godot --headless -s tests/test_phase2_core_loop.gd
+godot --headless -s tests/test_terrain_and_hud.gd
+```

@@ -1,9 +1,12 @@
-[gd_scene load_steps=3 format=3 uid="uid://fuel_pickup_001"]
+[gd_scene load_steps=4 format=3 uid="uid://fuel_pickup_001"]
 
 [ext_resource type="Script" path="res://scripts/pickups/FuelPickup.gd" id="1_script"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_fuel"]
 size = Vector2(28, 32)
+
+[sub_resource type="Gradient" id="Gradient_vapor"]
+colors = PackedColorArray(0.25, 0.95, 0.45, 1, 0.1, 0.7, 0.3, 0)
 
 [node name="FuelPickup" type="Area2D"]
 collision_layer = 4
@@ -14,6 +17,10 @@ script = ExtResource("1_script")
 shape = SubResource("RectangleShape2D_fuel")
 
 [node name="Visual" type="Node2D" parent="."]
+
+[node name="GlowAura" type="Polygon2D" parent="Visual"]
+color = Color(0.2, 0.9, 0.35, 0.22)
+polygon = PackedVector2Array(-20, 20, 20, 20, 20, -14, 12, -22, -12, -22, -20, -14)
 
 [node name="CanisterBody" type="Polygon2D" parent="Visual"]
 color = Color(0.88, 0.22, 0.18, 1)
@@ -38,6 +45,21 @@ theme_override_colors/font_color = Color(1, 1, 1, 0.95)
 theme_override_font_sizes/font_size = 11
 text = "GAS"
 horizontal_alignment = 1
+
+[node name="VaporParticles" type="CPUParticles2D" parent="."]
+emitting = false
+amount = 16
+lifetime = 0.6
+one_shot = true
+explosiveness = 0.9
+spread = 180.0
+gravity = Vector2(0, -60)
+initial_velocity_min = 35.0
+initial_velocity_max = 85.0
+scale_amount_min = 3.0
+scale_amount_max = 6.0
+color = Color(0.25, 0.95, 0.4, 1)
+color_ramp = SubResource("Gradient_vapor")
 
 [node name="PopupLabel" type="Label" parent="."]
 visible = false
