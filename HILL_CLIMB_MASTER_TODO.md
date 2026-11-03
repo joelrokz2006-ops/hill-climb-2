@@ -67,13 +67,13 @@
 - [x] Provide a test scene or steps proving the vehicle drives on a basic slope (`scenes/vehicle/VehicleTest.tscn` & `tests/test_vehicle_physics.gd`).
 
 ## Member 3 — Terrain, environment, and HUD
-- [ ] Create a simple fixed test track first (Baseline prototype integrated; Member 3 to build official track).
-- [ ] Ensure terrain collision matches visible terrain.
-- [ ] Prepare a basic background/environment.
-- [ ] Create HUD elements for distance and fuel/rewards as agreed.
-- [ ] Check HUD readability for selected platform.
-- [ ] Audit supplied assets for dimensions, transparency, style, and licensing.
-- [ ] Prepare asset register and missing-asset list.
+- [x] Create a simple fixed test track first (`TestTrack.tscn` updated with rock strata and collision).
+- [x] Ensure terrain collision matches visible terrain.
+- [x] Prepare a basic background/environment (`ParallaxEnvironment.tscn` multi-layer parallax with mountains, clouds, sun).
+- [x] Create HUD elements for distance and fuel/rewards as agreed (`HUD.tscn` with distance, fuel gauge, low fuel flash, coins).
+- [x] Check HUD readability for selected platform.
+- [x] Audit supplied assets for dimensions, transparency, style, and licensing.
+- [x] Prepare asset register and missing-asset list (`docs/ASSET_REGISTER.md`).
 
 ## First playable verification
 - [x] Test driving up and down the hill (Verified in `VehicleTest.tscn` and `Game.tscn`).
@@ -82,9 +82,10 @@
 - [x] Confirm player can repeatedly drive across the test hill.
 - [x] Confirm no critical physics or scene errors remain.
 
-**Exit criteria:** Vehicle drives reliably across the fixed test hill; no critical physics or scene errors. (MET for Member 1 & Member 2)
+**Exit criteria:** Vehicle drives reliably across the fixed test hill; no critical physics or scene errors. (ALL MEMBERS COMPLETE)
 
 # PHASE 2 — CORE RUN LOOP
+**Current Active Phase — Owned by Member 1 (Lead)**
 
 - [ ] Create run states: playing, paused, finished.
 - [ ] Add distance tracking.
@@ -214,4 +215,4 @@
 - [x] Change is committed and reviewed before merging to `main`.
 
 ## Current next action
-**Member 1 (Integration):** Member 2's `member2contract` branch has been successfully pulled, integrated, and verified into `main`. Next step is coordinating with **Member 3** for the terrain and environment deliverables, or proceeding into **Phase 2 (Core Run Loop)**.
+**Member 1 (Team Leader):** Phase 1 is fully completed and verified across all 3 members. Member 1 now begins **Phase 2 — Core Run Loop**: implementing run state coordination (`READY` -> `PLAYING` -> `PAUSED` -> `FINISHED`), end-of-run results screen, game-over handlers (crashed & out of fuel), and restart reset flows.

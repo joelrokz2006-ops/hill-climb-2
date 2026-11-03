@@ -2,8 +2,8 @@
 
 **Project:** Hill Climb 2D  
 **Engine:** Godot 4.3 (GDScript)  
-**Status:** Phase 1 Foundation & Integration Complete  
-**Last Updated:** Phase 1 Integration (Member 1 & Member 2 verified)  
+**Status:** Phase 1 Complete / Phase 2 (Core Run Loop) Active  
+**Last Updated:** Phase 1 Full Integration Verified (Members 1, 2, 3)  
 
 ---
 
@@ -12,8 +12,8 @@
 | Phase | Description | Owner | Status | Notes |
 |---|---|---|---|---|
 | **Phase 0** | Project & Team Setup | Member 1 | **COMPLETED** | Repo, structure, project.godot, input map, Godot 4.3 verified |
-| **Phase 1** | Vehicle on Test Hill (First Playable) | Member 1 (Lead), 2, 3 | **COMPLETED** | Main & Game skeletons, tuned vehicle physics, test hill, particle effects, test bench, camera, HUD |
-| **Phase 2** | Core Run Loop | Team | PLANNED | Extended states, results screen, coin collectibles |
+| **Phase 1** | Vehicle on Test Hill (First Playable) | Member 1 (Lead), 2, 3 | **COMPLETED** | Main & Game skeletons, tuned vehicle physics, test hill, particle effects, parallax environment, HUD |
+| **Phase 2** | Core Run Loop | Member 1 (Lead) / Team | **IN PROGRESS** | Run states, game-over triggers, results overlay, restart flow |
 | **Phase 3** | Terrain Progression | Member 3 | PLANNED | Procedural or segmented endless terrain generation |
 | **Phase 4** | Pickups and Rewards | Member 2 & 3 | PLANNED | Fuel cans, coins, score persistence |
 | **Phase 5** | UI & Menus | Member 1 & 3 | PLANNED | Main menu, settings, pause menu, results overlay |
