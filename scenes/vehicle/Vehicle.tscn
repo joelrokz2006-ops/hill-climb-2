@@ -1,6 +1,10 @@
-[gd_scene load_steps=7 format=3 uid="uid://vehicle_root_001"]
+[gd_scene load_steps=11 format=3 uid="uid://vehicle_root_001"]
 
 [ext_resource type="Script" path="res://scripts/vehicle/VehicleController.gd" id="1_controller"]
+[ext_resource type="Texture2D" path="res://assets/vehicles/effects/exhaust_smoke_particle_01.png" id="2_smoke"]
+[ext_resource type="Texture2D" path="res://assets/vehicles/effects/dust_effects/ground_movement_dust/ground_dust_01.png" id="3_dust"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/engine/engine_idle_loop.wav" id="4_engine"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/vehicle/vehicle_landing_thud.wav" id="5_landing"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_chassis"]
 friction = 0.5
@@ -43,6 +47,44 @@ polygon = PackedVector2Array(-6, -24, 18, -24, 32, -8, -6, -8)
 [node name="DriverHeadVisual" type="Polygon2D" parent="."]
 color = Color(0.95, 0.8, 0.2, 1)
 polygon = PackedVector2Array(-2, -18, 8, -18, 10, -10, -2, -10)
+
+[node name="ExhaustParticles" type="CPUParticles2D" parent="."]
+position = Vector2(-46, 6)
+emitting = false
+amount = 12
+lifetime = 0.6
+texture = ExtResource("2_smoke")
+direction = Vector2(-1, -0.4)
+spread = 20.0
+gravity = Vector2(0, -50)
+initial_velocity_min = 40.0
+initial_velocity_max = 90.0
+scale_amount_min = 0.04
+scale_amount_max = 0.08
+color = Color(0.85, 0.85, 0.85, 0.6)
+
+[node name="RearDust" type="CPUParticles2D" parent="."]
+position = Vector2(-36, 28)
+emitting = false
+amount = 8
+lifetime = 0.4
+texture = ExtResource("3_dust")
+direction = Vector2(-1, -0.2)
+spread = 25.0
+gravity = Vector2(0, 80)
+initial_velocity_min = 30.0
+initial_velocity_max = 70.0
+scale_amount_min = 0.04
+scale_amount_max = 0.08
+color = Color(0.8, 0.7, 0.55, 0.7)
+
+[node name="EngineAudio" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("4_engine")
+volume_db = -6.0
+
+[node name="LandingAudio" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("5_landing")
+volume_db = -3.0
 
 [node name="CrashDetector" type="Area2D" parent="."]
 position = Vector2(4, -22)
