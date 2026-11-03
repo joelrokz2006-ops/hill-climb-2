@@ -52,19 +52,19 @@
 - [x] Add/verify camera follow (`FollowCamera.gd` tracks vehicle with velocity lookahead).
 - [x] Integrate and verify basic HUD placeholder (`HUD.tscn` wired to `GameManager` and `Vehicle`).
 - [x] Run a clean test from the project entry scene (`tests/test_game_loop.gd` passed with exit code 0).
-- [ ] Review member branches/PRs and resolve scene conflicts (Pending Member 2 and 3 PRs).
+- [x] Review member branches/PRs and resolve scene conflicts (PR #1 from `member2contract` integrated into `main`).
 
 ## Member 2 — Vehicle physics
-- [ ] Build a self-contained `scenes/vehicle/Vehicle.tscn` (Baseline prototype integrated; Member 2 to refine).
-- [ ] Implement accelerate.
-- [ ] Implement brake/reverse.
-- [ ] Implement optional air rotation.
-- [ ] Develop and test wheel/contact/suspension behavior.
-- [ ] Tune mass, traction, force/torque, damping, and rotation.
-- [ ] Add vehicle animations/sprite placement only after physics is stable.
-- [ ] Provide a clear interface for Game Manager and HUD.
-- [ ] Document exported tuning properties and their meaning.
-- [ ] Provide a test scene or steps proving the vehicle drives on a basic slope.
+- [x] Build a self-contained `scenes/vehicle/Vehicle.tscn` (Enhanced physics, particle anchors, and audio hooks).
+- [x] Implement accelerate.
+- [x] Implement brake/reverse.
+- [x] Implement optional air rotation.
+- [x] Develop and test wheel/contact/suspension behavior.
+- [x] Tune mass, traction, force/torque, damping, and rotation.
+- [x] Add vehicle animations/sprite placement (Exhaust smoke particles & tire dust kickup).
+- [x] Provide a clear interface for Game Manager and HUD (`crashed`, `fuel_changed`, `refuel`).
+- [x] Document exported tuning properties and their meaning (`docs/VEHICLE_TUNING_GUIDE.md`).
+- [x] Provide a test scene or steps proving the vehicle drives on a basic slope (`scenes/vehicle/VehicleTest.tscn` & `tests/test_vehicle_physics.gd`).
 
 ## Member 3 — Terrain, environment, and HUD
 - [ ] Create a simple fixed test track first (Baseline prototype integrated; Member 3 to build official track).
@@ -76,13 +76,13 @@
 - [ ] Prepare asset register and missing-asset list.
 
 ## First playable verification
-- [ ] Test driving up and down the hill (Headless test confirmed +43px forward acceleration; full interactive track driving pending).
-- [ ] Test vehicle landing and rotation behavior.
-- [ ] Tune physics to avoid constant flipping, sinking, or jitter.
-- [ ] Confirm player can repeatedly drive across the test hill.
-- [ ] Confirm no critical physics or scene errors remain.
+- [x] Test driving up and down the hill (Verified in `VehicleTest.tscn` and `Game.tscn`).
+- [x] Test vehicle landing and rotation behavior.
+- [x] Tune physics to avoid constant flipping, sinking, or jitter.
+- [x] Confirm player can repeatedly drive across the test hill.
+- [x] Confirm no critical physics or scene errors remain.
 
-**Exit criteria:** Vehicle drives reliably across the fixed test hill; no critical physics or scene errors.
+**Exit criteria:** Vehicle drives reliably across the fixed test hill; no critical physics or scene errors. (MET for Member 1 & Member 2)
 
 # PHASE 2 — CORE RUN LOOP
 
@@ -211,7 +211,7 @@
 - [x] Relevant behavior was tested, or limitations are stated.
 - [x] No new blocking errors are present.
 - [x] `DEVELOPMENT_PROGRESS.md` is updated.
-- [ ] Change is committed and reviewed before merging to `main`.
+- [x] Change is committed and reviewed before merging to `main`.
 
 ## Current next action
-**Member 1:** Push the `project.godot` fix and updated TODO list to remote GitHub, create the team branches (`feature/vehicle-physics`, `feature/terrain-hud`), and officially hand off the parallel modules to Member 2 and Member 3.
+**Member 1 (Integration):** Member 2's `member2contract` branch has been successfully pulled, integrated, and verified into `main`. Next step is coordinating with **Member 3** for the terrain and environment deliverables, or proceeding into **Phase 2 (Core Run Loop)**.
