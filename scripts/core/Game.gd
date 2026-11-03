@@ -41,6 +41,8 @@ func _setup_vehicle() -> void:
 		start_x = spawn_position.x
 		if not vehicle.crashed.is_connected(_on_vehicle_crashed):
 			vehicle.crashed.connect(_on_vehicle_crashed)
+		if is_instance_valid(game_manager) and game_manager.has_method("bind_vehicle"):
+			game_manager.bind_vehicle(vehicle)
 
 func _setup_camera() -> void:
 	if is_instance_valid(follow_camera) and is_instance_valid(vehicle):
@@ -65,14 +67,15 @@ func _process(delta: float) -> void:
 		restart_game()
 		return
 	if Input.is_action_just_pressed("pause") and is_instance_valid(game_manager):
-		game_manager.toggle_pause()
+		if game_manager.current_state != GameManagerScript.RunState.FINISHED:
+			game_manager.toggle_pause()
 		return
 		
 	if not is_instance_valid(vehicle) or not is_instance_valid(game_manager):
 		return
 	
-	if game_manager.current_state == GameManagerScript.RunState.PLAYING:
-		# Distance in meters (100 pixels = 1 meter)
+	if game_manager.current_state == GameManagerScript.RunState.PLAYING and vehicle.is_active:
+		# Distance in meters (100 pixels = 1 meter), strictly monotonic from spawn_x
 		var dist_meters: float = maxf(0.0, (vehicle.global_position.x - start_x) / 100.0)
 		game_manager.update_distance(dist_meters)
 		
@@ -88,21 +91,17 @@ func _process(delta: float) -> void:
 		else:
 			_stopped_timer = 0.0
 
-func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action_pressed("restart"):
-		restart_game()
-	elif event.is_action_pressed("pause"):
-		if is_instance_valid(game_manager):
-			game_manager.toggle_pause()
-
 func _on_vehicle_crashed() -> void:
-	if is_instance_valid(game_manager):
+	if is_instance_valid(game_manager) and game_manager.current_state == GameManagerScript.RunState.PLAYING:
 		game_manager.finish_run("crashed")
 
 func _on_run_restarted() -> void:
 	_stopped_timer = 0.0
+	start_x = spawn_position.x
 	if is_instance_valid(vehicle):
 		vehicle.reset_vehicle(spawn_position)
+	if is_instance_valid(follow_camera) and is_instance_valid(vehicle):
+		follow_camera.global_position = spawn_position
 	_reset_pickups()
 
 func _reset_pickups() -> void:

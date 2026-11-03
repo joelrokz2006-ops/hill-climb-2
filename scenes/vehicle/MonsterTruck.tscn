@@ -32,12 +32,12 @@ physics_material_override = SubResource("PhysicsMaterial_truck_chassis")
 center_of_mass_mode = 1
 center_of_mass = Vector2(0, 14)
 script = ExtResource("1_controller")
-base_motor_torque = 28000.0
-base_brake_torque = 16000.0
+base_motor_torque = 135000.0
+base_brake_torque = 80000.0
 base_wheel_friction = 1.85
 base_suspension_softness = 0.75
-motor_torque = 28000.0
-brake_torque = 16000.0
+motor_torque = 135000.0
+brake_torque = 80000.0
 air_tilt_torque = 32000.0
 
 [node name="ChassisCollision" type="CollisionShape2D" parent="."]

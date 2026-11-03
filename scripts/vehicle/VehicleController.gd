@@ -36,8 +36,8 @@ signal airtime_landed(duration: float, reward_coins: int)
 		_recalculate_upgrades()
 
 @export_group("Base Stats (Level 1)")
-@export var base_motor_torque: float = 18000.0
-@export var base_brake_torque: float = 12000.0
+@export var base_motor_torque: float = 75000.0
+@export var base_brake_torque: float = 45000.0
 @export var base_max_wheel_speed: float = 80.0
 @export var base_wheel_friction: float = 1.6
 @export var base_suspension_softness: float = 0.6
@@ -45,9 +45,9 @@ signal airtime_landed(duration: float, reward_coins: int)
 
 @export_group("Current Active Physics")
 ## Effective motor drive torque applied to wheels
-@export var motor_torque: float = 18000.0
+@export var motor_torque: float = 75000.0
 ## Effective braking torque applied when reversing
-@export var brake_torque: float = 12000.0
+@export var brake_torque: float = 45000.0
 ## Maximum rotational wheel velocity in radians/sec
 @export var max_wheel_speed: float = 80.0
 ## Rotational torque applied for mid-air flips and tilt balancing
@@ -84,6 +84,9 @@ var was_grounded: bool = false
 var is_active: bool = true
 var _previous_linear_velocity: Vector2 = Vector2.ZERO
 
+var _initial_rear_wheel_offset: Vector2 = Vector2(-36, 18)
+var _initial_front_wheel_offset: Vector2 = Vector2(36, 18)
+
 # Stunt and airtime tracking
 var air_time: float = 0.0
 var air_rotation_accum: float = 0.0
@@ -91,6 +94,10 @@ var _last_air_rotation: float = 0.0
 var wheelie_time: float = 0.0
 
 func _ready() -> void:
+	if rear_wheel:
+		_initial_rear_wheel_offset = rear_wheel.position
+	if front_wheel:
+		_initial_front_wheel_offset = front_wheel.position
 	current_fuel = max_fuel
 	_recalculate_upgrades()
 	
@@ -116,6 +123,17 @@ func _physics_process(delta: float) -> void:
 	
 	was_grounded = is_grounded
 	_previous_linear_velocity = linear_velocity
+
+func set_active(active: bool) -> void:
+	is_active = active
+	if not active:
+		_stop_effects()
+		linear_velocity = Vector2.ZERO
+		angular_velocity = 0.0
+		if rear_wheel:
+			rear_wheel.angular_velocity = 0.0
+		if front_wheel:
+			front_wheel.angular_velocity = 0.0
 
 func _check_ground_contact() -> void:
 	var rear_contact: bool = (rear_wheel.contact_monitor and rear_wheel.get_colliding_bodies().size() > 0) if rear_wheel else false
@@ -178,23 +196,26 @@ func _handle_input(delta: float) -> void:
 			# Out of fuel, cut off drive power
 			pass
 		else:
-			# Drive forward (apply torque to wheels)
+			# Drive forward (apply torque to wheels with smooth saturation at top speed)
 			var effective_accel: float = accel_input * sputter_mult
 			if rear_wheel and rear_wheel.angular_velocity < max_wheel_speed:
-				rear_wheel.apply_torque(motor_torque * effective_accel)
+				var rear_factor: float = clampf((max_wheel_speed - rear_wheel.angular_velocity) / (max_wheel_speed * 0.25), 0.0, 1.0)
+				rear_wheel.apply_torque(motor_torque * effective_accel * rear_factor)
 			if front_wheel and front_wheel.angular_velocity < max_wheel_speed:
-				front_wheel.apply_torque(motor_torque * 0.75 * effective_accel)
+				var front_factor: float = clampf((max_wheel_speed - front_wheel.angular_velocity) / (max_wheel_speed * 0.25), 0.0, 1.0)
+				front_wheel.apply_torque(motor_torque * 0.75 * effective_accel * front_factor)
 			
 			if consumes_fuel:
-				current_fuel = maxf(0.0, current_fuel - fuel_burn_rate * delta)
-				fuel_changed.emit(current_fuel, max_fuel)
+				consume_fuel(fuel_burn_rate * delta)
 				
 	elif accel_input < -0.05:
 		# Brake / Reverse
 		if rear_wheel and rear_wheel.angular_velocity > -max_wheel_speed * 0.5:
-			rear_wheel.apply_torque(brake_torque * accel_input)
+			var rear_brake_factor: float = clampf((max_wheel_speed * 0.5 + rear_wheel.angular_velocity) / (max_wheel_speed * 0.2), 0.0, 1.0)
+			rear_wheel.apply_torque(brake_torque * accel_input * rear_brake_factor)
 		if front_wheel and front_wheel.angular_velocity > -max_wheel_speed * 0.5:
-			front_wheel.apply_torque(brake_torque * 0.75 * accel_input)
+			var front_brake_factor: float = clampf((max_wheel_speed * 0.5 + front_wheel.angular_velocity) / (max_wheel_speed * 0.2), 0.0, 1.0)
+			front_wheel.apply_torque(brake_torque * 0.75 * accel_input * front_brake_factor)
 	
 	# Air rotation and flip control
 	if not is_grounded:
@@ -406,8 +427,14 @@ func deserialize_upgrades(data: Dictionary) -> void:
 		fuel_tank_level = clampi(int(data["fuel_tank_level"]), 1, 5)
 	_recalculate_upgrades()
 
+func consume_fuel(amount: float) -> void:
+	if not consumes_fuel:
+		return
+	current_fuel = maxf(0.0, current_fuel - amount)
+	fuel_changed.emit(current_fuel, max_fuel)
+
 func refuel(amount: float) -> void:
-	current_fuel = minf(max_fuel, current_fuel + amount)
+	current_fuel = clampf(current_fuel + amount, 0.0, max_fuel)
 	fuel_changed.emit(current_fuel, max_fuel)
 
 func get_speed_kmh() -> float:
@@ -419,6 +446,7 @@ func reset_vehicle(at_position: Vector2) -> void:
 	air_time = 0.0
 	air_rotation_accum = 0.0
 	_last_air_rotation = 0.0
+	wheelie_time = 0.0
 	fuel_changed.emit(current_fuel, max_fuel)
 	
 	global_position = at_position
@@ -432,16 +460,26 @@ func reset_vehicle(at_position: Vector2) -> void:
 	PhysicsServer2D.body_set_state(get_rid(), PhysicsServer2D.BODY_STATE_ANGULAR_VELOCITY, 0.0)
 	
 	if rear_wheel:
-		var rear_transform := Transform2D(0.0, at_position + Vector2(-36, 18))
+		rear_wheel.position = _initial_rear_wheel_offset
+		rear_wheel.rotation = 0.0
+		rear_wheel.linear_velocity = Vector2.ZERO
+		rear_wheel.angular_velocity = 0.0
+		var rear_transform := Transform2D(0.0, at_position + _initial_rear_wheel_offset)
 		PhysicsServer2D.body_set_state(rear_wheel.get_rid(), PhysicsServer2D.BODY_STATE_TRANSFORM, rear_transform)
 		PhysicsServer2D.body_set_state(rear_wheel.get_rid(), PhysicsServer2D.BODY_STATE_LINEAR_VELOCITY, Vector2.ZERO)
 		PhysicsServer2D.body_set_state(rear_wheel.get_rid(), PhysicsServer2D.BODY_STATE_ANGULAR_VELOCITY, 0.0)
 		
 	if front_wheel:
-		var front_transform := Transform2D(0.0, at_position + Vector2(36, 18))
+		front_wheel.position = _initial_front_wheel_offset
+		front_wheel.rotation = 0.0
+		front_wheel.linear_velocity = Vector2.ZERO
+		front_wheel.angular_velocity = 0.0
+		var front_transform := Transform2D(0.0, at_position + _initial_front_wheel_offset)
 		PhysicsServer2D.body_set_state(front_wheel.get_rid(), PhysicsServer2D.BODY_STATE_TRANSFORM, front_transform)
 		PhysicsServer2D.body_set_state(front_wheel.get_rid(), PhysicsServer2D.BODY_STATE_LINEAR_VELOCITY, Vector2.ZERO)
 		PhysicsServer2D.body_set_state(front_wheel.get_rid(), PhysicsServer2D.BODY_STATE_ANGULAR_VELOCITY, 0.0)
+	
+	_update_struts()
 	
 	if engine_audio and not engine_audio.playing:
 		engine_audio.play()

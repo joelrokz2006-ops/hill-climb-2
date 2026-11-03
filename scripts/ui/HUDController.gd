@@ -205,8 +205,16 @@ func _on_run_finished(final_distance: float, coins: int = 0, reason: String = ""
 	if message_banner:
 		message_banner.visible = true
 	if message_title_label:
-		message_title_label.text = "RUN FINISHED!"
-		message_title_label.modulate = Color(0.35, 0.85, 0.45)
+		match reason:
+			"crashed":
+				message_title_label.text = "DRIVER CRASHED!"
+				message_title_label.modulate = Color(0.98, 0.28, 0.24)
+			"out_of_fuel":
+				message_title_label.text = "OUT OF FUEL!"
+				message_title_label.modulate = Color(0.98, 0.65, 0.15)
+			_:
+				message_title_label.text = "RUN FINISHED!"
+				message_title_label.modulate = Color(0.35, 0.85, 0.45)
 	if message_label:
 		var best_dist: int = int(game_manager_ref.best_distance) if is_instance_valid(game_manager_ref) and "best_distance" in game_manager_ref else int(final_distance)
 		message_label.text = "Distance: %d m\nCoins: %d\nBest: %d m" % [int(final_distance), coins, best_dist]

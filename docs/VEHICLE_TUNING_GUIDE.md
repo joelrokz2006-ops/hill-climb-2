@@ -40,7 +40,7 @@ VehicleController tracks angular rotation and duration while airborne (`is_groun
 
 | Stat Name | Config Key | Formula / Effect | Level 1 (Base) | Level 5 (Max) |
 |---|---|---|---|---|
-| **Engine Power** | `engine_power` | `+20% torque, +12% top speed` per lvl | `18,000 Nm` | `32,400 Nm` |
+| **Engine Power** | `engine_power` | `+20% torque, +12% top speed` per lvl | `75,000 Nm` | `135,000 Nm` |
 | **Tire Grip** | `tire_grip` | `+22% friction` on PhysicsMaterial | `1.60 friction` | `3.01 friction` |
 | **Suspension** | `suspension` | `-0.08 softness` (firmer damping) | `0.60 softness` | `0.28 softness` |
 | **Fuel Tank** | `fuel_tank` | `+25% capacity` per lvl | `100.0 units` | `200.0 units` |

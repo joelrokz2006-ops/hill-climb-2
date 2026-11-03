@@ -58,13 +58,9 @@ func _on_body_entered(body: Node2D) -> void:
 	is_collected = true
 	collected.emit(fuel_amount)
 	
+	# Authoritative refuel via VehicleController
 	if target_vehicle.has_method("refuel"):
 		target_vehicle.refuel(fuel_amount)
-	
-	# Also inform GameManager if in tree
-	var gm = get_tree().root.find_child("GameManager", true, false)
-	if is_instance_valid(gm) and gm.has_method("add_fuel"):
-		gm.add_fuel(fuel_amount)
 	
 	# Visual collection feedback
 	collision_shape.set_deferred("disabled", true)
