@@ -18,22 +18,22 @@ func _init() -> void:
 	assert(game != null, "Game node must be instantiated inside SceneContainer")
 	print("✓ Main.tscn loaded and instantiated Game into SceneContainer")
 	
-	var gm: GameManager = game.get_node_or_null("GameManager")
+	var gm = game.get_node_or_null("GameManager")
 	assert(gm != null, "GameManager node must exist in Game scene")
-	assert(gm.current_state == GameManager.RunState.PLAYING, "GameManager should be in PLAYING state")
+	assert(gm.current_state == 1, "GameManager should be in PLAYING state")
 	print("✓ GameManager active in PLAYING state")
 	
-	var vehicle: VehicleController = game.vehicle
+	var vehicle = game.vehicle
 	assert(vehicle != null, "Vehicle reference must be valid in Game scene")
 	var initial_x: float = vehicle.global_position.x
 	print("✓ Vehicle resolved: initial position x = %f, y = %f" % [initial_x, vehicle.global_position.y])
 	
-	var camera: Camera2D = game.follow_camera
+	var camera = game.follow_camera
 	assert(camera != null, "FollowCamera must exist")
 	assert(camera.get("target") == vehicle, "FollowCamera target must be Vehicle")
 	print("✓ FollowCamera targeting Vehicle")
 	
-	var hud: HUDController = game.hud
+	var hud = game.hud
 	assert(hud != null, "HUD node must exist in Game scene")
 	print("✓ HUD wired and listening to game events")
 	

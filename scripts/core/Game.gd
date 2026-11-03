@@ -4,9 +4,11 @@ extends Node2D
 ## GameScene: Integration hub bringing together Vehicle, Terrain, Camera, and HUD.
 ## Owns vehicle spawn positioning, distance metric tracking, and local scene resets.
 
+const GameManagerScript = preload("res://scripts/core/GameManager.gd")
+
 @export var spawn_position: Vector2 = Vector2(0.0, 370.0)
 
-@onready var game_manager: GameManager = $GameManager
+@onready var game_manager = $GameManager
 @onready var terrain_slot: Node2D = $TerrainSlot
 @onready var vehicle_slot: Node2D = $VehicleSlot
 @onready var follow_camera: Camera2D = $FollowCamera
@@ -58,7 +60,7 @@ func _process(_delta: float) -> void:
 	if not is_instance_valid(vehicle) or not is_instance_valid(game_manager):
 		return
 	
-	if game_manager.current_state == GameManager.RunState.PLAYING:
+	if game_manager.current_state == GameManagerScript.RunState.PLAYING:
 		# Distance in meters (100 pixels = 1 meter)
 		var dist_meters: float = maxf(0.0, (vehicle.global_position.x - start_x) / 100.0)
 		game_manager.update_distance(dist_meters)

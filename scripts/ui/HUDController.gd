@@ -10,13 +10,13 @@ extends Control
 @onready var message_banner: PanelContainer = %MessageBanner
 @onready var message_label: Label = %MessageLabel
 
-var game_manager_ref: GameManager
+var game_manager_ref: Node
 
 func _ready() -> void:
 	if message_banner:
 		message_banner.visible = false
 
-func bind_game_manager(gm: GameManager) -> void:
+func bind_game_manager(gm: Node) -> void:
 	game_manager_ref = gm
 	if not is_instance_valid(gm):
 		return
