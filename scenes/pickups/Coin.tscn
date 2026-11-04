@@ -1,6 +1,9 @@
-[gd_scene load_steps=4 format=3 uid="uid://coin_pickup_001"]
+[gd_scene load_steps=7 format=3 uid="uid://coin_pickup_001"]
 
 [ext_resource type="Script" path="res://scripts/pickups/Coin.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/pickups/coins/coin_gold_static.png" id="2_coin_tex"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/pickups/coin_collection_sound.wav" id="3_audio"]
+[ext_resource type="FontFile" path="res://assets/fonts/Boxy-Bold.ttf" id="4_font"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_coin"]
 radius = 16.0
@@ -22,17 +25,9 @@ shape = SubResource("CircleShape2D_coin")
 color = Color(1, 0.88, 0.25, 0.22)
 polygon = PackedVector2Array(0, -20, 14, -14, 20, 0, 14, 14, 0, 20, -14, 14, -20, 0, -14, -14)
 
-[node name="OuterRim" type="Polygon2D" parent="Visual"]
-color = Color(0.92, 0.7, 0.15, 1)
-polygon = PackedVector2Array(0, -14, 10, -10, 14, 0, 10, 10, 0, 14, -10, 10, -14, 0, -10, -10)
-
-[node name="InnerCoin" type="Polygon2D" parent="Visual"]
-color = Color(1, 0.88, 0.28, 1)
-polygon = PackedVector2Array(0, -10, 7, -7, 10, 0, 7, 7, 0, 10, -7, 7, -10, 0, -7, -7)
-
-[node name="StarSymbol" type="Polygon2D" parent="Visual"]
-color = Color(0.85, 0.6, 0.1, 1)
-polygon = PackedVector2Array(0, -5, 2, -2, 5, -2, 3, 1, 4, 5, 0, 3, -4, 5, -3, 1, -5, -2, -2, -2)
+[node name="CoinSprite" type="Sprite2D" parent="Visual"]
+scale = Vector2(0.46, 0.46)
+texture = ExtResource("2_coin_tex")
 
 [node name="SparkleParticles" type="CPUParticles2D" parent="."]
 emitting = false
@@ -49,12 +44,17 @@ scale_amount_max = 4.5
 color = Color(1, 0.88, 0.2, 1)
 color_ramp = SubResource("Gradient_sparkle")
 
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("3_audio")
+volume_db = -4.0
+
 [node name="PopupLabel" type="Label" parent="."]
 visible = false
 offset_left = -20.0
 offset_top = -18.0
 offset_right = 20.0
 offset_bottom = 2.0
-theme_override_font_sizes/font_size = 13
+theme_override_fonts/font = ExtResource("4_font")
+theme_override_font_sizes/font_size = 14
 text = "+5"
 horizontal_alignment = 1

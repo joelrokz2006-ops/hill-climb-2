@@ -21,6 +21,7 @@ color = Color(0.28, 0.19, 0.13, 1)
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
 
 [node name="GrassLine" type="Line2D" parent="."]
+visible = false
 width = 12.0
 default_color = Color(0.3, 0.68, 0.22, 1)
 joint_mode = 2
@@ -29,6 +30,7 @@ end_cap_mode = 2
 antialiased = true
 
 [node name="GrassHighlightLine" type="Line2D" parent="."]
+visible = false
 width = 4.0
 default_color = Color(0.46, 0.82, 0.3, 1)
 joint_mode = 2

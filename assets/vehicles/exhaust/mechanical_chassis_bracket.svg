@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="plateGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#475569"/>
+      <stop offset="50%" stop-color="#334155"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+  </defs>
+  <!-- Heavy steel mounting plate -->
+  <polygon points="10,12 54,12 48,52 16,52" fill="url(#plateGrad)" stroke="#0f172a" stroke-width="2.5" stroke-linejoin="round"/>
+  <!-- Mounting bolts -->
+  <circle cx="22" cy="22" r="4" fill="#cbd5e1" stroke="#0f172a" stroke-width="1.5"/>
+  <circle cx="42" cy="22" r="4" fill="#cbd5e1" stroke="#0f172a" stroke-width="1.5"/>
+  <!-- Center bushing eyelet -->
+  <circle cx="32" cy="38" r="8" fill="#0f172a" stroke="#64748b" stroke-width="2"/>
+  <circle cx="32" cy="38" r="4" fill="#94a3b8"/>
+</svg>

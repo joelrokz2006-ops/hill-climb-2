@@ -1,56 +1,84 @@
-[gd_scene load_steps=8 format=3 uid="uid://hud_scene_001"]
+[gd_scene load_steps=26 format=3 uid="uid://hud_scene_001"]
 
 [ext_resource type="Script" path="res://scripts/ui/HUDController.gd" id="1_hud_controller"]
+[ext_resource type="FontFile" path="res://assets/fonts/Boxy-Bold.ttf" id="2_font_bold"]
+[ext_resource type="FontFile" path="res://assets/fonts/Kenney_Future.ttf" id="3_font_future"]
+[ext_resource type="FontFile" path="res://assets/fonts/Kenney_Future_Narrow.ttf" id="4_font_narrow"]
+[ext_resource type="Texture2D" path="res://assets/ui/hud/fuel_hud/fuel_icon.png" id="5_fuel_icon"]
+[ext_resource type="Texture2D" path="res://assets/ui/hud/fuel_hud/fuel_bar_background.png" id="6_fuel_bg"]
+[ext_resource type="Texture2D" path="res://assets/ui/hud/fuel_hud/fuel_bar_fill.png" id="7_fuel_fill"]
+[ext_resource type="Texture2D" path="res://assets/ui/hud/coin_hud/coin_icon.png" id="8_coin_icon"]
+[ext_resource type="Texture2D" path="res://assets/ui/hud/coin_hud/coin_counter_display_panel.png" id="9_coins_panel_tex"]
+[ext_resource type="Texture2D" path="res://assets/ui/hud/rpm_gauge/rpm_gauge_dial_background.png" id="10_rpm_dial"]
+[ext_resource type="Texture2D" path="res://assets/ui/hud/rpm_gauge/rpm_gauge_needle.png" id="11_rpm_needle"]
+[ext_resource type="Texture2D" path="res://assets/ui/hud/rpm_gauge/rpm_gauge_frame.png" id="12_rpm_frame"]
+[ext_resource type="Texture2D" path="res://assets/ui/controls/brake_pedal_normal.png" id="13_brake_n"]
+[ext_resource type="Texture2D" path="res://assets/ui/controls/brake_pedal_pressed.png" id="14_brake_p"]
+[ext_resource type="Texture2D" path="res://assets/ui/controls/accelerator_pedal_normal.png" id="15_gas_n"]
+[ext_resource type="Texture2D" path="res://assets/ui/controls/accelerator_pedal_pressed.png" id="16_gas_p"]
+[ext_resource type="Texture2D" path="res://assets/ui/controls/pause_button_normal.png" id="17_pause_n"]
+[ext_resource type="Texture2D" path="res://assets/ui/controls/control_button_base.png" id="18_nitro_n"]
+[ext_resource type="Texture2D" path="res://assets/ui/controls/control_button_highlight.png" id="19_nitro_p"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hud_glass"]
-bg_color = Color(0.06, 0.09, 0.15, 0.85)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.25, 0.38, 0.58, 0.55)
+bg_color = Color(0.06, 0.09, 0.15, 0.88)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.28, 0.45, 0.68, 0.65)
 corner_radius_top_left = 12
 corner_radius_top_right = 12
 corner_radius_bottom_right = 12
 corner_radius_bottom_left = 12
-shadow_color = Color(0, 0, 0, 0.35)
+shadow_color = Color(0, 0, 0, 0.4)
 shadow_size = 8
 shadow_offset = Vector2(0, 3)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_coins_badge"]
-bg_color = Color(0.08, 0.11, 0.18, 0.9)
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nitro_bg"]
+bg_color = Color(0.04, 0.08, 0.14, 0.9)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.9, 0.75, 0.2, 0.6)
-corner_radius_top_left = 12
-corner_radius_top_right = 12
-corner_radius_bottom_right = 12
-corner_radius_bottom_left = 12
-shadow_color = Color(0, 0, 0, 0.35)
-shadow_size = 6
+border_color = Color(0.15, 0.45, 0.65, 0.6)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fuel_bg"]
-bg_color = Color(0.1, 0.13, 0.18, 0.95)
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nitro_fill"]
+bg_color = Color(0.0, 0.82, 0.96, 1)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.2, 0.25, 0.35, 0.6)
-corner_radius_top_left = 5
-corner_radius_top_right = 5
-corner_radius_bottom_right = 5
-corner_radius_bottom_left = 5
+border_color = Color(0.4, 0.95, 1.0, 0.8)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fuel_fill"]
-bg_color = Color(0.22, 0.82, 0.36, 1)
-border_width_top = 1
-border_color = Color(0.5, 0.95, 0.6, 0.8)
-corner_radius_top_left = 5
-corner_radius_top_right = 5
-corner_radius_bottom_right = 5
-corner_radius_bottom_left = 5
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_coins"]
+texture = ExtResource("9_coins_panel_tex")
+texture_margin_left = 12.0
+texture_margin_top = 8.0
+texture_margin_right = 12.0
+texture_margin_bottom = 8.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_fuel_bg"]
+texture = ExtResource("6_fuel_bg")
+texture_margin_left = 6.0
+texture_margin_top = 4.0
+texture_margin_right = 6.0
+texture_margin_bottom = 4.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_fuel_fill"]
+texture = ExtResource("7_fuel_fill")
+texture_margin_left = 6.0
+texture_margin_top = 4.0
+texture_margin_right = 6.0
+texture_margin_bottom = 4.0
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_banner"]
 bg_color = Color(0.07, 0.1, 0.16, 0.96)
@@ -95,8 +123,8 @@ layout_mode = 1
 anchors_preset = 0
 offset_left = 20.0
 offset_top = 18.0
-offset_right = 340.0
-offset_bottom = 162.0
+offset_right = 350.0
+offset_bottom = 228.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_hud_glass")
 
 [node name="Margin" type="MarginContainer" parent="TopStatsPanel"]
@@ -122,14 +150,16 @@ theme_override_constants/separation = 1
 [node name="DistanceTitle" type="Label" parent="TopStatsPanel/Margin/VBox/DistanceRow/DistanceBadge"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.65, 0.78, 0.92, 1)
-theme_override_font_sizes/font_size = 11
+theme_override_fonts/font = ExtResource("4_font_narrow")
+theme_override_font_sizes/font_size = 12
 text = "DISTANCE"
 
 [node name="DistanceLabel" type="Label" parent="TopStatsPanel/Margin/VBox/DistanceRow/DistanceBadge"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 24
+theme_override_fonts/font = ExtResource("2_font_bold")
+theme_override_font_sizes/font_size = 22
 text = "0 m"
 
 [node name="BestDistanceRow" type="VBoxContainer" parent="TopStatsPanel/Margin/VBox/DistanceRow"]
@@ -140,8 +170,9 @@ theme_override_constants/separation = 1
 [node name="BestDistanceLabel" type="Label" parent="TopStatsPanel/Margin/VBox/DistanceRow/BestDistanceRow"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(0.65, 0.72, 0.85, 0.85)
-theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.72, 0.82, 0.92, 0.9)
+theme_override_fonts/font = ExtResource("4_font_narrow")
+theme_override_font_sizes/font_size = 14
 text = "Best: 0 m"
 horizontal_alignment = 2
 
@@ -156,18 +187,24 @@ theme_override_constants/separation = 5
 layout_mode = 2
 
 [node name="FuelIconRoot" type="Control" parent="TopStatsPanel/Margin/VBox/FuelSection/FuelHeader"]
-custom_minimum_size = Vector2(16, 16)
+custom_minimum_size = Vector2(20, 20)
 layout_mode = 2
 
-[node name="CanisterMini" type="Polygon2D" parent="TopStatsPanel/Margin/VBox/FuelSection/FuelHeader/FuelIconRoot"]
-position = Vector2(8, 8)
-color = Color(0.9, 0.3, 0.25, 1)
-polygon = PackedVector2Array(-5, 6, 5, 6, 5, -4, 3, -6, -3, -6, -5, -4)
+[node name="FuelIconTexture" type="TextureRect" parent="TopStatsPanel/Margin/VBox/FuelSection/FuelHeader/FuelIconRoot"]
+layout_mode = 0
+offset_left = -2.0
+offset_top = -2.0
+offset_right = 22.0
+offset_bottom = 24.0
+texture = ExtResource("5_fuel_icon")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="FuelTitle" type="Label" parent="TopStatsPanel/Margin/VBox/FuelSection/FuelHeader"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.7, 0.8, 0.92, 1)
-theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.75, 0.85, 0.95, 1)
+theme_override_fonts/font = ExtResource("4_font_narrow")
+theme_override_font_sizes/font_size = 13
 text = "FUEL"
 
 [node name="LowFuelIndicator" type="Label" parent="TopStatsPanel/Margin/VBox/FuelSection/FuelHeader"]
@@ -176,6 +213,7 @@ visible = false
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(1, 0.25, 0.2, 1)
+theme_override_fonts/font = ExtResource("3_font_future")
 theme_override_font_sizes/font_size = 11
 text = "⚠️ LOW FUEL"
 horizontal_alignment = 1
@@ -184,17 +222,51 @@ horizontal_alignment = 1
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_colors/font_color = Color(0.85, 0.92, 0.98, 1)
-theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.88, 0.94, 1, 1)
+theme_override_fonts/font = ExtResource("2_font_bold")
+theme_override_font_sizes/font_size = 13
 text = "100%"
 horizontal_alignment = 2
 
 [node name="FuelBar" type="ProgressBar" parent="TopStatsPanel/Margin/VBox/FuelSection"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(280, 16)
+custom_minimum_size = Vector2(280, 18)
 layout_mode = 2
-theme_override_styles/background = SubResource("StyleBoxFlat_fuel_bg")
-theme_override_styles/fill = SubResource("StyleBoxFlat_fuel_fill")
+theme_override_styles/background = SubResource("StyleBoxTexture_fuel_bg")
+theme_override_styles/fill = SubResource("StyleBoxTexture_fuel_fill")
+value = 100.0
+show_percentage = false
+
+[node name="NitroSection" type="VBoxContainer" parent="TopStatsPanel/Margin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="NitroHeader" type="HBoxContainer" parent="TopStatsPanel/Margin/VBox/NitroSection"]
+layout_mode = 2
+
+[node name="NitroTitle" type="Label" parent="TopStatsPanel/Margin/VBox/NitroSection/NitroHeader"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.25, 0.88, 1, 1)
+theme_override_fonts/font = ExtResource("4_font_narrow")
+theme_override_font_sizes/font_size = 13
+text = "⚡ NITRO"
+
+[node name="NitroPercentageLabel" type="Label" parent="TopStatsPanel/Margin/VBox/NitroSection/NitroHeader"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.75, 0.94, 1, 1)
+theme_override_fonts/font = ExtResource("2_font_bold")
+theme_override_font_sizes/font_size = 13
+text = "100%"
+horizontal_alignment = 2
+
+[node name="NitroBar" type="ProgressBar" parent="TopStatsPanel/Margin/VBox/NitroSection"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(280, 14)
+layout_mode = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_nitro_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_nitro_fill")
 value = 100.0
 show_percentage = false
 
@@ -203,57 +275,193 @@ layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -190.0
+offset_left = -240.0
 offset_top = 18.0
-offset_right = -20.0
-offset_bottom = 66.0
+offset_right = -78.0
+offset_bottom = 70.0
 grow_horizontal = 0
-theme_override_styles/panel = SubResource("StyleBoxFlat_coins_badge")
+theme_override_styles/panel = SubResource("StyleBoxTexture_coins")
 
 [node name="Margin" type="MarginContainer" parent="CoinsPanel"]
 layout_mode = 2
-theme_override_constants/margin_left = 14
-theme_override_constants/margin_top = 8
-theme_override_constants/margin_right = 14
-theme_override_constants/margin_bottom = 8
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 6
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 6
 
 [node name="HBox" type="HBoxContainer" parent="CoinsPanel/Margin"]
 layout_mode = 2
 theme_override_constants/separation = 10
 
 [node name="CoinIconRoot" type="Control" parent="CoinsPanel/Margin/HBox"]
-custom_minimum_size = Vector2(22, 22)
+custom_minimum_size = Vector2(24, 24)
 layout_mode = 2
 
-[node name="CoinOuter" type="Polygon2D" parent="CoinsPanel/Margin/HBox/CoinIconRoot"]
-position = Vector2(11, 11)
-color = Color(1, 0.8, 0.12, 1)
-polygon = PackedVector2Array(0, -10, 7, -7, 10, 0, 7, 7, 0, 10, -7, 7, -10, 0, -7, -7)
-
-[node name="CoinInner" type="Polygon2D" parent="CoinsPanel/Margin/HBox/CoinIconRoot"]
-position = Vector2(11, 11)
-color = Color(0.95, 0.65, 0.08, 1)
-polygon = PackedVector2Array(0, -7, 5, -5, 7, 0, 5, 5, 0, 7, -5, 5, -7, 0, -5, -5)
-
-[node name="CoinText" type="Label" parent="CoinsPanel/Margin/HBox/CoinIconRoot"]
+[node name="CoinIconTexture" type="TextureRect" parent="CoinsPanel/Margin/HBox/CoinIconRoot"]
 layout_mode = 0
-offset_top = -1.0
-offset_right = 22.0
-offset_bottom = 21.0
-theme_override_colors/font_color = Color(0.4, 0.24, 0, 1)
-theme_override_font_sizes/font_size = 12
-text = "$"
-horizontal_alignment = 1
-vertical_alignment = 1
+offset_left = -2.0
+offset_top = -2.0
+offset_right = 26.0
+offset_bottom = 26.0
+texture = ExtResource("8_coin_icon")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="CoinsLabel" type="Label" parent="CoinsPanel/Margin/HBox"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_colors/font_color = Color(1, 0.9, 0.45, 1)
+theme_override_colors/font_color = Color(1, 0.92, 0.45, 1)
+theme_override_fonts/font = ExtResource("2_font_bold")
 theme_override_font_sizes/font_size = 18
 text = "0"
 horizontal_alignment = 2
+
+[node name="PauseButton" type="TextureButton" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -66.0
+offset_top = 18.0
+offset_right = -18.0
+offset_bottom = 66.0
+grow_horizontal = 0
+texture_normal = ExtResource("17_pause_n")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="RPMGauge" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -260.0
+offset_top = -120.0
+offset_right = -150.0
+offset_bottom = -10.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="DialBack" type="TextureRect" parent="RPMGauge"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("10_rpm_dial")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="NeedlePivot" type="Control" parent="RPMGauge"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="RPMNeedle" type="Sprite2D" parent="RPMGauge/NeedlePivot"]
+unique_name_in_owner = true
+rotation = -2.0944
+scale = Vector2(0.25, 0.25)
+texture = ExtResource("11_rpm_needle")
+offset = Vector2(0, -75)
+
+[node name="DialFrame" type="TextureRect" parent="RPMGauge"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("12_rpm_frame")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="TouchControls" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="BrakePedal" type="TextureButton" parent="TouchControls"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 28.0
+offset_top = -122.0
+offset_right = 120.0
+offset_bottom = -26.0
+grow_vertical = 0
+texture_normal = ExtResource("13_brake_n")
+texture_pressed = ExtResource("14_brake_p")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="GasPedal" type="TextureButton" parent="TouchControls"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -128.0
+offset_top = -122.0
+offset_right = -36.0
+offset_bottom = -26.0
+grow_horizontal = 0
+grow_vertical = 0
+texture_normal = ExtResource("15_gas_n")
+texture_pressed = ExtResource("16_gas_p")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="NitroButton" type="TextureButton" parent="TouchControls"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -126.0
+offset_top = -212.0
+offset_right = -38.0
+offset_bottom = -132.0
+grow_horizontal = 0
+grow_vertical = 0
+texture_normal = ExtResource("18_nitro_n")
+texture_pressed = ExtResource("19_nitro_p")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="NitroButtonLabel" type="Label" parent="TouchControls/NitroButton"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.15, 0.88, 1, 1)
+theme_override_fonts/font = ExtResource("2_font_bold")
+theme_override_font_sizes/font_size = 14
+text = "⚡ NITRO"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="ControlsTip" type="Label" parent="."]
 layout_mode = 1
@@ -262,15 +470,16 @@ anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -340.0
-offset_top = -42.0
-offset_right = 340.0
-offset_bottom = -16.0
+offset_left = -380.0
+offset_top = -36.0
+offset_right = 380.0
+offset_bottom = -14.0
 grow_horizontal = 2
 grow_vertical = 0
-theme_override_colors/font_color = Color(0.85, 0.92, 0.98, 0.8)
+theme_override_colors/font_color = Color(0.85, 0.92, 0.98, 0.75)
+theme_override_fonts/font = ExtResource("4_font_narrow")
 theme_override_font_sizes/font_size = 13
-text = "Drive: [D / ->]   |   Brake: [A / <-]   |   Air Tilt: [A/D]   |   Restart: [R]   |   Pause: [Esc]"
+text = "Drive: [D / ->]   |   Brake: [A / <-]   |   Boost: [Shift / Space]   |   Air Tilt: [A/D]   |   Restart: [R]"
 horizontal_alignment = 1
 
 [node name="MessageBanner" type="PanelContainer" parent="."]
@@ -304,7 +513,8 @@ theme_override_constants/separation = 12
 [node name="MessageTitleLabel" type="Label" parent="MessageBanner/Margin/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 22
+theme_override_fonts/font = ExtResource("3_font_future")
+theme_override_font_sizes/font_size = 20
 text = "RUN FINISHED!"
 horizontal_alignment = 1
 
@@ -315,6 +525,7 @@ layout_mode = 2
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9, 0.94, 0.98, 1)
+theme_override_fonts/font = ExtResource("4_font_narrow")
 theme_override_font_sizes/font_size = 16
 text = "Distance: 0 m
 Coins: 0
@@ -326,6 +537,7 @@ vertical_alignment = 1
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.95, 0.82, 0.25, 0.95)
+theme_override_fonts/font = ExtResource("4_font_narrow")
 theme_override_font_sizes/font_size = 14
 text = "Press [R] to Retry"
 horizontal_alignment = 1
@@ -361,13 +573,15 @@ theme_override_constants/separation = 8
 [node name="PauseTitle" type="Label" parent="PauseBanner/Margin/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
-theme_override_font_sizes/font_size = 20
+theme_override_fonts/font = ExtResource("3_font_future")
+theme_override_font_sizes/font_size = 18
 text = "GAME PAUSED"
 horizontal_alignment = 1
 
 [node name="PauseHint" type="Label" parent="PauseBanner/Margin/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.85, 0.9, 0.95, 0.9)
+theme_override_fonts/font = ExtResource("4_font_narrow")
 theme_override_font_sizes/font_size = 13
 text = "Press [Esc / P] to Resume"
 horizontal_alignment = 1

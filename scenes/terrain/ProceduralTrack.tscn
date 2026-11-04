@@ -19,10 +19,10 @@ script = ExtResource("3_terrain_generator")
 target = NodePath("../Vehicle")
 
 [node name="Vehicle" parent="." instance=ExtResource("4_vehicle")]
-position = Vector2(0, 360)
+position = Vector2(0, 382)
 
 [node name="FollowCamera" type="Camera2D" parent="." node_paths=PackedStringArray("target")]
-position = Vector2(0, 360)
+position = Vector2(180, 332)
 zoom = Vector2(1.1, 1.1)
 script = ExtResource("5_follow_cam")
 target = NodePath("../Vehicle")

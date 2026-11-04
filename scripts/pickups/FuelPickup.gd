@@ -15,6 +15,7 @@ signal collected(amount: float)
 @onready var popup_label: Label = $PopupLabel
 @onready var vapor_particles: CPUParticles2D = get_node_or_null("VaporParticles")
 @onready var glow_aura: Polygon2D = get_node_or_null("Visual/GlowAura")
+@onready var audio_player: AudioStreamPlayer2D = get_node_or_null("AudioStreamPlayer2D")
 
 var is_collected: bool = false
 var _elapsed: float = 0.0
@@ -34,7 +35,7 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	if not is_collected and is_instance_valid(visual):
 		_elapsed += delta
-		visual.position.y = _initial_visual_y + sin(_elapsed * bob_frequency) * bob_height
+		visual.position.y = _initial_visual_y - (sin(_elapsed * bob_frequency) * 0.5 + 0.5) * bob_height
 		if is_instance_valid(glow_aura):
 			var pulse := (sin(_elapsed * 4.0) * 0.15) + 0.85
 			glow_aura.scale = Vector2(pulse, pulse)
@@ -43,14 +44,18 @@ func _on_body_entered(body: Node2D) -> void:
 	if is_collected:
 		return
 	
-	# Verify vehicle or wheel body
+	# Verify vehicle or wheel body using duck-typing instead of hard class reference
+	# (avoids parse-time dependency on VehicleController class_name)
 	var target_vehicle = null
-	if body is VehicleController:
+	var parent := body.get_parent()
+	if body.has_method("refuel"):
 		target_vehicle = body
-	elif body.get_parent() is VehicleController:
-		target_vehicle = body.get_parent()
-	elif body.name.ends_with("Wheel") and body.get_parent() is VehicleController:
-		target_vehicle = body.get_parent()
+	elif is_instance_valid(parent) and parent.has_method("refuel"):
+		target_vehicle = parent
+	elif body.is_in_group("vehicle"):
+		target_vehicle = body
+	elif is_instance_valid(parent) and parent.is_in_group("vehicle"):
+		target_vehicle = parent
 	
 	if target_vehicle == null:
 		return
@@ -62,8 +67,10 @@ func _on_body_entered(body: Node2D) -> void:
 	if target_vehicle.has_method("refuel"):
 		target_vehicle.refuel(fuel_amount)
 	
-	# Visual collection feedback
+	# Visual & Audio collection feedback
 	collision_shape.set_deferred("disabled", true)
+	if is_instance_valid(audio_player):
+		audio_player.play()
 	if is_instance_valid(visual):
 		visual.visible = false
 		

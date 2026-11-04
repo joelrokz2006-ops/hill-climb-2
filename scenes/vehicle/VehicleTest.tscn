@@ -26,11 +26,6 @@ polygon = PackedVector2Array(-300, 380, 200, 380, 600, 270, 800, 270, 1200, 50, 
 color = Color(0.32, 0.22, 0.16, 1)
 polygon = PackedVector2Array(-300, 380, 200, 380, 600, 270, 800, 270, 1200, 50, 1300, 50, 1700, 380, 1900, 340, 2050, 480, 2400, 480, 2500, 450, 2600, 480, 2700, 440, 2800, 480, 3500, 480, 3500, 900, -300, 900)
 
-[node name="GrassSurfaceVisual" type="Line2D" parent="TestTrack"]
-points = PackedVector2Array(-300, 380, 200, 380, 600, 270, 800, 270, 1200, 50, 1300, 50, 1700, 380, 1900, 340, 2050, 480, 2400, 480, 2500, 450, 2600, 480, 2700, 440, 2800, 480, 3500, 480)
-width = 12.0
-default_color = Color(0.28, 0.65, 0.24, 1)
-
 [node name="SlopeMarkers" type="Node2D" parent="TestTrack"]
 
 [node name="FlatLabel" type="Label" parent="TestTrack/SlopeMarkers"]

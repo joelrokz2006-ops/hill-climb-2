@@ -43,6 +43,18 @@ enum SegmentType {
 		if Engine.is_editor_hint():
 			rebuild_segment()
 
+@export var start_slope: float = 0.0:
+	set(val):
+		start_slope = val
+		if Engine.is_editor_hint():
+			rebuild_segment()
+
+@export var end_slope: float = 0.0:
+	set(val):
+		end_slope = val
+		if Engine.is_editor_hint():
+			rebuild_segment()
+
 @export var amplitude: float = 80.0:
 	set(val):
 		amplitude = val
@@ -109,12 +121,51 @@ func get_exit_point() -> Vector2:
 		return Vector2(segment_length, end_height)
 	return generated_surface_points[generated_surface_points.size() - 1]
 
+## Returns the tangent slope (dy/dx) at the exit of this segment for seamless C1 joins
+func get_exit_slope() -> float:
+	if generated_surface_points.size() < 2:
+		return end_slope
+	var n := generated_surface_points.size()
+	var p_last := generated_surface_points[n - 1]
+	var p_prev := generated_surface_points[n - 2]
+	var dx := p_last.x - p_prev.x
+	if is_zero_approx(dx):
+		return end_slope
+	return (p_last.y - p_prev.y) / dx
+
+## Returns the interpolated surface Y at local x coordinate (top ground contour)
+func get_surface_y_at(local_x: float) -> float:
+	if generated_surface_points.is_empty():
+		return 0.0
+	var first_pt := generated_surface_points[0]
+	var last_pt := generated_surface_points[generated_surface_points.size() - 1]
+	if local_x <= first_pt.x:
+		return first_pt.y
+	if local_x >= last_pt.x:
+		return last_pt.y
+	
+	var idx := 0
+	for i in range(generated_surface_points.size() - 1):
+		if generated_surface_points[i + 1].x >= local_x:
+			idx = i
+			break
+	
+	var p1 := generated_surface_points[idx]
+	var p2 := generated_surface_points[mini(idx + 1, generated_surface_points.size() - 1)]
+	var span_x := p2.x - p1.x
+	if is_zero_approx(span_x):
+		return p1.y
+	var alpha := (local_x - p1.x) / span_x
+	return lerpf(p1.y, p2.y, alpha)
+
 ## Returns the interpolated surface position and upward-pointing surface normal at local x
 func get_surface_point_and_normal_at(local_x: float) -> Dictionary:
 	if generated_surface_points.is_empty():
 		return {"point": Vector2(local_x, 0.0), "normal": Vector2.UP}
 	
-	var clamped_x := clampf(local_x, 0.0, segment_length)
+	var first_pt := generated_surface_points[0]
+	var last_pt := generated_surface_points[generated_surface_points.size() - 1]
+	var clamped_x := clampf(local_x, first_pt.x, last_pt.x)
 	var idx := 0
 	for i in range(generated_surface_points.size() - 1):
 		if generated_surface_points[i + 1].x >= clamped_x:
@@ -125,7 +176,7 @@ func get_surface_point_and_normal_at(local_x: float) -> Dictionary:
 	var p2 := generated_surface_points[mini(idx + 1, generated_surface_points.size() - 1)]
 	var span_x := p2.x - p1.x
 	var alpha := 0.0 if is_zero_approx(span_x) else (clamped_x - p1.x) / span_x
-	var pt := p1.lerp(p2, alpha)
+	var pt := Vector2(clamped_x, lerpf(p1.y, p2.y, alpha))
 	var dir := (p2 - p1).normalized() if p1.distance_squared_to(p2) > 0.0001 else Vector2.RIGHT
 	var normal := Vector2(-dir.y, dir.x)
 	if normal.y > 0.0:
@@ -163,12 +214,18 @@ func _ensure_child_nodes() -> void:
 	if not grass_line:
 		grass_line = Line2D.new()
 		grass_line.name = "GrassLine"
+		grass_line.visible = false
 		add_child(grass_line)
+	else:
+		grass_line.visible = false
 	
 	if not grass_highlight_line:
 		grass_highlight_line = Line2D.new()
 		grass_highlight_line.name = "GrassHighlightLine"
+		grass_highlight_line.visible = false
 		add_child(grass_highlight_line)
+	else:
+		grass_highlight_line.visible = false
 		
 	if not decorations_root:
 		decorations_root = Node2D.new()
@@ -189,8 +246,14 @@ func _generate_surface_points() -> void:
 		var x := t * segment_length
 		var y := 0.0
 		
-		# Linear baseline interpolation between start and end height
-		var base_y := lerpf(start_height, end_height, t)
+		# Hermite cubic spline baseline matching start_height, start_slope, end_height, end_slope
+		var h00 := 2.0 * t * t * t - 3.0 * t * t + 1.0
+		var h10 := t * t * t - 2.0 * t * t + t
+		var h01 := -2.0 * t * t * t + 3.0 * t * t
+		var h11 := t * t * t - t * t
+		var base_y := h00 * start_height + h10 * segment_length * start_slope + h01 * end_height + h11 * segment_length * end_slope
+		
+		# Hann-squared window guarantees zero first-derivative at t=0 and t=1, preserving exact C1 slope joins
 		var window_hann := sin(t * PI)
 		var window_hann_sq := window_hann * window_hann
 		
@@ -199,65 +262,83 @@ func _generate_surface_points() -> void:
 				y = base_y
 				
 			SegmentType.GENTLE_HILLS:
-				# Smooth sine wave hill with Hann window for continuous zero boundary slope
-				var wave := sin(t * TAU) * window_hann * amplitude
+				# Smooth sine wave hill with Hann-squared window
+				var wave := sin(t * TAU) * window_hann_sq * amplitude
 				y = base_y - wave
 				
 			SegmentType.STEEP_CLIMB:
-				# Steeper slope with smooth s-curve easing and subtle terrain ripple
-				var eased_t := smoothstep(0.0, 1.0, t)
-				var climb := lerpf(start_height, end_height, eased_t)
-				var ripple := sin(t * TAU) * window_hann * (amplitude * 0.18)
-				y = climb - ripple
+				# Steeper climb with subtle natural terrain ripple
+				var ripple := sin(t * TAU * 1.5) * window_hann_sq * (amplitude * 0.25)
+				y = base_y - ripple
 				
 			SegmentType.VALLEY_DIP:
-				# Smooth dip in the middle with zero derivative at boundaries
+				# Smooth rounded dip in the middle
 				var dip := window_hann_sq * amplitude
 				y = base_y + dip
 				
 			SegmentType.JUMP_RAMP:
-				# Ramp leading to a crest lip followed by smooth landing slope
-				if t < 0.65:
-					var ramp_t := t / 0.65
-					var lift := smoothstep(0.0, 1.0, ramp_t) * (amplitude * 1.3)
-					y = start_height - lift
-				else:
-					var land_t := (t - 0.65) / 0.35
-					var peak_y := start_height - (amplitude * 1.3)
-					var eased_land := smoothstep(0.0, 1.0, land_t)
-					y = lerpf(peak_y, end_height, eased_land)
-					
+				# Smooth launch crest with continuous slope
+				var crest := sin(t * PI) * window_hann_sq * (amplitude * 1.1)
+				y = base_y - crest
+				
 			SegmentType.ROLLING_WAVES:
-				# Multiple rolling hills with boundary tangent damping
-				var wave1 := sin(t * TAU * 1.5) * 0.7
-				var wave2 := sin(t * TAU * 3.0) * 0.3
-				var wave_val := (wave1 + wave2) * window_hann * amplitude
+				# Multiple rolling hills with seamless boundary tangency
+				var wave1 := sin(t * TAU * 1.5) * 0.65
+				var wave2 := sin(t * TAU * 3.0) * 0.35
+				var wave_val := (wave1 + wave2) * window_hann_sq * amplitude
 				y = base_y - wave_val
 				
 			SegmentType.PLATEAU_DROP:
-				# Elevated table-land ridge with steep thrilling drop
-				if t < 0.32:
-					var climb_t := t / 0.32
-					y = lerpf(start_height, start_height - amplitude, smoothstep(0.0, 1.0, climb_t))
-				elif t < 0.68:
-					y = start_height - amplitude
-				else:
-					var drop_t := (t - 0.68) / 0.32
-					y = lerpf(start_height - amplitude, end_height, smoothstep(0.0, 1.0, drop_t))
-					
+				# Natural rounded mesa / rolling ridge (never a rectangular box or sharp cliff)
+				var ridge := sin(t * PI) * window_hann_sq * (amplitude * 0.8)
+				y = base_y - ridge
+				
 			SegmentType.BUMPY_WASHBOARD:
-				# Consecutive rapid ripples that test suspension damping
-				var bumps := sin(t * TAU * 4.0) * window_hann * (amplitude * 0.25)
+				# Small rhythmic ripples to exercise suspension
+				var bumps := sin(t * TAU * 4.0) * window_hann_sq * (amplitude * 0.22)
 				y = base_y - bumps
 				
 			SegmentType.DOUBLE_CREST:
 				# Two rounded peaks with smooth saddle dip in between
-				var crests := (sin(t * TAU * 2.0 - (PI * 0.5)) * 0.5 + 0.5) * window_hann * amplitude
+				var crests := sin(t * TAU * 2.0) * window_hann_sq * (amplitude * 0.6)
 				y = base_y - crests
 				
 		pts.append(Vector2(x, y))
 	
 	generated_surface_points = pts
+
+# Preloaded ground and subsurface textures
+const TEX_SOIL_SUBSURFACE: Texture2D = preload("res://assets/terrain/surfaces/brown_soil_subsurface.png")
+const TEX_DIRT_STRATA: Texture2D = preload("res://assets/terrain/transitions/dirt_pattern_01.png")
+const TEX_GRASS_EDGE: Texture2D = preload("res://assets/terrain/surfaces/grass_top_edge.png")
+
+# Preloaded countryside scenery textures
+const TEX_BUSHES: Array = [
+	preload("res://assets/environment/countryside/bushes/bush_round_green.png"),
+	preload("res://assets/environment/countryside/bushes/bush_shrub_01.png"),
+	preload("res://assets/environment/countryside/bushes/bush_shrub_02.png"),
+	preload("res://assets/environment/countryside/bushes/bush_shrub_03.png")
+]
+const TEX_FLOWERS: Array = [
+	preload("res://assets/environment/countryside/plants/flower_yellow.png"),
+	preload("res://assets/environment/countryside/plants/flower_purple.png"),
+	preload("res://assets/environment/countryside/plants/grass_tuft_01.png"),
+	preload("res://assets/environment/countryside/plants/mushroom_red.png"),
+	preload("res://assets/environment/countryside/plants/mushroom_brown.png")
+]
+const TEX_ROCKS: Array = [
+	preload("res://assets/terrain/rocks/small_stones_pebbles.png"),
+	preload("res://assets/terrain/rocks/large_rock_boulder_01.png"),
+	preload("res://assets/terrain/rocks/rock_hill_slope_left.png"),
+	preload("res://assets/terrain/rocks/rock_hill_slope_right.png")
+]
+const TEX_PROPS: Array = [
+	preload("res://assets/environment/countryside/fences/wooden_fence_01.png"),
+	preload("res://assets/environment/countryside/fences/wooden_fence_broken.png"),
+	preload("res://assets/environment/countryside/props/fallen_log_01.png"),
+	preload("res://assets/environment/countryside/signs/wooden_signpost.png"),
+	preload("res://assets/environment/countryside/signs/wooden_sign_arrow_right.png")
+]
 
 func _apply_geometry() -> void:
 	if generated_surface_points.size() < 2:
@@ -266,14 +347,21 @@ func _apply_geometry() -> void:
 	var first_pt := generated_surface_points[0]
 	var last_pt := generated_surface_points[generated_surface_points.size() - 1]
 	
-	# 1. Build ground polygon closed at bottom
+	const GLOBAL_DEEP_BOTTOM_Y: float = 2400.0
+	var local_bottom_y: float = GLOBAL_DEEP_BOTTOM_Y - global_position.y
+	var max_surf_y: float = first_pt.y
+	for pt in generated_surface_points:
+		if pt.y > max_surf_y:
+			max_surf_y = pt.y
+	local_bottom_y = maxf(local_bottom_y, max_surf_y + ground_depth)
+	
+	# 1. Build ground polygon closed at constant global bottom to eliminate seams and gaps
 	var poly_pts := PackedVector2Array()
 	for pt in generated_surface_points:
 		poly_pts.append(pt)
 	
-	var bottom_y := maxf(first_pt.y, last_pt.y) + ground_depth
-	poly_pts.append(Vector2(last_pt.x, bottom_y))
-	poly_pts.append(Vector2(first_pt.x, bottom_y))
+	poly_pts.append(Vector2(last_pt.x, local_bottom_y))
+	poly_pts.append(Vector2(first_pt.x, local_bottom_y))
 	
 	# Synchronize visual polygon and collision polygon exactly
 	if collision_polygon:
@@ -281,42 +369,29 @@ func _apply_geometry() -> void:
 	
 	if ground_polygon:
 		ground_polygon.polygon = poly_pts
-		ground_polygon.color = ground_color
+		ground_polygon.color = Color(1, 1, 1, 1)
+		ground_polygon.texture = TEX_SOIL_SUBSURFACE
+		ground_polygon.texture_repeat = CanvasItem.TEXTURE_REPEAT_ENABLED
 	
 	# 2. Build subsoil polygon with slight offset for rich underground layering
 	if subsoil_polygon:
 		var subsoil_pts := PackedVector2Array()
 		for pt in generated_surface_points:
 			subsoil_pts.append(Vector2(pt.x, pt.y + 40.0))
-		subsoil_pts.append(Vector2(last_pt.x, bottom_y))
-		subsoil_pts.append(Vector2(first_pt.x, bottom_y))
+		subsoil_pts.append(Vector2(last_pt.x, local_bottom_y))
+		subsoil_pts.append(Vector2(first_pt.x, local_bottom_y))
 		subsoil_polygon.polygon = subsoil_pts
-		subsoil_polygon.color = subsoil_color
+		subsoil_polygon.color = Color(0.9, 0.9, 0.9, 1)
+		subsoil_polygon.texture = TEX_DIRT_STRATA
+		subsoil_polygon.texture_repeat = CanvasItem.TEXTURE_REPEAT_ENABLED
 	
-	# 3. Grass surface line
+	# 3. Grass lines hidden to maintain pure brown soil/dirt terrain style
 	if grass_line:
-		grass_line.points = generated_surface_points
-		grass_line.width = grass_thickness
-		grass_line.default_color = grass_color
-		grass_line.begin_cap_mode = Line2D.LINE_CAP_ROUND
-		grass_line.end_cap_mode = Line2D.LINE_CAP_ROUND
-		grass_line.joint_mode = Line2D.LINE_JOINT_ROUND
-		grass_line.antialiased = true
-	
-	# 4. Grass highlight line (subtle top highlight)
+		grass_line.visible = false
 	if grass_highlight_line:
-		var highlight_pts := PackedVector2Array()
-		for pt in generated_surface_points:
-			highlight_pts.append(Vector2(pt.x, pt.y - 2.0))
-		grass_highlight_line.points = highlight_pts
-		grass_highlight_line.width = maxf(2.0, grass_thickness * 0.3)
-		grass_highlight_line.default_color = grass_highlight_color
-		grass_highlight_line.begin_cap_mode = Line2D.LINE_CAP_ROUND
-		grass_highlight_line.end_cap_mode = Line2D.LINE_CAP_ROUND
-		grass_highlight_line.joint_mode = Line2D.LINE_JOINT_ROUND
-		grass_highlight_line.antialiased = true
+		grass_highlight_line.visible = false
 	
-	# 5. Optional procedural surface details (bushes, rocks)
+	# 4. Optional procedural surface details (rocks, boulders, fences, signs)
 	if decorations_root:
 		_build_decorations()
 
@@ -334,73 +409,37 @@ func _build_decorations() -> void:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = seed_val
 	
-	var num_decorations := int(segment_length / 280.0)
-	for d in range(num_decorations):
-		var idx := rng.randi_range(2, generated_surface_points.size() - 3)
-		var pt := generated_surface_points[idx]
-		var pt_next := generated_surface_points[idx + 1]
-		var dir := (pt_next - pt).normalized()
-		var normal := Vector2(-dir.y, dir.x)
-		if normal.y > 0.0:
-			normal = -normal # Point upward from ground
-		
-		# Place grass tuft, wildflower, or small rock
-		var choice := rng.randf()
-		if choice < 0.35:
-			# Shaded rock
-			var rock := Polygon2D.new()
-			rock.color = Color(0.48, 0.44, 0.40, 1.0)
-			var r_size := rng.randf_range(4.0, 9.0)
-			rock.polygon = PackedVector2Array([
-				Vector2(-r_size, 0),
-				Vector2(-r_size * 0.6, -r_size * 0.8),
-				Vector2(r_size * 0.4, -r_size),
-				Vector2(r_size, -r_size * 0.5),
-				Vector2(r_size * 0.8, 0)
-			])
-			rock.position = pt + normal * 2.0
-			rock.rotation = dir.angle()
-			decorations_root.add_child(rock)
-		elif choice < 0.70:
-			# Multi-blade grass tuft
-			var tuft := Line2D.new()
-			tuft.width = 2.5
-			tuft.default_color = Color(0.38, 0.78, 0.25, 0.9)
-			tuft.begin_cap_mode = Line2D.LINE_CAP_ROUND
-			tuft.end_cap_mode = Line2D.LINE_CAP_ROUND
-			var h := rng.randf_range(8.0, 15.0)
-			tuft.points = PackedVector2Array([
-				Vector2.ZERO,
-				Vector2(rng.randf_range(-5, -1), -h),
-				Vector2.ZERO,
-				Vector2(rng.randf_range(1, 5), -h * 0.9)
-			])
-			tuft.position = pt
-			decorations_root.add_child(tuft)
-		else:
-			# Wildflower cluster
-			var flower_root := Node2D.new()
-			flower_root.position = pt
-			var stem := Line2D.new()
-			stem.width = 2.0
-			stem.default_color = Color(0.25, 0.65, 0.2, 0.95)
-			var stem_h := rng.randf_range(9.0, 14.0)
-			stem.points = PackedVector2Array([Vector2.ZERO, Vector2(rng.randf_range(-2, 2), -stem_h)])
-			flower_root.add_child(stem)
-			
-			var petal := Polygon2D.new()
-			var flower_colors := [
-				Color(1.0, 0.85, 0.2, 0.95),  # Yellow dandelion
-				Color(1.0, 0.45, 0.55, 0.95), # Pink daisy
-				Color(0.95, 0.95, 1.0, 0.95)  # White chamomile
-			]
-			petal.color = flower_colors[rng.randi() % flower_colors.size()]
-			var p_size := rng.randf_range(2.5, 4.0)
-			petal.polygon = PackedVector2Array([
-				Vector2(-p_size, -stem_h),
-				Vector2(0, -stem_h - p_size),
-				Vector2(p_size, -stem_h),
-				Vector2(0, -stem_h + p_size)
-			])
-			flower_root.add_child(petal)
-			decorations_root.add_child(flower_root)
+	# 1. Place 1 fence / signpost / prop
+	if rng.randf() < 0.65:
+		var prop_idx := rng.randi_range(2, generated_surface_points.size() - 3)
+		var p_pt := generated_surface_points[prop_idx]
+		var p_next := generated_surface_points[prop_idx + 1]
+		var p_dir := (p_next - p_pt).normalized()
+		var prop_tex: Texture2D = TEX_PROPS[rng.randi() % TEX_PROPS.size()]
+		var prop_sprite := Sprite2D.new()
+		prop_sprite.texture = prop_tex
+		prop_sprite.z_index = -2
+		var p_scale := rng.randf_range(0.35, 0.45)
+		prop_sprite.scale = Vector2(p_scale, p_scale)
+		prop_sprite.offset = Vector2(0, -prop_tex.get_height() * 0.5)
+		prop_sprite.position = p_pt + Vector2(0, 2)
+		prop_sprite.rotation = clampf(p_dir.angle() * 0.35, -0.3, 0.3)
+		decorations_root.add_child(prop_sprite)
+
+	# 2. Place 3-5 rocks and stone formations on the soil surface
+	var num_rocks := rng.randi_range(3, 5)
+	for s in range(num_rocks):
+		var s_idx := rng.randi_range(2, generated_surface_points.size() - 3)
+		var s_pt := generated_surface_points[s_idx]
+		var s_next := generated_surface_points[s_idx + 1]
+		var s_dir := (s_next - s_pt).normalized()
+		var rock_tex: Texture2D = TEX_ROCKS[rng.randi() % TEX_ROCKS.size()]
+		var rock_sprite := Sprite2D.new()
+		rock_sprite.texture = rock_tex
+		rock_sprite.z_index = -1
+		var s_scale := rng.randf_range(0.28, 0.42)
+		rock_sprite.scale = Vector2(s_scale, s_scale)
+		rock_sprite.offset = Vector2(0, -rock_tex.get_height() * 0.5)
+		rock_sprite.position = s_pt + Vector2(0, 1)
+		rock_sprite.rotation = clampf(s_dir.angle() * 0.4, -0.35, 0.35)
+		decorations_root.add_child(rock_sprite)

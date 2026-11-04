@@ -10,8 +10,17 @@ extends Control
 @onready var fuel_bar: ProgressBar = %FuelBar
 @onready var fuel_percentage_label: Label = get_node_or_null("%FuelPercentageLabel")
 @onready var low_fuel_indicator: Label = get_node_or_null("%LowFuelIndicator")
+@onready var nitro_bar: ProgressBar = get_node_or_null("%NitroBar")
+@onready var nitro_percentage_label: Label = get_node_or_null("%NitroPercentageLabel")
 @onready var coins_label: Label = get_node_or_null("%CoinsLabel")
 @onready var coins_panel: PanelContainer = get_node_or_null("CoinsPanel")
+
+@onready var _rpm_needle: Sprite2D = get_node_or_null("%RPMNeedle")
+@onready var gas_pedal: TextureButton = get_node_or_null("%GasPedal")
+@onready var brake_pedal: TextureButton = get_node_or_null("%BrakePedal")
+@onready var nitro_button: TextureButton = get_node_or_null("%NitroButton")
+@onready var nitro_button_label: Label = get_node_or_null("%NitroButtonLabel")
+@onready var pause_button: TextureButton = get_node_or_null("%PauseButton")
 
 @onready var message_banner: PanelContainer = %MessageBanner
 @onready var message_title_label: Label = get_node_or_null("%MessageTitleLabel")
@@ -20,9 +29,13 @@ extends Control
 @onready var pause_banner: PanelContainer = get_node_or_null("%PauseBanner")
 
 var game_manager_ref: Node
+var _vehicle_ref: Node = null
 var _flash_timer: float = 0.0
 var _is_low_fuel: bool = false
 var _target_fuel: float = 100.0
+var _target_nitro: float = 100.0
+var _pothole_pulse_active: bool = false
+var _pothole_pulse_timer: float = 0.0
 var _last_coins_count: int = 0
 
 # Style boxes for dynamic fuel bar feedback
@@ -48,6 +61,18 @@ func _ready() -> void:
 	if low_fuel_indicator:
 		low_fuel_indicator.visible = false
 		
+	if gas_pedal:
+		gas_pedal.button_down.connect(func(): Input.action_press("accelerate"))
+		gas_pedal.button_up.connect(func(): Input.action_release("accelerate"))
+	if brake_pedal:
+		brake_pedal.button_down.connect(func(): Input.action_press("brake_reverse"))
+		brake_pedal.button_up.connect(func(): Input.action_release("brake_reverse"))
+	if nitro_button:
+		nitro_button.button_down.connect(_on_nitro_button_down)
+		nitro_button.button_up.connect(_on_nitro_button_up)
+	if pause_button:
+		pause_button.pressed.connect(_on_pause_button_pressed)
+
 	# Fallback auto-discovery if running in standalone scene
 	call_deferred("_auto_discover_bindings")
 
@@ -59,7 +84,7 @@ func _auto_discover_bindings() -> void:
 			if is_instance_valid(gm):
 				bind_game_manager(gm)
 			var veh = tree_root.find_child("Vehicle", true, false)
-			if is_instance_valid(veh) and veh is VehicleController:
+			if is_instance_valid(veh) and veh.has_method("refuel"):
 				bind_vehicle(veh)
 
 func _init_fuel_styles() -> void:
@@ -85,7 +110,30 @@ func _process(delta: float) -> void:
 	# Smoothly animate fuel bar towards target level during driving
 	if fuel_bar and absf(fuel_bar.value - _target_fuel) > 0.1:
 		fuel_bar.value = lerpf(fuel_bar.value, _target_fuel, delta * 12.0)
+
+	# Smoothly animate nitro bar towards target level
+	if nitro_bar and absf(nitro_bar.value - _target_nitro) > 0.1:
+		nitro_bar.value = lerpf(nitro_bar.value, _target_nitro, delta * 14.0)
+
+	# Pulse nitro button when struggling in pothole
+	if _pothole_pulse_active and nitro_button:
+		_pothole_pulse_timer += delta * 8.0
+		var pulse := (sin(_pothole_pulse_timer) * 0.5) + 0.5
+		nitro_button.modulate = Color(0.2, 0.8, 1.0).lerp(Color(1.0, 1.0, 0.3), pulse)
+		var s := 1.0 + sin(_pothole_pulse_timer) * 0.08
+		nitro_button.scale = Vector2(s, s)
+		nitro_button.pivot_offset = nitro_button.size * 0.5
 	
+	# Animate RPM needle based on vehicle wheel angular velocity
+	if is_instance_valid(_rpm_needle) and is_instance_valid(_vehicle_ref):
+		var ang_vel: float = 0.0
+		var rw = _vehicle_ref.get_node_or_null("RearWheel")
+		if is_instance_valid(rw) and "angular_velocity" in rw:
+			ang_vel = absf(rw.angular_velocity)
+		var rpm_ratio: float = clampf(ang_vel / 80.0, 0.0, 1.0)
+		var target_rot: float = deg_to_rad(lerpf(-120.0, 120.0, rpm_ratio))
+		_rpm_needle.rotation = lerp_angle(_rpm_needle.rotation, target_rot, delta * 12.0)
+
 	# Pulse low fuel beacon when critical
 	if _is_low_fuel:
 		_flash_timer += delta * 7.0
@@ -99,6 +147,22 @@ func _process(delta: float) -> void:
 		if low_fuel_indicator and low_fuel_indicator.visible:
 			low_fuel_indicator.visible = false
 			low_fuel_indicator.scale = Vector2.ONE
+
+func _on_nitro_button_down() -> void:
+	Input.action_press("nitro")
+	if is_instance_valid(_vehicle_ref) and _vehicle_ref.has_method("set_nitro_active"):
+		_vehicle_ref.set_nitro_active(true)
+
+func _on_nitro_button_up() -> void:
+	Input.action_release("nitro")
+	if is_instance_valid(_vehicle_ref) and _vehicle_ref.has_method("set_nitro_active"):
+		_vehicle_ref.set_nitro_active(false)
+
+func _on_pause_button_pressed() -> void:
+	var ev := InputEventAction.new()
+	ev.action = "pause"
+	ev.pressed = true
+	Input.parse_input_event(ev)
 
 ## Binds to GameManager signals
 func bind_game_manager(gm: Node) -> void:
@@ -126,9 +190,10 @@ func bind_game_manager(gm: Node) -> void:
 		_on_coins_updated(gm.coins_collected)
 
 ## Binds to VehicleController signals
-func bind_vehicle(vehicle: VehicleController) -> void:
+func bind_vehicle(vehicle: Node) -> void:
 	if not is_instance_valid(vehicle):
 		return
+	_vehicle_ref = vehicle
 	if not vehicle.fuel_changed.is_connected(_on_fuel_updated):
 		vehicle.fuel_changed.connect(_on_fuel_updated)
 	if not vehicle.crashed.is_connected(_on_vehicle_crashed):
@@ -139,6 +204,15 @@ func bind_vehicle(vehicle: VehicleController) -> void:
 		vehicle.airtime_landed.connect(_on_airtime_landed)
 	if vehicle.has_signal("clean_landed") and not vehicle.clean_landed.is_connected(_on_clean_landed):
 		vehicle.clean_landed.connect(_on_clean_landed)
+	if vehicle.has_signal("nitro_changed") and not vehicle.nitro_changed.is_connected(_on_nitro_updated):
+		vehicle.nitro_changed.connect(_on_nitro_updated)
+	if vehicle.has_signal("nitro_state_changed") and not vehicle.nitro_state_changed.is_connected(_on_nitro_state_changed):
+		vehicle.nitro_state_changed.connect(_on_nitro_state_changed)
+	if vehicle.has_signal("pothole_assist_hint") and not vehicle.pothole_assist_hint.is_connected(_on_pothole_assist_hint):
+		vehicle.pothole_assist_hint.connect(_on_pothole_assist_hint)
+	
+	if "current_nitro" in vehicle and "max_nitro" in vehicle:
+		_on_nitro_updated(vehicle.current_nitro, vehicle.max_nitro)
 
 func _update_best_distance() -> void:
 	if best_distance_label and is_instance_valid(game_manager_ref) and "best_distance" in game_manager_ref:
@@ -194,6 +268,39 @@ func _on_fuel_updated(current: float, max_val: float) -> void:
 		if fuel_bar and _fuel_style_healthy:
 			fuel_bar.add_theme_stylebox_override("fill", _fuel_style_healthy)
 
+func _on_nitro_updated(current: float, max_val: float) -> void:
+	_target_nitro = current
+	if nitro_bar:
+		nitro_bar.max_value = max_val
+		nitro_bar.value = current
+	var pct: float = (current / max_val) * 100.0 if max_val > 0.0 else 0.0
+	if nitro_percentage_label:
+		nitro_percentage_label.text = "%d%%" % int(pct)
+	
+	if nitro_button:
+		if current <= 0.0:
+			nitro_button.modulate = Color(0.5, 0.5, 0.5, 0.6)
+		elif not _pothole_pulse_active:
+			nitro_button.modulate = Color.WHITE
+
+func _on_nitro_state_changed(is_boosting: bool) -> void:
+	if nitro_button:
+		if is_boosting:
+			nitro_button.modulate = Color(1.3, 1.3, 1.5, 1.0)
+		elif not _pothole_pulse_active:
+			nitro_button.modulate = Color.WHITE
+	if nitro_bar:
+		if is_boosting:
+			nitro_bar.modulate = Color(1.3, 1.3, 1.5, 1.0)
+		else:
+			nitro_bar.modulate = Color.WHITE
+
+func _on_pothole_assist_hint(should_hint: bool) -> void:
+	_pothole_pulse_active = should_hint
+	if not should_hint and nitro_button:
+		nitro_button.modulate = Color.WHITE
+		nitro_button.scale = Vector2.ONE
+
 func _on_coins_updated(count: int) -> void:
 	if coins_label:
 		coins_label.text = str(count)
@@ -210,6 +317,10 @@ func _on_run_paused(is_paused: bool) -> void:
 
 func _on_run_started() -> void:
 	_is_low_fuel = false
+	_pothole_pulse_active = false
+	if nitro_button:
+		nitro_button.scale = Vector2.ONE
+		nitro_button.modulate = Color.WHITE
 	_milestones_reached.clear()
 	if is_instance_valid(_toast_panel):
 		_toast_panel.visible = false

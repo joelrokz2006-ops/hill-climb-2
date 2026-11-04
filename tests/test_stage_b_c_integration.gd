@@ -33,6 +33,7 @@ func _init() -> void:
 	# 1. Test Camera Trauma Shake & Landing Feedback (Stage B)
 	# ---------------------------------------------------------
 	print("-> [Stage B: 1/3] Testing Camera Trauma & Hard Landing...")
+	camera.trauma = 0.0 # Clear any landing trauma caused by vehicle dropping from spawn onto track
 	assert(camera.trauma == 0.0, "Initial camera trauma must be 0")
 	camera.add_trauma(0.5)
 	assert(camera.trauma == 0.5, "add_trauma should increase camera trauma")

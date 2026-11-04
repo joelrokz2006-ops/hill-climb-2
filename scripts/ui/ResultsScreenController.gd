@@ -12,6 +12,8 @@ extends Control
 @onready var time_value_label: Label = %TimeValueLabel
 @onready var new_record_badge: Label = %NewRecordBadge
 @onready var retry_button: Button = %RetryButton
+@onready var game_over_audio: AudioStreamPlayer = get_node_or_null("GameOverAudio")
+@onready var click_audio: AudioStreamPlayer = get_node_or_null("ClickAudio")
 
 var game_manager_ref: Node
 
@@ -38,6 +40,8 @@ func _on_run_started() -> void:
 
 func _on_run_finished(final_distance: float, coins: int = 0, reason: String = "") -> void:
 	visible = true
+	if is_instance_valid(game_over_audio):
+		game_over_audio.play()
 	
 	# Determine title & styling based on finish reason
 	match reason:
@@ -79,6 +83,8 @@ func _on_run_finished(final_distance: float, coins: int = 0, reason: String = ""
 		retry_button.grab_focus()
 
 func _on_retry_pressed() -> void:
+	if is_instance_valid(click_audio):
+		click_audio.play()
 	visible = false
 	if is_instance_valid(game_manager_ref) and game_manager_ref.has_method("restart_run"):
 		game_manager_ref.restart_run()

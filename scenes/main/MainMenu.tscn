@@ -1,55 +1,62 @@
-[gd_scene load_steps=7 format=3 uid="uid://main_menu_scene_001"]
+[gd_scene load_steps=15 format=3 uid="uid://main_menu_scene_001"]
 
 [ext_resource type="Script" path="res://scripts/core/MainMenuController.gd" id="1_controller"]
+[ext_resource type="Texture2D" path="res://assets/ui/main_menu/main_menu_background.png" id="2_bg"]
+[ext_resource type="Texture2D" path="res://assets/ui/logo/hill_climb_game_logo.png" id="3_logo"]
+[ext_resource type="FontFile" path="res://assets/fonts/Kenney_Future.ttf" id="4_font_future"]
+[ext_resource type="FontFile" path="res://assets/fonts/Boxy-Bold.ttf" id="5_font_bold"]
+[ext_resource type="FontFile" path="res://assets/fonts/Kenney_Future_Narrow.ttf" id="6_font_narrow"]
+[ext_resource type="Texture2D" path="res://assets/ui/buttons/button_play_normal.png" id="7_btn_play_n"]
+[ext_resource type="Texture2D" path="res://assets/ui/buttons/button_play_pressed.png" id="8_btn_play_p"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card"]
-bg_color = Color(0.12, 0.16, 0.22, 0.95)
+bg_color = Color(0.08, 0.12, 0.18, 0.94)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
-border_color = Color(0.24, 0.35, 0.48, 1)
-corner_radius_top_left = 12
-corner_radius_top_right = 12
-corner_radius_bottom_right = 12
-corner_radius_bottom_left = 12
-shadow_color = Color(0, 0, 0, 0.4)
-shadow_size = 10
+border_color = Color(0.28, 0.42, 0.62, 0.9)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+shadow_color = Color(0, 0, 0, 0.45)
+shadow_size = 12
 shadow_offset = Vector2(0, 6)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_start"]
-bg_color = Color(0.18, 0.62, 0.32, 1)
-corner_radius_top_left = 8
-corner_radius_top_right = 8
-corner_radius_bottom_right = 8
-corner_radius_bottom_left = 8
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_play_n"]
+texture = ExtResource("7_btn_play_n")
+texture_margin_left = 12.0
+texture_margin_top = 8.0
+texture_margin_right = 12.0
+texture_margin_bottom = 8.0
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_start_hover"]
-bg_color = Color(0.24, 0.75, 0.38, 1)
-corner_radius_top_left = 8
-corner_radius_top_right = 8
-corner_radius_bottom_right = 8
-corner_radius_bottom_left = 8
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_play_p"]
+texture = ExtResource("8_btn_play_p")
+texture_margin_left = 12.0
+texture_margin_top = 8.0
+texture_margin_right = 12.0
+texture_margin_bottom = 8.0
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_secondary"]
-bg_color = Color(0.2, 0.26, 0.34, 1)
+bg_color = Color(0.18, 0.24, 0.34, 0.95)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.35, 0.45, 0.58, 1)
+border_color = Color(0.35, 0.48, 0.65, 0.9)
 corner_radius_top_left = 8
 corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_secondary_hover"]
-bg_color = Color(0.28, 0.36, 0.46, 1)
+bg_color = Color(0.26, 0.35, 0.48, 1)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.45, 0.58, 0.72, 1)
+border_color = Color(0.5, 0.65, 0.85, 1)
 corner_radius_top_left = 8
 corner_radius_top_right = 8
 corner_radius_bottom_right = 8
@@ -65,52 +72,16 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_controller")
 
-[node name="Background" type="ColorRect" parent="."]
+[node name="Background" type="TextureRect" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.08, 0.12, 0.18, 1)
-
-[node name="SkyHighlight" type="ColorRect" parent="."]
-layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
-offset_bottom = 360.0
-grow_horizontal = 2
-color = Color(0.12, 0.18, 0.28, 0.6)
-
-[node name="DecorativeHills" type="Control" parent="."]
-layout_mode = 1
-anchors_preset = 12
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_top = -180.0
-grow_horizontal = 2
-grow_vertical = 0
-
-[node name="DirtLayer" type="ColorRect" parent="DecorativeHills"]
-layout_mode = 1
-anchors_preset = 12
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_top = -120.0
-grow_horizontal = 2
-grow_vertical = 0
-color = Color(0.24, 0.19, 0.15, 1)
-
-[node name="GrassLayer" type="ColorRect" parent="DecorativeHills"]
-layout_mode = 1
-anchors_preset = 10
-anchor_right = 1.0
-offset_top = 60.0
-offset_bottom = 76.0
-grow_horizontal = 2
-color = Color(0.22, 0.48, 0.2, 1)
+texture = ExtResource("2_bg")
+expand_mode = 1
+stretch_mode = 6
 
 [node name="CenterContainer" type="CenterContainer" parent="."]
 layout_mode = 1
@@ -121,30 +92,20 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="ContentVBox" type="VBoxContainer" parent="CenterContainer"]
-custom_minimum_size = Vector2(480, 0)
+custom_minimum_size = Vector2(460, 0)
 layout_mode = 2
-theme_override_constants/separation = 22
+theme_override_constants/separation = 18
 alignment = 1
 
-[node name="TitleBox" type="VBoxContainer" parent="CenterContainer/ContentVBox"]
+[node name="LogoContainer" type="CenterContainer" parent="CenterContainer/ContentVBox"]
 layout_mode = 2
-theme_override_constants/separation = 4
-alignment = 1
 
-[node name="GameTitle" type="Label" parent="CenterContainer/ContentVBox/TitleBox"]
+[node name="LogoTexture" type="TextureRect" parent="CenterContainer/ContentVBox/LogoContainer"]
+custom_minimum_size = Vector2(480, 140)
 layout_mode = 2
-theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.6)
-theme_override_constants/shadow_offset_y = 3
-theme_override_font_sizes/font_size = 52
-text = "HILL CLIMB 2D"
-horizontal_alignment = 1
-
-[node name="SubTitle" type="Label" parent="CenterContainer/ContentVBox/TitleBox"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.55, 0.7, 0.85, 1)
-theme_override_font_sizes/font_size = 18
-text = "PHYSICS OFF-ROAD RACING"
-horizontal_alignment = 1
+texture = ExtResource("3_logo")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="StatsPanel" type="PanelContainer" parent="CenterContainer/ContentVBox"]
 layout_mode = 2
@@ -153,88 +114,99 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_card")
 [node name="MarginContainer" type="MarginContainer" parent="CenterContainer/ContentVBox/StatsPanel"]
 layout_mode = 2
 theme_override_constants/margin_left = 28
-theme_override_constants/margin_top = 18
+theme_override_constants/margin_top = 16
 theme_override_constants/margin_right = 28
-theme_override_constants/margin_bottom = 18
+theme_override_constants/margin_bottom = 16
 
 [node name="StatsGrid" type="GridContainer" parent="CenterContainer/ContentVBox/StatsPanel/MarginContainer"]
 layout_mode = 2
 theme_override_constants/h_separation = 20
-theme_override_constants/v_separation = 10
+theme_override_constants/v_separation = 8
 columns = 2
 
 [node name="BestDistCaption" type="Label" parent="CenterContainer/ContentVBox/StatsPanel/MarginContainer/StatsGrid"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.7, 0.75, 0.82, 1)
-theme_override_font_sizes/font_size = 17
+theme_override_colors/font_color = Color(0.75, 0.82, 0.92, 1)
+theme_override_fonts/font = ExtResource("6_font_narrow")
+theme_override_font_sizes/font_size = 14
 text = "BEST DISTANCE"
 
 [node name="BestDistanceLabel" type="Label" parent="CenterContainer/ContentVBox/StatsPanel/MarginContainer/StatsGrid"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_colors/font_color = Color(0.35, 0.88, 0.5, 1)
-theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(0.35, 0.9, 0.55, 1)
+theme_override_fonts/font = ExtResource("5_font_bold")
+theme_override_font_sizes/font_size = 18
 text = "0 m"
 horizontal_alignment = 2
 
 [node name="CoinsCaption" type="Label" parent="CenterContainer/ContentVBox/StatsPanel/MarginContainer/StatsGrid"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.7, 0.75, 0.82, 1)
-theme_override_font_sizes/font_size = 17
+theme_override_colors/font_color = Color(0.75, 0.82, 0.92, 1)
+theme_override_fonts/font = ExtResource("6_font_narrow")
+theme_override_font_sizes/font_size = 14
 text = "TOTAL COINS"
 
 [node name="TotalCoinsLabel" type="Label" parent="CenterContainer/ContentVBox/StatsPanel/MarginContainer/StatsGrid"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_colors/font_color = Color(0.95, 0.82, 0.25, 1)
-theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(1, 0.88, 0.28, 1)
+theme_override_fonts/font = ExtResource("5_font_bold")
+theme_override_font_sizes/font_size = 18
 text = "0"
 horizontal_alignment = 2
 
 [node name="RunsCaption" type="Label" parent="CenterContainer/ContentVBox/StatsPanel/MarginContainer/StatsGrid"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.5, 0.55, 0.62, 1)
-theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.65, 0.72, 0.82, 1)
+theme_override_fonts/font = ExtResource("6_font_narrow")
+theme_override_font_sizes/font_size = 14
 text = "RUNS PLAYED"
 
 [node name="RunsPlayedLabel" type="Label" parent="CenterContainer/ContentVBox/StatsPanel/MarginContainer/StatsGrid"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_colors/font_color = Color(0.7, 0.75, 0.82, 1)
+theme_override_colors/font_color = Color(0.8, 0.86, 0.95, 1)
+theme_override_fonts/font = ExtResource("5_font_bold")
 theme_override_font_sizes/font_size = 16
 text = "0"
 horizontal_alignment = 2
 
 [node name="ButtonsVBox" type="VBoxContainer" parent="CenterContainer/ContentVBox"]
 layout_mode = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 10
 
 [node name="StartButton" type="Button" parent="CenterContainer/ContentVBox/ButtonsVBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 52)
+custom_minimum_size = Vector2(0, 54)
 layout_mode = 2
-theme_override_font_sizes/font_size = 22
-theme_override_styles/hover = SubResource("StyleBoxFlat_btn_start_hover")
-theme_override_styles/normal = SubResource("StyleBoxFlat_btn_start")
-text = "▶  START DRIVE"
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("4_font_future")
+theme_override_font_sizes/font_size = 20
+theme_override_styles/normal = SubResource("StyleBoxTexture_play_n")
+theme_override_styles/hover = SubResource("StyleBoxTexture_play_n")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_play_p")
+text = "START DRIVE"
 
 [node name="ResetSaveButton" type="Button" parent="CenterContainer/ContentVBox/ButtonsVBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 42)
+custom_minimum_size = Vector2(0, 38)
 layout_mode = 2
-theme_override_font_sizes/font_size = 15
+theme_override_fonts/font = ExtResource("6_font_narrow")
+theme_override_font_sizes/font_size = 13
 theme_override_styles/hover = SubResource("StyleBoxFlat_btn_secondary_hover")
 theme_override_styles/normal = SubResource("StyleBoxFlat_btn_secondary")
 text = "↺  RESET PROGRESS"
 
 [node name="QuitButton" type="Button" parent="CenterContainer/ContentVBox/ButtonsVBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 42)
+custom_minimum_size = Vector2(0, 38)
 layout_mode = 2
-theme_override_font_sizes/font_size = 15
+theme_override_fonts/font = ExtResource("6_font_narrow")
+theme_override_font_sizes/font_size = 13
 theme_override_styles/hover = SubResource("StyleBoxFlat_btn_secondary_hover")
 theme_override_styles/normal = SubResource("StyleBoxFlat_btn_secondary")
 text = "✕  QUIT GAME"

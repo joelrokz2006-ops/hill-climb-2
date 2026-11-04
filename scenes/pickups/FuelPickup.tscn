@@ -1,12 +1,46 @@
-[gd_scene load_steps=4 format=3 uid="uid://fuel_pickup_001"]
+[gd_scene load_steps=14 format=3 uid="uid://fuel_pickup_001"]
 
 [ext_resource type="Script" path="res://scripts/pickups/FuelPickup.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/pickups/fuel/fuel_can_animation_frames/fuel_can_frame_01.png" id="2_frame1"]
+[ext_resource type="Texture2D" path="res://assets/pickups/fuel/fuel_can_animation_frames/fuel_can_frame_02.png" id="3_frame2"]
+[ext_resource type="Texture2D" path="res://assets/pickups/fuel/fuel_can_animation_frames/fuel_can_frame_03.png" id="4_frame3"]
+[ext_resource type="Texture2D" path="res://assets/pickups/fuel/fuel_can_animation_frames/fuel_can_frame_04.png" id="5_frame4"]
+[ext_resource type="Texture2D" path="res://assets/pickups/fuel/fuel_can_animation_frames/fuel_can_frame_05.png" id="6_frame5"]
+[ext_resource type="Texture2D" path="res://assets/pickups/fuel/fuel_can_animation_frames/fuel_can_frame_06.png" id="7_frame6"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/pickups/fuel_collection_sound.wav" id="8_audio"]
+[ext_resource type="FontFile" path="res://assets/fonts/Boxy-Bold.ttf" id="9_font"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_fuel"]
 size = Vector2(28, 32)
 
 [sub_resource type="Gradient" id="Gradient_vapor"]
 colors = PackedColorArray(0.25, 0.95, 0.45, 1, 0.1, 0.7, 0.3, 0)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_fuel"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_frame1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_frame2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_frame3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_frame4")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_frame5")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_frame6")
+}],
+"loop": true,
+"name": &"default",
+"speed": 8.0
+}]
 
 [node name="FuelPickup" type="Area2D"]
 collision_layer = 4
@@ -22,29 +56,10 @@ shape = SubResource("RectangleShape2D_fuel")
 color = Color(0.2, 0.9, 0.35, 0.22)
 polygon = PackedVector2Array(-20, 20, 20, 20, 20, -14, 12, -22, -12, -22, -20, -14)
 
-[node name="CanisterBody" type="Polygon2D" parent="Visual"]
-color = Color(0.88, 0.22, 0.18, 1)
-polygon = PackedVector2Array(-12, 14, 12, 14, 12, -8, 8, -12, -8, -12, -12, -8)
-
-[node name="CanisterCap" type="Polygon2D" parent="Visual"]
-position = Vector2(6, -14)
-color = Color(0.25, 0.25, 0.28, 1)
-polygon = PackedVector2Array(-3, 2, 3, 2, 3, -3, -3, -3)
-
-[node name="HandleLine" type="Line2D" parent="Visual"]
-points = PackedVector2Array(-6, -12, -6, -16, 2, -16, 2, -12)
-width = 2.5
-default_color = Color(0.22, 0.22, 0.25, 1)
-
-[node name="FuelText" type="Label" parent="Visual"]
-offset_left = -10.0
-offset_top = -7.0
-offset_right = 10.0
-offset_bottom = 12.0
-theme_override_colors/font_color = Color(1, 1, 1, 0.95)
-theme_override_font_sizes/font_size = 11
-text = "GAS"
-horizontal_alignment = 1
+[node name="FuelAnimatedSprite" type="AnimatedSprite2D" parent="Visual"]
+scale = Vector2(0.24, 0.24)
+sprite_frames = SubResource("SpriteFrames_fuel")
+autoplay = "default"
 
 [node name="VaporParticles" type="CPUParticles2D" parent="."]
 emitting = false
@@ -61,12 +76,17 @@ scale_amount_max = 6.0
 color = Color(0.25, 0.95, 0.4, 1)
 color_ramp = SubResource("Gradient_vapor")
 
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("8_audio")
+volume_db = -3.0
+
 [node name="PopupLabel" type="Label" parent="."]
 visible = false
 offset_left = -30.0
 offset_top = -20.0
 offset_right = 30.0
 offset_bottom = -2.0
-theme_override_font_sizes/font_size = 13
+theme_override_fonts/font = ExtResource("9_font")
+theme_override_font_sizes/font_size = 14
 text = "+35 FUEL"
 horizontal_alignment = 1

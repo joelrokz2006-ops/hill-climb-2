@@ -6,6 +6,9 @@ extends RigidBody2D
 
 signal crashed
 signal fuel_changed(current: float, max_fuel: float)
+signal nitro_changed(current: float, max_nitro: float)
+signal nitro_state_changed(is_boosting: bool)
+signal pothole_assist_hint(should_hint: bool)
 signal upgraded(stat_name: String, level: int)
 signal trick_performed(trick_name: String, reward_coins: int)
 signal airtime_landed(duration: float, reward_coins: int)
@@ -67,24 +70,55 @@ signal clean_landed(bonus_coins: int)
 ## Fuel burn rate in units per second of acceleration
 @export var fuel_burn_rate: float = 4.0
 
+@export_group("Nitro Boost")
+## Maximum nitro capacity
+@export var max_nitro: float = 100.0
+## Current available nitro
+@export var current_nitro: float = 100.0
+## Nitro burn rate in units per second of boost
+@export var nitro_consumption_rate: float = 25.0
+## Nitro passive recharge rate in units per second when inactive
+@export var nitro_recharge_rate: float = 14.0
+## Forward thrust applied directly along vehicle forward heading (transform.x)
+@export var nitro_boost_force: float = 18000.0
+## Motor torque multiplier while nitro is engaged
+@export var nitro_torque_multiplier: float = 1.6
+## Max wheel rotational speed multiplier while nitro is engaged
+@export var nitro_max_speed_multiplier: float = 1.35
+## Traction friction increase while nitro is engaged to climb steep pothole dips
+@export var nitro_traction_boost: float = 0.5
+## Minimum nitro energy required to start activation
+@export var nitro_min_activation_energy: float = 8.0
+
 @onready var rear_wheel: RigidBody2D = get_node_or_null("RearWheel")
 @onready var front_wheel: RigidBody2D = get_node_or_null("FrontWheel")
+@onready var rear_wheel_mount: Marker2D = get_node_or_null("RearWheelMount")
+@onready var front_wheel_mount: Marker2D = get_node_or_null("FrontWheelMount")
+@onready var rear_strut_mount: Marker2D = get_node_or_null("RearStrutMount")
+@onready var front_strut_mount: Marker2D = get_node_or_null("FrontStrutMount")
 @onready var rear_joint: PinJoint2D = get_node_or_null("RearJoint")
 @onready var front_joint: PinJoint2D = get_node_or_null("FrontJoint")
 @onready var crash_detector: Area2D = get_node_or_null("CrashDetector")
 @onready var exhaust_particles: CPUParticles2D = get_node_or_null("ExhaustParticles")
+@onready var boost_particles: CPUParticles2D = get_node_or_null("BoostParticles")
 @onready var rear_dust: CPUParticles2D = get_node_or_null("RearDust")
 @onready var engine_audio: AudioStreamPlayer2D = get_node_or_null("EngineAudio")
 @onready var landing_audio: AudioStreamPlayer2D = get_node_or_null("LandingAudio")
 @onready var skid_audio: AudioStreamPlayer2D = get_node_or_null("SkidAudio")
+@onready var nitro_audio: AudioStreamPlayer2D = get_node_or_null("NitroAudio")
 @onready var rear_strut: Line2D = get_node_or_null("RearStrutVisual")
 @onready var front_strut: Line2D = get_node_or_null("FrontStrutVisual")
 
 var current_fuel: float = 100.0
+var is_nitro_active: bool = false
+var is_nitro_requested: bool = false
 var is_grounded: bool = false
 var was_grounded: bool = false
 var is_active: bool = true
 var _previous_linear_velocity: Vector2 = Vector2.ZERO
+var _current_base_friction: float = 1.6
+var _pothole_stuck_timer: float = 0.0
+var _pothole_hint_active: bool = false
 
 var _initial_rear_wheel_offset: Vector2 = Vector2(-36, 18)
 var _initial_front_wheel_offset: Vector2 = Vector2(36, 18)
@@ -96,17 +130,29 @@ var _last_air_rotation: float = 0.0
 var wheelie_time: float = 0.0
 
 func _ready() -> void:
-	if rear_wheel:
+	if rear_wheel_mount:
+		_initial_rear_wheel_offset = rear_wheel_mount.position
+		if rear_joint:
+			rear_joint.position = rear_wheel_mount.position
+	elif rear_wheel:
 		_initial_rear_wheel_offset = rear_wheel.position
-	if front_wheel:
+
+	if front_wheel_mount:
+		_initial_front_wheel_offset = front_wheel_mount.position
+		if front_joint:
+			front_joint.position = front_wheel_mount.position
+	elif front_wheel:
 		_initial_front_wheel_offset = front_wheel.position
+
 	current_fuel = max_fuel
+	current_nitro = max_nitro
 	_recalculate_upgrades()
+	nitro_changed.emit(current_nitro, max_nitro)
 	
 	if crash_detector:
 		crash_detector.body_entered.connect(_on_crash_detector_body_entered)
 	
-	if engine_audio and not engine_audio.playing:
+	if is_inside_tree() and engine_audio and not engine_audio.playing:
 		engine_audio.play()
 
 func _process(_delta: float) -> void:
@@ -119,12 +165,74 @@ func _physics_process(delta: float) -> void:
 	
 	_check_ground_contact()
 	_track_stunts(delta)
+	_update_nitro(delta)
+	_check_pothole_assist(delta)
 	_handle_input(delta)
 	_update_audio(delta)
 	_update_particles()
 	
 	was_grounded = is_grounded
 	_previous_linear_velocity = linear_velocity
+
+func set_nitro_active(active: bool) -> void:
+	is_nitro_requested = active
+
+func _update_nitro(delta: float) -> void:
+	var action_pressed: bool = is_nitro_requested or Input.is_action_pressed("nitro")
+	if not action_pressed and (Input.is_key_pressed(KEY_SHIFT) or Input.is_key_pressed(KEY_SPACE)):
+		action_pressed = true
+	
+	var can_boost: bool = is_active and action_pressed and (is_nitro_active or current_nitro >= nitro_min_activation_energy) and current_nitro > 0.0
+	
+	if can_boost:
+		if not is_nitro_active:
+			_activate_nitro()
+		current_nitro = maxf(0.0, current_nitro - nitro_consumption_rate * delta)
+		nitro_changed.emit(current_nitro, max_nitro)
+		if current_nitro <= 0.0:
+			_deactivate_nitro()
+	else:
+		if is_nitro_active:
+			_deactivate_nitro()
+		if current_nitro < max_nitro:
+			current_nitro = minf(max_nitro, current_nitro + nitro_recharge_rate * delta)
+			nitro_changed.emit(current_nitro, max_nitro)
+
+func _activate_nitro() -> void:
+	is_nitro_active = true
+	nitro_state_changed.emit(true)
+	_apply_wheel_friction(_current_base_friction + nitro_traction_boost)
+	if boost_particles:
+		boost_particles.emitting = true
+	if is_inside_tree() and nitro_audio and not nitro_audio.playing:
+		nitro_audio.play()
+
+func _deactivate_nitro() -> void:
+	if is_nitro_active:
+		is_nitro_active = false
+		nitro_state_changed.emit(false)
+		_apply_wheel_friction(_current_base_friction)
+		if boost_particles:
+			boost_particles.emitting = false
+		if nitro_audio and nitro_audio.playing:
+			nitro_audio.stop()
+
+func _check_pothole_assist(delta: float) -> void:
+	var accel_input: float = Input.get_axis("brake_reverse", "accelerate")
+	var is_trying_to_move: bool = accel_input > 0.1 or Input.get_action_strength("accelerate") > 0.1
+	var is_struggling_speed: bool = absf(linear_velocity.x) < 45.0
+	var is_tilted_up: bool = rotation < -0.12 or absf(rotation) > 0.18
+	
+	if is_grounded and is_trying_to_move and is_struggling_speed and is_tilted_up:
+		_pothole_stuck_timer += delta
+		if _pothole_stuck_timer >= 0.35 and not _pothole_hint_active:
+			_pothole_hint_active = true
+			pothole_assist_hint.emit(true)
+	else:
+		if _pothole_hint_active and (linear_velocity.x > 70.0 or not is_grounded or not is_trying_to_move):
+			_pothole_hint_active = false
+			pothole_assist_hint.emit(false)
+		_pothole_stuck_timer = maxf(0.0, _pothole_stuck_timer - delta * 2.0)
 
 func set_active(active: bool) -> void:
 	is_active = active
@@ -197,10 +305,17 @@ func _handle_input(delta: float) -> void:
 	var accel_input: float = Input.get_axis("brake_reverse", "accelerate")
 	var tilt_input: float = Input.get_axis("tilt_left", "tilt_right")
 	
+	# Apply forward nitro thrust force along vehicle body local X
+	if is_nitro_active:
+		apply_central_force(transform.x * nitro_boost_force)
+	
 	# Low fuel sputtering physical warning when tank < 15%
 	var sputter_mult: float = 1.0
 	if consumes_fuel and current_fuel < 15.0 and current_fuel > 0.0:
 		sputter_mult = 0.5 + 0.5 * sin(Time.get_ticks_msec() * 0.015)
+	
+	var active_motor_torque: float = motor_torque * (nitro_torque_multiplier if is_nitro_active else 1.0)
+	var active_max_speed: float = max_wheel_speed * (nitro_max_speed_multiplier if is_nitro_active else 1.0)
 	
 	if accel_input > 0.05:
 		if consumes_fuel and current_fuel <= 0.0:
@@ -209,23 +324,23 @@ func _handle_input(delta: float) -> void:
 		else:
 			# Drive forward (apply torque to wheels with smooth saturation at top speed)
 			var effective_accel: float = accel_input * sputter_mult
-			if rear_wheel and rear_wheel.angular_velocity < max_wheel_speed:
-				var rear_factor: float = clampf((max_wheel_speed - rear_wheel.angular_velocity) / (max_wheel_speed * 0.25), 0.0, 1.0)
-				rear_wheel.apply_torque(motor_torque * effective_accel * rear_factor)
-			if front_wheel and front_wheel.angular_velocity < max_wheel_speed:
-				var front_factor: float = clampf((max_wheel_speed - front_wheel.angular_velocity) / (max_wheel_speed * 0.25), 0.0, 1.0)
-				front_wheel.apply_torque(motor_torque * 0.75 * effective_accel * front_factor)
+			if rear_wheel and rear_wheel.angular_velocity < active_max_speed:
+				var rear_factor: float = clampf((active_max_speed - rear_wheel.angular_velocity) / (active_max_speed * 0.25), 0.0, 1.0)
+				rear_wheel.apply_torque(active_motor_torque * effective_accel * rear_factor)
+			if front_wheel and front_wheel.angular_velocity < active_max_speed:
+				var front_factor: float = clampf((active_max_speed - front_wheel.angular_velocity) / (active_max_speed * 0.25), 0.0, 1.0)
+				front_wheel.apply_torque(active_motor_torque * 0.75 * effective_accel * front_factor)
 			
 			if consumes_fuel:
 				consume_fuel(fuel_burn_rate * delta)
 				
 	elif accel_input < -0.05:
 		# Brake / Reverse
-		if rear_wheel and rear_wheel.angular_velocity > -max_wheel_speed * 0.5:
-			var rear_brake_factor: float = clampf((max_wheel_speed * 0.5 + rear_wheel.angular_velocity) / (max_wheel_speed * 0.2), 0.0, 1.0)
+		if rear_wheel and rear_wheel.angular_velocity > -active_max_speed * 0.5:
+			var rear_brake_factor: float = clampf((active_max_speed * 0.5 + rear_wheel.angular_velocity) / (active_max_speed * 0.2), 0.0, 1.0)
 			rear_wheel.apply_torque(brake_torque * accel_input * rear_brake_factor)
-		if front_wheel and front_wheel.angular_velocity > -max_wheel_speed * 0.5:
-			var front_brake_factor: float = clampf((max_wheel_speed * 0.5 + front_wheel.angular_velocity) / (max_wheel_speed * 0.2), 0.0, 1.0)
+		if front_wheel and front_wheel.angular_velocity > -active_max_speed * 0.5:
+			var front_brake_factor: float = clampf((active_max_speed * 0.5 + front_wheel.angular_velocity) / (active_max_speed * 0.2), 0.0, 1.0)
 			front_wheel.apply_torque(brake_torque * 0.75 * accel_input * front_brake_factor)
 	
 	# Air rotation and flip control
@@ -244,12 +359,43 @@ func _handle_input(delta: float) -> void:
 		apply_torque(air_tilt_torque * 0.3 * tilt_input)
 
 func _update_struts() -> void:
+	var rear_mount := Vector2(-36, 4)
+	var front_mount := Vector2(41, 4)
+	if rear_strut_mount:
+		rear_mount = rear_strut_mount.position
+	elif name == "MonsterTruck":
+		rear_mount = Vector2(-42, 6)
+	elif name == "DuneBuggy":
+		rear_mount = Vector2(-38, 4)
+
+	if front_strut_mount:
+		front_mount = front_strut_mount.position
+	elif name == "MonsterTruck":
+		front_mount = Vector2(47, 6)
+	elif name == "DuneBuggy":
+		front_mount = Vector2(38, 4)
+		rear_mount = Vector2(-38, 4)
+		front_mount = Vector2(38, 4)
+
 	if rear_strut and rear_wheel:
 		var local_rear: Vector2 = to_local(rear_wheel.global_position)
-		rear_strut.points = PackedVector2Array([Vector2(-36, 4), local_rear])
+		rear_strut.points = PackedVector2Array([rear_mount, local_rear])
+		var rear_shock: Sprite2D = get_node_or_null("RearShock")
+		if is_instance_valid(rear_shock):
+			rear_shock.position = (rear_mount + local_rear) * 0.5
+			rear_shock.rotation = (local_rear - rear_mount).angle() - PI * 0.5
+			var dist: float = rear_mount.distance_to(local_rear)
+			rear_shock.scale = Vector2(0.12, clampf(dist / 140.0, 0.08, 0.22))
+
 	if front_strut and front_wheel:
 		var local_front: Vector2 = to_local(front_wheel.global_position)
-		front_strut.points = PackedVector2Array([Vector2(36, 4), local_front])
+		front_strut.points = PackedVector2Array([front_mount, local_front])
+		var front_shock: Sprite2D = get_node_or_null("FrontShock")
+		if is_instance_valid(front_shock):
+			front_shock.position = (front_mount + local_front) * 0.5
+			front_shock.rotation = (local_front - front_mount).angle() - PI * 0.5
+			var dist: float = front_mount.distance_to(local_front)
+			front_shock.scale = Vector2(0.12, clampf(dist / 140.0, 0.08, 0.22))
 
 func _update_particles() -> void:
 	var accel_input: float = Input.get_axis("brake_reverse", "accelerate")
@@ -265,7 +411,7 @@ func _update_particles() -> void:
 ## Modulate engine pitch (RPM) dynamically based on wheel angular velocity and throttle
 func _update_audio(delta: float) -> void:
 	if engine_audio:
-		if not engine_audio.playing and is_active:
+		if is_inside_tree() and not engine_audio.playing and is_active:
 			engine_audio.play()
 		
 		var rear_ratio: float = absf(rear_wheel.angular_velocity) / max_wheel_speed if rear_wheel else 0.0
@@ -276,6 +422,8 @@ func _update_audio(delta: float) -> void:
 		# Blend physical wheel speed with throttle response for authentic revving
 		var speed_ratio: float = clampf((wheel_speed_ratio * 0.65) + (throttle_ratio * 0.35), 0.0, 1.0)
 		var target_pitch: float = lerpf(0.8, 2.2, speed_ratio)
+		if is_nitro_active:
+			target_pitch = maxf(target_pitch, 2.4)
 		engine_audio.pitch_scale = lerpf(engine_audio.pitch_scale, target_pitch, 12.0 * delta)
 	
 	# Tire Skid / Screech audio
@@ -285,7 +433,7 @@ func _update_audio(delta: float) -> void:
 		var is_wheel_spinning: bool = is_grounded and rear_wheel and absf(rear_wheel.angular_velocity) > 40.0 and linear_velocity.length() < 70.0
 		
 		if (is_braking_hard or is_wheel_spinning) and is_active:
-			if not skid_audio.playing:
+			if is_inside_tree() and not skid_audio.playing:
 				skid_audio.play()
 			skid_audio.volume_db = lerpf(skid_audio.volume_db, -6.0, 10.0 * delta)
 		else:
@@ -294,10 +442,11 @@ func _update_audio(delta: float) -> void:
 				skid_audio.stop()
 
 func _play_landing_sound() -> void:
-	if landing_audio and not landing_audio.playing:
+	if is_inside_tree() and landing_audio and not landing_audio.playing:
 		landing_audio.play()
 
 func _stop_effects() -> void:
+	_deactivate_nitro()
 	if exhaust_particles:
 		exhaust_particles.emitting = false
 	if rear_dust:
@@ -331,7 +480,8 @@ func _recalculate_upgrades() -> void:
 	
 	# 2. Tire Grip: +22% friction per level
 	var eff_friction: float = base_wheel_friction * (1.0 + (grip_level - 1) * 0.22)
-	_apply_wheel_friction(eff_friction)
+	_current_base_friction = eff_friction
+	_apply_wheel_friction(_current_base_friction + (nitro_traction_boost if is_nitro_active else 0.0))
 	
 	# 3. Suspension: firmer damping, reduces softness by 0.08 per level
 	var eff_softness: float = maxf(0.18, base_suspension_softness - (suspension_level - 1) * 0.08)
@@ -455,11 +605,18 @@ func get_speed_kmh() -> float:
 func reset_vehicle(at_position: Vector2) -> void:
 	is_active = true
 	current_fuel = max_fuel
+	current_nitro = max_nitro
+	is_nitro_requested = false
+	_deactivate_nitro()
+	_pothole_stuck_timer = 0.0
+	_pothole_hint_active = false
 	air_time = 0.0
 	air_rotation_accum = 0.0
 	_last_air_rotation = 0.0
 	wheelie_time = 0.0
 	fuel_changed.emit(current_fuel, max_fuel)
+	nitro_changed.emit(current_nitro, max_nitro)
+	pothole_assist_hint.emit(false)
 	
 	global_position = at_position
 	rotation = 0.0
@@ -493,7 +650,7 @@ func reset_vehicle(at_position: Vector2) -> void:
 	
 	_update_struts()
 	
-	if engine_audio and not engine_audio.playing:
+	if is_inside_tree() and engine_audio and not engine_audio.playing:
 		engine_audio.play()
 	if skid_audio and skid_audio.playing:
 		skid_audio.stop()

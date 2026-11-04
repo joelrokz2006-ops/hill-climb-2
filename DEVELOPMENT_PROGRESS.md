@@ -116,6 +116,42 @@
 - [x] **Stage E (Gameplay Polish)**: HUD milestone toasts (100m, 250m, 500m, 1,000m), stunt popup rewards, dynamic camera lookahead and landing response.
 - [x] **Stage F (Regression Verification)**: All 7 automated test suites passed with 100% success.
 
+### Asset Integration & Complete Visual Upgrade (Phases 1–16)
+- [x] **Phase 1 (Audit)**: Inspected all scene graphs, script contracts, signals, and regression tests. Created `docs/ASSET_INTEGRATION_AUDIT.md`.
+- [x] **Phase 2 (Asset Inventory)**: Audited all 285 source items in `/home/johnwick/Downloads/hill-game-asset`. Created `docs/COMPLETE_ASSET_INVENTORY.md` (91 USED, 123 READY, 67 SOURCE_ONLY, 2 REDUNDANT, 2 NOT_APPLICABLE, 0 BLOCKED).
+- [x] **Phase 3 (Directory Organization)**: Structured and imported 220 runtime assets into standard `assets/` subdirectories (`terrain`, `environment`, `vehicles`, `pickups`, `ui`, `audio`, `fonts`).
+- [x] **Phase 4 (Vehicle Visual Upgrade)**: Integrated high-res chassis, driver sprite, rotating wheels, detailed rims, and real-time dynamic shock absorber orientation and compression across `Vehicle.tscn`, `MonsterTruck.tscn`, and `DuneBuggy.tscn`.
+- [x] **Phase 5 (Terrain Upgrade)**: Textured procedural and static terrain polygons with high-res subsurface soil, subsoil dirt pattern, and tiled grass edge lines.
+- [x] **Phase 6 (Countryside Scenery Upgrade)**: Populated terrain with high-resolution trees, bushes, wooden fences, signposts, flowers, and rock boulders.
+- [x] **Phase 7 (Sky & Multi-Layer Parallax)**: Replaced flat backgrounds with daylight sky, sun element, cirrus and cumulus clouds, and 5 seamless scrolling parallax layers with zero boundary gaps.
+- [x] **Phase 8 (Pickups Upgrade)**: Integrated crisp gold coin and 6-frame animated Jerrycan fuel pickups with sparkling audio chimes and floating labels.
+- [x] **Phase 9 (HUD Upgrade)**: Integrated custom fuel gauge, fuel icon, coin counter panel, physical RPM needle tracking rear wheel angular velocity, touch pedals, pause button, and Kenney fonts.
+- [x] **Phase 10 (Menus & Results Upgrade)**: Restyled `MainMenu.tscn`, `PauseMenu.tscn`, and `ResultsScreen.tscn` using authentic panel backgrounds, custom button textures, and typography.
+- [x] **Phase 11 (VFX Polish)**: Refined exhaust smoke puffs, landing dust bursts, and pickup particle effects.
+- [x] **Phase 12 (Audio Integration)**: Wired happy adventure background music, countryside wind ambience, dynamic engine rev loops, landing thuds, tire skids, coin/fuel pick SFX, UI button clicks, and game over stinger.
+- [x] **Phase 13 (Fonts Integration)**: Deployed `Boxy-Bold.ttf` for score counters and `Kenney_Future.ttf` / `Kenney_Future_Narrow.ttf` across all UI labels and buttons.
+- [x] **Phase 14 (Performance Optimization)**: Verified zero performance regressions, efficient Sprite2D nodes, segment object pooling, and low draw call counts.
+- [x] **Phase 15 (Quality Assurance)**: Executed all 8 automated headless test suites with 100% pass rate.
+- [x] **Phase 16 (Documentation)**: Authored `docs/ASSET_INTEGRATION_REPORT.md`, `docs/ASSET_CREDITS.md`, and updated all project documentation.
+
+### Phase 17 — New Vehicle Integration & Underground Collectibles Fix
+- [x] **Vehicle Asset Integration**: Integrated new Red Girl Buggy from `girl_buggy.zip` into `res://assets/vehicles/girl_buggy/` (`body.png`, `driver.png`, `wheel_front.png`, `wheel_rear.png`).
+- [x] **Precise Geometric Alignment**:
+  - Derived exact wheel arch center coordinates from body sprite pixels ($142\text{px}$ and $419\text{px}$, midpoint $280.5\text{px}$).
+  - Configured `RearWheelMount` at `Vector2(-35, 16)` and `FrontWheelMount` at `Vector2(35, 16)`.
+  - Scaled wheels by $0.3025$ to achieve exact $36\text{px}$ diameter / $18\text{px}$ radius matching collision shape.
+  - Aligned `PinJoint2D` physics joints at `(-35, 16)` and `(35, 16)` to guarantee wheel retention under acceleration, braking, and big air landing.
+  - Positioned `DriverSprite` inside the cockpit at `Vector2(-4, -18)` with `z_index = -1` (head clearly visible above roll cage).
+  - Maintained Nitro Boost system, exhaust/boost emitters, and collision boxes.
+- [x] **Underground Collectibles Fix**:
+  - Implemented `TerrainSegment.get_surface_y_at(local_x) -> float` with boundary-clamped linear interpolation of top ground surface points.
+  - Replaced normal-offset placement with direct upward elevation offsets: `coin.position = Vector2(cx, surface_y - coin_surface_clearance)` and `fuel.position = Vector2(local_x, surface_y - fuel_surface_clearance)`.
+  - Added `@export var coin_surface_clearance: float = 34.0` and `@export var fuel_surface_clearance: float = 46.0` to `TerrainGenerator.gd`.
+  - Completely eliminated lateral displacement into ascending/descending slopes, ensuring pickups never spawn underground or intersect collision geometry.
+- [x] **Automated Regression & Verification**:
+  - Created `tests/test_new_vehicle_and_collectibles.gd` validating vehicle geometry, surface queries, and 0 underground pickups across 74+ procedurally generated items.
+  - All 10 project test suites passing 100% with zero errors.
+
 ---
 
 ## Verification Logs
@@ -129,3 +165,5 @@
 - Main Menu & Persistence suite: `godot --headless -s tests/test_main_menu_and_save.gd` -> **Exit code 0 (PASS)**
 - Gameplay bug audit verification suite: `godot --headless -s tests/test_gameplay_bug_audit.gd` -> **Exit code 0 (PASS)**
 - Stage B & C integration suite: `godot --headless -s tests/test_stage_b_c_integration.gd` -> **Exit code 0 (PASS)**
+- Wheel alignment & Nitro boost suite: `godot --headless -s tests/test_nitro_and_wheel_alignment.gd` -> **Exit code 0 (PASS)**
+- New vehicle & Collectibles fix suite: `godot --headless -s tests/test_new_vehicle_and_collectibles.gd` -> **Exit code 0 (PASS)**

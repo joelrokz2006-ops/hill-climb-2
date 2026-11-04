@@ -25,11 +25,24 @@ func load_menu() -> void:
 			current_scene_node.start_game_requested.connect(load_game)
 
 func load_game() -> void:
-	_switch_scene(default_game_scene)
+	if not is_instance_valid(scene_container):
+		scene_container = get_node_or_null("SceneContainer")
+	if not is_instance_valid(scene_container):
+		push_error("MainController: SceneContainer is missing!")
+		return
+
 	if is_instance_valid(current_scene_node):
-		if current_scene_node is GameScene:
-			current_scene_node.use_procedural_terrain = true
-			current_scene_node.setup_terrain()
+		current_scene_node.queue_free()
+		current_scene_node = null
+	
+	if default_game_scene:
+		var game_inst = default_game_scene.instantiate()
+		# Enable procedural terrain BEFORE add_child so _ready() initializes it immediately without frame flicker
+		if game_inst.has_method("setup_terrain"):
+			game_inst.set("use_procedural_terrain", true)
+		scene_container.add_child(game_inst)
+		current_scene_node = game_inst
+		
 		if current_scene_node.has_signal("return_to_main_menu_requested") and not current_scene_node.return_to_main_menu_requested.is_connected(load_menu):
 			current_scene_node.return_to_main_menu_requested.connect(load_menu)
 

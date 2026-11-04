@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://dune_buggy_001"]
+[gd_scene load_steps=18 format=3 uid="uid://dune_buggy_001"]
 
 [ext_resource type="Script" path="res://scripts/vehicle/VehicleController.gd" id="1_controller"]
 [ext_resource type="Texture2D" path="res://assets/vehicles/effects/exhaust_smoke_particle_01.png" id="2_smoke"]
@@ -6,6 +6,13 @@
 [ext_resource type="AudioStream" path="res://assets/audio/sfx/engine/engine_idle_loop.wav" id="4_engine"]
 [ext_resource type="AudioStream" path="res://assets/audio/sfx/vehicle/vehicle_landing_thud.wav" id="5_landing"]
 [ext_resource type="AudioStream" path="res://assets/audio/sfx/vehicle/tire_rolling_skid_loop.wav" id="6_skid"]
+[ext_resource type="Texture2D" path="res://assets/vehicles/suspension/suspension_shock_absorber.png" id="7_shock"]
+[ext_resource type="Texture2D" path="res://assets/vehicles/girl_buggy/driver.png" id="8_buggy_driver"]
+[ext_resource type="Texture2D" path="res://assets/vehicles/girl_buggy/body.png" id="9_buggy_body"]
+[ext_resource type="Texture2D" path="res://assets/vehicles/exhaust/exhaust_pipe.png" id="10_exhaust"]
+[ext_resource type="Texture2D" path="res://assets/vehicles/girl_buggy/wheel_rear.png" id="11_buggy_rear_wheel"]
+[ext_resource type="Texture2D" path="res://assets/vehicles/girl_buggy/wheel_front.png" id="12_buggy_front_wheel"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/engine/engine_acceleration_rev_high.wav" id="13_turbo"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_buggy_chassis"]
 friction = 0.5
@@ -43,39 +50,61 @@ max_wheel_speed = 90.0
 air_tilt_torque = 28000.0
 
 [node name="ChassisCollision" type="CollisionShape2D" parent="."]
-position = Vector2(0, -4)
+position = Vector2(2, -4)
 shape = SubResource("RectangleShape2D_buggy_chassis")
 
+[node name="RearWheelMount" type="Marker2D" parent="."]
+position = Vector2(-35, 16)
+
+[node name="FrontWheelMount" type="Marker2D" parent="."]
+position = Vector2(35, 16)
+
+[node name="RearStrutMount" type="Marker2D" parent="."]
+position = Vector2(-35, 4)
+
+[node name="FrontStrutMount" type="Marker2D" parent="."]
+position = Vector2(35, 4)
+
 [node name="RearStrutVisual" type="Line2D" parent="."]
-points = PackedVector2Array(-32, 4, -32, 16)
+points = PackedVector2Array(-35, 4, -35, 16)
 width = 3.5
 default_color = Color(0.15, 0.85, 0.35, 1)
 
 [node name="FrontStrutVisual" type="Line2D" parent="."]
-points = PackedVector2Array(32, 4, 32, 16)
+points = PackedVector2Array(35, 4, 35, 16)
 width = 3.5
 default_color = Color(0.15, 0.85, 0.35, 1)
 
-[node name="RollCageLines" type="Line2D" parent="."]
-points = PackedVector2Array(-38, 4, -32, -18, -12, -26, 16, -26, 34, -6, 42, 6)
-width = 4.0
-default_color = Color(0.2, 0.22, 0.25, 1)
+[node name="RearShock" type="Sprite2D" parent="."]
+z_index = -1
+position = Vector2(-35, 10)
+scale = Vector2(0.1, 0.12)
+texture = ExtResource("7_shock")
 
-[node name="CrossBar" type="Line2D" parent="."]
-points = PackedVector2Array(-32, -18, 16, -6)
-width = 3.0
-default_color = Color(0.2, 0.22, 0.25, 1)
+[node name="FrontShock" type="Sprite2D" parent="."]
+z_index = -1
+position = Vector2(35, 10)
+scale = Vector2(0.1, 0.12)
+texture = ExtResource("7_shock")
 
-[node name="ChassisBodyVisual" type="Polygon2D" parent="."]
-color = Color(0.15, 0.85, 0.35, 1)
-polygon = PackedVector2Array(-42, 6, -34, -8, -16, -10, 24, -8, 42, 2, 38, 8, -40, 8)
+[node name="DriverSprite" type="Sprite2D" parent="."]
+z_index = -1
+position = Vector2(-4, -18)
+scale = Vector2(0.125, 0.125)
+texture = ExtResource("8_buggy_driver")
 
-[node name="DriverHeadVisual" type="Polygon2D" parent="."]
-color = Color(0.95, 0.8, 0.2, 1)
-polygon = PackedVector2Array(-2, -18, 8, -18, 10, -10, -2, -10)
+[node name="ExhaustPipe" type="Sprite2D" parent="."]
+position = Vector2(-48, 4)
+scale = Vector2(0.12, 0.12)
+texture = ExtResource("10_exhaust")
+
+[node name="BodySprite" type="Sprite2D" parent="."]
+position = Vector2(5, -6)
+scale = Vector2(0.25, 0.25)
+texture = ExtResource("9_buggy_body")
 
 [node name="ExhaustParticles" type="CPUParticles2D" parent="."]
-position = Vector2(-42, 4)
+position = Vector2(-54, 4)
 emitting = false
 amount = 14
 lifetime = 0.5
@@ -89,8 +118,23 @@ scale_amount_min = 0.035
 scale_amount_max = 0.075
 color = Color(0.85, 0.85, 0.85, 0.6)
 
+[node name="BoostParticles" type="CPUParticles2D" parent="."]
+position = Vector2(-54, 4)
+emitting = false
+amount = 20
+lifetime = 0.35
+texture = ExtResource("2_smoke")
+direction = Vector2(-1, -0.15)
+spread = 15.0
+gravity = Vector2(0, -30)
+initial_velocity_min = 120.0
+initial_velocity_max = 240.0
+scale_amount_min = 0.05
+scale_amount_max = 0.12
+color = Color(0.15, 0.85, 1.0, 0.95)
+
 [node name="RearDust" type="CPUParticles2D" parent="."]
-position = Vector2(-32, 24)
+position = Vector2(-35, 28)
 emitting = false
 amount = 8
 lifetime = 0.35
@@ -106,7 +150,7 @@ color = Color(0.8, 0.7, 0.55, 0.7)
 
 [node name="EngineAudio" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource("4_engine")
-volume_db = -5.0
+volume_db = -6.0
 
 [node name="LandingAudio" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource("5_landing")
@@ -116,8 +160,13 @@ volume_db = -3.0
 stream = ExtResource("6_skid")
 volume_db = -80.0
 
+[node name="NitroAudio" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("13_turbo")
+volume_db = -2.0
+pitch_scale = 1.6
+
 [node name="CrashDetector" type="Area2D" parent="."]
-position = Vector2(2, -22)
+position = Vector2(-2, -24)
 collision_layer = 0
 collision_mask = 1
 
@@ -125,10 +174,10 @@ collision_mask = 1
 shape = SubResource("CircleShape2D_buggy_crash")
 
 [node name="RearWheel" type="RigidBody2D" parent="."]
-position = Vector2(-32, 16)
+position = Vector2(-35, 16)
 collision_layer = 2
 collision_mask = 1
-mass = 2.0
+mass = 1.8
 physics_material_override = SubResource("PhysicsMaterial_buggy_wheel")
 contact_monitor = true
 max_contacts_reported = 2
@@ -136,24 +185,15 @@ max_contacts_reported = 2
 [node name="WheelCollision" type="CollisionShape2D" parent="RearWheel"]
 shape = SubResource("CircleShape2D_buggy_wheel")
 
-[node name="WheelVisual" type="Polygon2D" parent="RearWheel"]
-color = Color(0.16, 0.16, 0.18, 1)
-polygon = PackedVector2Array(0, -18, 13, -12, 18, 0, 13, 12, 0, 18, -13, 12, -18, 0, -13, -12)
-
-[node name="RimVisual" type="Polygon2D" parent="RearWheel"]
-color = Color(0.15, 0.85, 0.35, 1)
-polygon = PackedVector2Array(0, -7, 5, -5, 7, 0, 5, 5, 0, 7, -5, 5, -7, 0, -5, -5)
-
-[node name="SpokeLine" type="Line2D" parent="RearWheel"]
-points = PackedVector2Array(-16, 0, 16, 0)
-width = 2.5
-default_color = Color(0.9, 0.9, 0.9, 1)
+[node name="WheelSprite" type="Sprite2D" parent="RearWheel"]
+scale = Vector2(0.3025, 0.3025)
+texture = ExtResource("11_buggy_rear_wheel")
 
 [node name="FrontWheel" type="RigidBody2D" parent="."]
-position = Vector2(32, 16)
+position = Vector2(35, 16)
 collision_layer = 2
 collision_mask = 1
-mass = 2.0
+mass = 1.8
 physics_material_override = SubResource("PhysicsMaterial_buggy_wheel")
 contact_monitor = true
 max_contacts_reported = 2
@@ -161,27 +201,18 @@ max_contacts_reported = 2
 [node name="WheelCollision" type="CollisionShape2D" parent="FrontWheel"]
 shape = SubResource("CircleShape2D_buggy_wheel")
 
-[node name="WheelVisual" type="Polygon2D" parent="FrontWheel"]
-color = Color(0.16, 0.16, 0.18, 1)
-polygon = PackedVector2Array(0, -18, 13, -12, 18, 0, 13, 12, 0, 18, -13, 12, -18, 0, -13, -12)
-
-[node name="RimVisual" type="Polygon2D" parent="FrontWheel"]
-color = Color(0.15, 0.85, 0.35, 1)
-polygon = PackedVector2Array(0, -7, 5, -5, 7, 0, 5, 5, 0, 7, -5, 5, -7, 0, -5, -5)
-
-[node name="SpokeLine" type="Line2D" parent="FrontWheel"]
-points = PackedVector2Array(-16, 0, 16, 0)
-width = 2.5
-default_color = Color(0.9, 0.9, 0.9, 1)
+[node name="WheelSprite" type="Sprite2D" parent="FrontWheel"]
+scale = Vector2(0.3025, 0.3025)
+texture = ExtResource("12_buggy_front_wheel")
 
 [node name="RearJoint" type="PinJoint2D" parent="."]
-position = Vector2(-32, 16)
+position = Vector2(-35, 16)
 node_a = NodePath("..")
 node_b = NodePath("../RearWheel")
 softness = 0.55
 
 [node name="FrontJoint" type="PinJoint2D" parent="."]
-position = Vector2(32, 16)
+position = Vector2(35, 16)
 node_a = NodePath("..")
 node_b = NodePath("../FrontWheel")
 softness = 0.55

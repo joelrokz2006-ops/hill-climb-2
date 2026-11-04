@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="80" height="120" viewBox="0 0 80 120" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="chromePiston" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#8c9ba5"/><stop offset="30%" stop-color="#ffffff"/><stop offset="70%" stop-color="#cbd5e1"/><stop offset="100%" stop-color="#64748b"/>
+    </linearGradient>
+    <linearGradient id="springRed" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ff5252"/><stop offset="40%" stop-color="#e53935"/><stop offset="100%" stop-color="#b71c1c"/>
+    </linearGradient>
+    <linearGradient id="darkMetal" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#232b36"/><stop offset="50%" stop-color="#3a4756"/><stop offset="100%" stop-color="#181e26"/>
+    </linearGradient>
+    <linearGradient id="damperBody" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#1e293b"/><stop offset="45%" stop-color="#334155"/><stop offset="70%" stop-color="#475569"/><stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+  </defs>
+  <rect x="34" y="18" width="12" height="85" fill="url(#chromePiston)" stroke="#1e293b" stroke-width="1.5" rx="2"/>
+  <rect x="30" y="60" width="20" height="45" fill="url(#damperBody)" stroke="#0f172a" stroke-width="2" rx="3"/>
+  <rect x="22" y="24" width="36" height="7" fill="url(#darkMetal)" stroke="#111827" stroke-width="2" rx="2"/>
+  <rect x="22" y="90" width="36" height="7" fill="url(#darkMetal)" stroke="#111827" stroke-width="2" rx="2"/>
+  <path d="M 23,30 Q 40,36 57,30 L 57,40 Q 40,46 23,40 Z" fill="url(#springRed)" stroke="#1e1b18" stroke-width="2"/>
+  <path d="M 23,44 Q 40,50 57,44 L 57,54 Q 40,60 23,54 Z" fill="url(#springRed)" stroke="#1e1b18" stroke-width="2"/>
+  <path d="M 23,58 Q 40,64 57,58 L 57,68 Q 40,74 23,68 Z" fill="url(#springRed)" stroke="#1e1b18" stroke-width="2"/>
+  <path d="M 23,72 Q 40,78 57,72 L 57,82 Q 40,88 23,82 Z" fill="url(#springRed)" stroke="#1e1b18" stroke-width="2"/>
+  <path d="M 23,84 Q 40,90 57,84 L 57,92 Q 40,98 23,92 Z" fill="url(#springRed)" stroke="#1e1b18" stroke-width="2"/>
+  <circle cx="40" cy="12" r="10" fill="url(#darkMetal)" stroke="#111827" stroke-width="2"/>
+  <circle cx="40" cy="12" r="4.5" fill="#0f172a" stroke="#475569" stroke-width="1"/>
+  <circle cx="40" cy="108" r="10" fill="url(#darkMetal)" stroke="#111827" stroke-width="2"/>
+  <circle cx="40" cy="108" r="4.5" fill="#0f172a" stroke="#475569" stroke-width="1"/>
+</svg>

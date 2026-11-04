@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="80" height="160" viewBox="0 0 80 160" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="chromePiston" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#8c9ba5"/>
+      <stop offset="30%" stop-color="#ffffff"/>
+      <stop offset="70%" stop-color="#cbd5e1"/>
+      <stop offset="100%" stop-color="#64748b"/>
+    </linearGradient>
+    <linearGradient id="springRed" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ff5252"/>
+      <stop offset="40%" stop-color="#e53935"/>
+      <stop offset="100%" stop-color="#b71c1c"/>
+    </linearGradient>
+    <linearGradient id="springHighlight" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.0"/>
+    </linearGradient>
+    <linearGradient id="darkMetal" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#232b36"/>
+      <stop offset="50%" stop-color="#3a4756"/>
+      <stop offset="100%" stop-color="#181e26"/>
+    </linearGradient>
+    <linearGradient id="damperBody" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="45%" stop-color="#334155"/>
+      <stop offset="70%" stop-color="#475569"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Piston shaft (telescoping rod) -->
+  <rect x="34" y="20" width="12" height="120" fill="url(#chromePiston)" stroke="#1e293b" stroke-width="1.5" rx="2"/>
+
+  <!-- Lower damper body sleeve -->
+  <rect x="30" y="82" width="20" height="58" fill="url(#damperBody)" stroke="#0f172a" stroke-width="2" rx="3"/>
+  <rect x="32" y="86" width="4" height="50" fill="#ffffff" opacity="0.15" rx="1"/>
+
+  <!-- Top spring collar / perch -->
+  <rect x="22" y="28" width="36" height="8" fill="url(#darkMetal)" stroke="#111827" stroke-width="2" rx="2"/>
+  <!-- Bottom spring collar / perch -->
+  <rect x="22" y="124" width="36" height="8" fill="url(#darkMetal)" stroke="#111827" stroke-width="2" rx="2"/>
+
+  <!-- Coil Spring Loops -->
+  <!-- Loop 1 -->
+  <path d="M 23,36 Q 40,44 57,36 L 57,47 Q 40,55 23,47 Z" fill="url(#springRed)" stroke="#1e1b18" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M 25,38 Q 40,45 55,38" stroke="url(#springHighlight)" stroke-width="2" fill="none"/>
+
+  <!-- Loop 2 -->
+  <path d="M 23,54 Q 40,62 57,54 L 57,65 Q 40,73 23,65 Z" fill="url(#springRed)" stroke="#1e1b18" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M 25,56 Q 40,63 55,56" stroke="url(#springHighlight)" stroke-width="2" fill="none"/>
+
+  <!-- Loop 3 -->
+  <path d="M 23,72 Q 40,80 57,72 L 57,83 Q 40,91 23,83 Z" fill="url(#springRed)" stroke="#1e1b18" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M 25,74 Q 40,81 55,74" stroke="url(#springHighlight)" stroke-width="2" fill="none"/>
+
+  <!-- Loop 4 -->
+  <path d="M 23,90 Q 40,98 57,90 L 57,101 Q 40,109 23,101 Z" fill="url(#springRed)" stroke="#1e1b18" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M 25,92 Q 40,99 55,92" stroke="url(#springHighlight)" stroke-width="2" fill="none"/>
+
+  <!-- Loop 5 -->
+  <path d="M 23,108 Q 40,116 57,108 L 57,119 Q 40,127 23,119 Z" fill="url(#springRed)" stroke="#1e1b18" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M 25,110 Q 40,117 55,110" stroke="url(#springHighlight)" stroke-width="2" fill="none"/>
+
+  <!-- Top Mount (Chassis Eyelet) -->
+  <circle cx="40" cy="14" r="12" fill="url(#darkMetal)" stroke="#111827" stroke-width="2.5"/>
+  <circle cx="40" cy="14" r="5.5" fill="#0f172a" stroke="#475569" stroke-width="1.5"/>
+  <circle cx="40" cy="14" r="2.5" fill="#94a3b8"/>
+
+  <!-- Bottom Mount (Axle Eyelet) -->
+  <circle cx="40" cy="146" r="12" fill="url(#darkMetal)" stroke="#111827" stroke-width="2.5"/>
+  <circle cx="40" cy="146" r="5.5" fill="#0f172a" stroke="#475569" stroke-width="1.5"/>
+  <circle cx="40" cy="146" r="2.5" fill="#94a3b8"/>
+</svg>

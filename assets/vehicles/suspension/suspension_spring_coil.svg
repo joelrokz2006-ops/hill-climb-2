@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="60" height="110" viewBox="0 0 60 110" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="springRed" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ff5252"/><stop offset="40%" stop-color="#e53935"/><stop offset="100%" stop-color="#b71c1c"/>
+    </linearGradient>
+    <linearGradient id="springHighlight" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.6"/><stop offset="100%" stop-color="#ffffff" stop-opacity="0.0"/>
+    </linearGradient>
+  </defs>
+  <!-- 5 Loops -->
+  <path d="M 13,8 Q 30,16 47,8 L 47,19 Q 30,27 13,19 Z" fill="url(#springRed)" stroke="#1e1b18" stroke-width="2.5"/>
+  <path d="M 15,10 Q 30,17 45,10" stroke="url(#springHighlight)" stroke-width="2" fill="none"/>
+
+  <path d="M 13,28 Q 30,36 47,28 L 47,39 Q 30,47 13,39 Z" fill="url(#springRed)" stroke="#1e1b18" stroke-width="2.5"/>
+  <path d="M 15,30 Q 30,37 45,30" stroke="url(#springHighlight)" stroke-width="2" fill="none"/>
+
+  <path d="M 13,48 Q 30,56 47,48 L 47,59 Q 30,67 13,59 Z" fill="url(#springRed)" stroke="#1e1b18" stroke-width="2.5"/>
+  <path d="M 15,50 Q 30,57 45,50" stroke="url(#springHighlight)" stroke-width="2" fill="none"/>
+
+  <path d="M 13,68 Q 30,76 47,68 L 47,79 Q 30,87 13,79 Z" fill="url(#springRed)" stroke="#1e1b18" stroke-width="2.5"/>
+  <path d="M 15,70 Q 30,77 45,70" stroke="url(#springHighlight)" stroke-width="2" fill="none"/>
+
+  <path d="M 13,88 Q 30,96 47,88 L 47,99 Q 30,107 13,99 Z" fill="url(#springRed)" stroke="#1e1b18" stroke-width="2.5"/>
+  <path d="M 15,90 Q 30,97 45,90" stroke="url(#springHighlight)" stroke-width="2" fill="none"/>
+</svg>

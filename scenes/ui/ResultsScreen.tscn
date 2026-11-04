@@ -1,35 +1,35 @@
-[gd_scene load_steps=5 format=3 uid="uid://results_screen_001"]
+[gd_scene load_steps=12 format=3 uid="uid://results_screen_001"]
 
 [ext_resource type="Script" path="res://scripts/ui/ResultsScreenController.gd" id="1_controller"]
+[ext_resource type="Texture2D" path="res://assets/ui/panels/game_over_panel_background.png" id="2_panel_tex"]
+[ext_resource type="Texture2D" path="res://assets/ui/buttons/button_retry_normal.png" id="3_retry_n"]
+[ext_resource type="Texture2D" path="res://assets/ui/buttons/button_retry_pressed.png" id="4_retry_p"]
+[ext_resource type="FontFile" path="res://assets/fonts/Boxy-Bold.ttf" id="5_font_boxy"]
+[ext_resource type="FontFile" path="res://assets/fonts/Kenney_Future.ttf" id="6_font_future"]
+[ext_resource type="FontFile" path="res://assets/fonts/Kenney_Future_Narrow.ttf" id="7_font_narrow"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/ui/game_over_sound.wav" id="8_sfx_gameover"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/ui/ui_button_click.wav" id="9_sfx_click"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card"]
-bg_color = Color(0.1, 0.13, 0.18, 0.95)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.25, 0.35, 0.48, 1)
-corner_radius_top_left = 14
-corner_radius_top_right = 14
-corner_radius_bottom_right = 14
-corner_radius_bottom_left = 14
-shadow_color = Color(0, 0, 0, 0.45)
-shadow_size = 12
-shadow_offset = Vector2(0, 6)
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_card"]
+texture = ExtResource("2_panel_tex")
+texture_margin_left = 32.0
+texture_margin_top = 32.0
+texture_margin_right = 32.0
+texture_margin_bottom = 32.0
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_normal"]
-bg_color = Color(0.2, 0.55, 0.85, 1)
-corner_radius_top_left = 8
-corner_radius_top_right = 8
-corner_radius_bottom_right = 8
-corner_radius_bottom_left = 8
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_btn"]
+texture = ExtResource("3_retry_n")
+texture_margin_left = 12.0
+texture_margin_top = 10.0
+texture_margin_right = 12.0
+texture_margin_bottom = 10.0
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_hover"]
-bg_color = Color(0.28, 0.65, 0.98, 1)
-corner_radius_top_left = 8
-corner_radius_top_right = 8
-corner_radius_bottom_right = 8
-corner_radius_bottom_left = 8
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_btn_p"]
+texture = ExtResource("4_retry_p")
+texture_margin_left = 12.0
+texture_margin_top = 10.0
+texture_margin_right = 12.0
+texture_margin_bottom = 10.0
 
 [node name="ResultsScreen" type="Control"]
 process_mode = 3
@@ -48,7 +48,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.04, 0.06, 0.09, 0.82)
+color = Color(0.04, 0.06, 0.09, 0.85)
 
 [node name="CenterContainer" type="CenterContainer" parent="."]
 layout_mode = 1
@@ -59,16 +59,16 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="CardPanel" type="PanelContainer" parent="CenterContainer"]
-custom_minimum_size = Vector2(380, 360)
+custom_minimum_size = Vector2(440, 400)
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+theme_override_styles/panel = SubResource("StyleBoxTexture_card")
 
 [node name="Margin" type="MarginContainer" parent="CenterContainer/CardPanel"]
 layout_mode = 2
-theme_override_constants/margin_left = 28
-theme_override_constants/margin_top = 24
-theme_override_constants/margin_right = 28
-theme_override_constants/margin_bottom = 24
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 28
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 28
 
 [node name="VBox" type="VBoxContainer" parent="CenterContainer/CardPanel/Margin"]
 layout_mode = 2
@@ -77,15 +77,17 @@ theme_override_constants/separation = 12
 [node name="TitleLabel" type="Label" parent="CenterContainer/CardPanel/Margin/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 26
+theme_override_fonts/font = ExtResource("5_font_boxy")
+theme_override_font_sizes/font_size = 28
 text = "RUN FINISHED"
 horizontal_alignment = 1
 
 [node name="ReasonLabel" type="Label" parent="CenterContainer/CardPanel/Margin/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(0.75, 0.8, 0.88, 0.8)
-theme_override_font_sizes/font_size = 14
+theme_override_fonts/font = ExtResource("7_font_narrow")
+theme_override_colors/font_color = Color(0.85, 0.88, 0.95, 0.9)
+theme_override_font_sizes/font_size = 15
 text = "Driver reached end of run"
 horizontal_alignment = 1
 
@@ -93,8 +95,9 @@ horizontal_alignment = 1
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
+theme_override_fonts/font = ExtResource("6_font_future")
 theme_override_colors/font_color = Color(1, 0.84, 0.2, 1)
-theme_override_font_sizes/font_size = 16
+theme_override_font_sizes/font_size = 15
 text = "★ NEW DISTANCE RECORD! ★"
 horizontal_alignment = 1
 
@@ -103,62 +106,70 @@ layout_mode = 2
 
 [node name="StatsGrid" type="GridContainer" parent="CenterContainer/CardPanel/Margin/VBox"]
 layout_mode = 2
-theme_override_constants/h_separation = 16
-theme_override_constants/v_separation = 8
+theme_override_constants/h_separation = 20
+theme_override_constants/v_separation = 10
 columns = 2
 
 [node name="DistTag" type="Label" parent="CenterContainer/CardPanel/Margin/VBox/StatsGrid"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_colors/font_color = Color(0.8, 0.85, 0.9, 0.9)
+theme_override_fonts/font = ExtResource("7_font_narrow")
+theme_override_colors/font_color = Color(0.85, 0.9, 0.95, 0.95)
 theme_override_font_sizes/font_size = 15
 text = "Distance Traveled:"
 
 [node name="DistanceValueLabel" type="Label" parent="CenterContainer/CardPanel/Margin/VBox/StatsGrid"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 16
+theme_override_fonts/font = ExtResource("6_font_future")
+theme_override_font_sizes/font_size = 18
 text = "0 m"
 horizontal_alignment = 2
 
 [node name="BestTag" type="Label" parent="CenterContainer/CardPanel/Margin/VBox/StatsGrid"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.8, 0.85, 0.9, 0.9)
+theme_override_fonts/font = ExtResource("7_font_narrow")
+theme_override_colors/font_color = Color(0.85, 0.9, 0.95, 0.95)
 theme_override_font_sizes/font_size = 15
 text = "Personal Best:"
 
 [node name="BestValueLabel" type="Label" parent="CenterContainer/CardPanel/Margin/VBox/StatsGrid"]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_fonts/font = ExtResource("6_font_future")
 theme_override_colors/font_color = Color(1, 0.85, 0.25, 1)
-theme_override_font_sizes/font_size = 16
+theme_override_font_sizes/font_size = 18
 text = "0 m"
 horizontal_alignment = 2
 
 [node name="CoinsTag" type="Label" parent="CenterContainer/CardPanel/Margin/VBox/StatsGrid"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.8, 0.85, 0.9, 0.9)
+theme_override_fonts/font = ExtResource("7_font_narrow")
+theme_override_colors/font_color = Color(0.85, 0.9, 0.95, 0.95)
 theme_override_font_sizes/font_size = 15
 text = "Coins Collected:"
 
 [node name="CoinsValueLabel" type="Label" parent="CenterContainer/CardPanel/Margin/VBox/StatsGrid"]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_fonts/font = ExtResource("6_font_future")
 theme_override_colors/font_color = Color(0.95, 0.78, 0.2, 1)
-theme_override_font_sizes/font_size = 16
+theme_override_font_sizes/font_size = 18
 text = "+0"
 horizontal_alignment = 2
 
 [node name="TimeTag" type="Label" parent="CenterContainer/CardPanel/Margin/VBox/StatsGrid"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.8, 0.85, 0.9, 0.9)
+theme_override_fonts/font = ExtResource("7_font_narrow")
+theme_override_colors/font_color = Color(0.85, 0.9, 0.95, 0.95)
 theme_override_font_sizes/font_size = 15
 text = "Time Elapsed:"
 
 [node name="TimeValueLabel" type="Label" parent="CenterContainer/CardPanel/Margin/VBox/StatsGrid"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 16
+theme_override_fonts/font = ExtResource("6_font_future")
+theme_override_font_sizes/font_size = 18
 text = "0.0 s"
 horizontal_alignment = 2
 
@@ -167,17 +178,28 @@ layout_mode = 2
 
 [node name="RetryButton" type="Button" parent="CenterContainer/CardPanel/Margin/VBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 42)
+custom_minimum_size = Vector2(192, 48)
 layout_mode = 2
 focus_mode = 2
+theme_override_fonts/font = ExtResource("6_font_future")
 theme_override_font_sizes/font_size = 16
-theme_override_styles/normal = SubResource("StyleBoxFlat_btn_normal")
-theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_p")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn")
 text = "RETRY RUN [R]"
 
 [node name="RestartHint" type="Label" parent="CenterContainer/CardPanel/Margin/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.65, 0.7, 0.8, 0.75)
+theme_override_fonts/font = ExtResource("7_font_narrow")
+theme_override_colors/font_color = Color(0.7, 0.75, 0.85, 0.75)
 theme_override_font_sizes/font_size = 12
 text = "Press [R] or Enter to drive again"
 horizontal_alignment = 1
+
+[node name="GameOverAudio" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("8_sfx_gameover")
+volume_db = -4.0
+
+[node name="ClickAudio" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("9_sfx_click")
+volume_db = -6.0
