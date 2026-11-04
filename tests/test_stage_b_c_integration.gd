@@ -129,6 +129,7 @@ func _init() -> void:
 	game.queue_free()
 	SaveManager.reset_save()
 	SaveManager.custom_save_path = ""
+	await process_frame
 	
 	print("=================================================================")
 	print("✓ ALL STAGE B & C INTEGRATION CHECKS PASSED WITH 100% SUCCESS!")
