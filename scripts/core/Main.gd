@@ -27,6 +27,9 @@ func load_menu() -> void:
 func load_game() -> void:
 	_switch_scene(default_game_scene)
 	if is_instance_valid(current_scene_node):
+		if current_scene_node is GameScene:
+			current_scene_node.use_procedural_terrain = true
+			current_scene_node.setup_terrain()
 		if current_scene_node.has_signal("return_to_main_menu_requested") and not current_scene_node.return_to_main_menu_requested.is_connected(load_menu):
 			current_scene_node.return_to_main_menu_requested.connect(load_menu)
 

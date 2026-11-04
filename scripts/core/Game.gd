@@ -9,6 +9,8 @@ const GameManagerScript = preload("res://scripts/core/GameManager.gd")
 signal return_to_main_menu_requested
 
 @export var spawn_position: Vector2 = Vector2(0.0, 360.0)
+## Whether to use endless procedural terrain (true) or fixed TestTrack (false)
+@export var use_procedural_terrain: bool = false
 
 @onready var game_manager: Node = $GameManager
 @onready var terrain_slot: Node2D = $TerrainSlot
@@ -26,6 +28,7 @@ var _stopped_timer: float = 0.0
 func _ready() -> void:
 	_setup_vehicle()
 	_setup_camera()
+	setup_terrain()
 	_setup_ui()
 	
 	if is_instance_valid(game_manager):
@@ -41,8 +44,41 @@ func _setup_vehicle() -> void:
 		start_x = spawn_position.x
 		if not vehicle.crashed.is_connected(_on_vehicle_crashed):
 			vehicle.crashed.connect(_on_vehicle_crashed)
+		if vehicle.has_signal("hard_landed") and not vehicle.hard_landed.is_connected(_on_vehicle_hard_landed):
+			vehicle.hard_landed.connect(_on_vehicle_hard_landed)
 		if is_instance_valid(game_manager) and game_manager.has_method("bind_vehicle"):
 			game_manager.bind_vehicle(vehicle)
+
+func setup_terrain() -> void:
+	if not is_instance_valid(terrain_slot):
+		return
+	
+	if use_procedural_terrain:
+		# Remove static track if present
+		var static_track = terrain_slot.get_node_or_null("TestTrack")
+		if is_instance_valid(static_track):
+			static_track.queue_free()
+		
+		var existing_gen = terrain_slot.get_node_or_null("TerrainGenerator")
+		if not is_instance_valid(existing_gen):
+			var gen := TerrainGenerator.new()
+			gen.name = "TerrainGenerator"
+			gen.target = vehicle
+			gen.auto_find_target = true
+			terrain_slot.add_child(gen)
+	else:
+		# Ensure TestTrack is present for controlled regression tests
+		var existing_gen = terrain_slot.get_node_or_null("TerrainGenerator")
+		if is_instance_valid(existing_gen):
+			existing_gen.queue_free()
+		
+		var static_track = terrain_slot.get_node_or_null("TestTrack")
+		if not is_instance_valid(static_track):
+			var track_packed: PackedScene = preload("res://scenes/terrain/TestTrack.tscn")
+			if track_packed:
+				var track = track_packed.instantiate()
+				track.name = "TestTrack"
+				terrain_slot.add_child(track)
 
 func _setup_camera() -> void:
 	if is_instance_valid(follow_camera) and is_instance_valid(vehicle):
@@ -91,7 +127,13 @@ func _process(delta: float) -> void:
 		else:
 			_stopped_timer = 0.0
 
+func _on_vehicle_hard_landed(severity: float) -> void:
+	if is_instance_valid(follow_camera) and follow_camera.has_method("add_trauma"):
+		follow_camera.add_trauma(severity * 0.4)
+
 func _on_vehicle_crashed() -> void:
+	if is_instance_valid(follow_camera) and follow_camera.has_method("add_trauma"):
+		follow_camera.add_trauma(0.7)
 	if is_instance_valid(game_manager) and game_manager.current_state == GameManagerScript.RunState.PLAYING:
 		game_manager.finish_run("crashed")
 
@@ -102,6 +144,13 @@ func _on_run_restarted() -> void:
 		vehicle.reset_vehicle(spawn_position)
 	if is_instance_valid(follow_camera) and is_instance_valid(vehicle):
 		follow_camera.global_position = spawn_position
+	
+	# If procedural generator is active, reset it to spawn origin
+	if is_instance_valid(terrain_slot):
+		var gen = terrain_slot.get_node_or_null("TerrainGenerator")
+		if is_instance_valid(gen) and gen.has_method("reset_generator"):
+			gen.reset_generator(Vector2(-400.0, 420.0))
+			
 	_reset_pickups()
 
 func _reset_pickups() -> void:

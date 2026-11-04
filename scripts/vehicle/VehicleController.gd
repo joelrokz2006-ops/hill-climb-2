@@ -9,6 +9,8 @@ signal fuel_changed(current: float, max_fuel: float)
 signal upgraded(stat_name: String, level: int)
 signal trick_performed(trick_name: String, reward_coins: int)
 signal airtime_landed(duration: float, reward_coins: int)
+signal hard_landed(severity: float)
+signal clean_landed(bonus_coins: int)
 
 @export_group("Upgrade Levels (1-5)")
 ## Engine Power level (1 to 5)
@@ -128,6 +130,9 @@ func set_active(active: bool) -> void:
 	is_active = active
 	if not active:
 		_stop_effects()
+		air_time = 0.0
+		air_rotation_accum = 0.0
+		wheelie_time = 0.0
 		linear_velocity = Vector2.ZERO
 		angular_velocity = 0.0
 		if rear_wheel:
@@ -141,8 +146,11 @@ func _check_ground_contact() -> void:
 	is_grounded = rear_contact or front_contact
 	
 	# Detect hard landing thud
-	if not was_grounded and is_grounded and _previous_linear_velocity.y > 140.0:
-		_play_landing_sound()
+	if not was_grounded and is_grounded:
+		var impact_y: float = _previous_linear_velocity.y
+		if impact_y > 140.0:
+			_play_landing_sound()
+			hard_landed.emit(clampf((impact_y - 140.0) / 300.0, 0.2, 1.0))
 
 func _track_stunts(delta: float) -> void:
 	var rear_contact: bool = (rear_wheel.contact_monitor and rear_wheel.get_colliding_bodies().size() > 0) if rear_wheel else false
@@ -163,11 +171,14 @@ func _track_stunts(delta: float) -> void:
 			trick_performed.emit("Frontflip", 20)
 		wheelie_time = 0.0
 	else:
-		# Vehicle just landed cleanly from substantial airborne time
+		# Vehicle just landed from airborne
 		if not was_grounded and is_active:
 			if air_time >= 1.2:
 				var air_reward: int = int(air_time * 10)
 				airtime_landed.emit(air_time, air_reward)
+			elif air_time >= 0.75 and absf(rotation) < 0.25:
+				# Clean landing bonus when touching down flat after jump
+				clean_landed.emit(5)
 		
 		air_time = 0.0
 		air_rotation_accum = 0.0
@@ -305,6 +316,7 @@ func _on_crash_detector_body_entered(body: Node) -> void:
 	is_active = false
 	air_time = 0.0
 	air_rotation_accum = 0.0
+	wheelie_time = 0.0
 	_stop_effects()
 	crashed.emit()
 

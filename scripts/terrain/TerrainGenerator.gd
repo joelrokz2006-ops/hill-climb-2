@@ -35,8 +35,8 @@ signal segment_despawned(segment: TerrainSegment)
 
 @export_group("Pickups Distribution")
 @export var enable_pickups: bool = true
-## Spacing between consecutive fuel canister spawns (in pixels, ~130 meters)
-@export var fuel_interval_distance: float = 13000.0
+## Spacing between consecutive fuel canister spawns (in pixels, ~85 meters)
+@export var fuel_interval_distance: float = 8500.0
 ## Probability of generating coins on a procedural segment
 @export var coin_spawn_chance: float = 0.75
 
