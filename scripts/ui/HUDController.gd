@@ -16,6 +16,8 @@ extends Control
 @onready var coins_panel: PanelContainer = get_node_or_null("CoinsPanel")
 
 @onready var _rpm_needle: Sprite2D = get_node_or_null("%RPMNeedle")
+@onready var speed_needle: Sprite2D = get_node_or_null("%SpeedNeedle")
+@onready var speed_digital_label: Label = get_node_or_null("%SpeedDigitalLabel")
 @onready var gas_pedal: TextureButton = get_node_or_null("%GasPedal")
 @onready var brake_pedal: TextureButton = get_node_or_null("%BrakePedal")
 @onready var nitro_button: TextureButton = get_node_or_null("%NitroButton")
@@ -61,16 +63,16 @@ func _ready() -> void:
 	if low_fuel_indicator:
 		low_fuel_indicator.visible = false
 		
-	if gas_pedal:
-		gas_pedal.button_down.connect(func(): Input.action_press("accelerate"))
-		gas_pedal.button_up.connect(func(): Input.action_release("accelerate"))
-	if brake_pedal:
-		brake_pedal.button_down.connect(func(): Input.action_press("brake_reverse"))
-		brake_pedal.button_up.connect(func(): Input.action_release("brake_reverse"))
-	if nitro_button:
+	if gas_pedal and not gas_pedal.button_down.is_connected(_on_gas_down):
+		gas_pedal.button_down.connect(_on_gas_down)
+		gas_pedal.button_up.connect(_on_gas_up)
+	if brake_pedal and not brake_pedal.button_down.is_connected(_on_brake_down):
+		brake_pedal.button_down.connect(_on_brake_down)
+		brake_pedal.button_up.connect(_on_brake_up)
+	if nitro_button and not nitro_button.button_down.is_connected(_on_nitro_button_down):
 		nitro_button.button_down.connect(_on_nitro_button_down)
 		nitro_button.button_up.connect(_on_nitro_button_up)
-	if pause_button:
+	if pause_button and not pause_button.pressed.is_connected(_on_pause_button_pressed):
 		pause_button.pressed.connect(_on_pause_button_pressed)
 
 	# Fallback auto-discovery if running in standalone scene
@@ -134,6 +136,17 @@ func _process(delta: float) -> void:
 		var target_rot: float = deg_to_rad(lerpf(-120.0, 120.0, rpm_ratio))
 		_rpm_needle.rotation = lerp_angle(_rpm_needle.rotation, target_rot, delta * 12.0)
 
+	# Animate Speedometer needle and digital readout based on vehicle.get_speed_kmh()
+	if is_instance_valid(speed_needle) and is_instance_valid(_vehicle_ref):
+		var speed_kmh: float = 0.0
+		if _vehicle_ref.has_method("get_speed_kmh"):
+			speed_kmh = maxf(0.0, _vehicle_ref.get_speed_kmh())
+		var speed_ratio: float = clampf(speed_kmh / 220.0, 0.0, 1.0)
+		var target_speed_rot: float = deg_to_rad(lerpf(-135.0, 135.0, speed_ratio))
+		speed_needle.rotation = lerp_angle(speed_needle.rotation, target_speed_rot, delta * 14.0)
+		if is_instance_valid(speed_digital_label):
+			speed_digital_label.text = str(int(round(speed_kmh)))
+
 	# Pulse low fuel beacon when critical
 	if _is_low_fuel:
 		_flash_timer += delta * 7.0
@@ -147,6 +160,18 @@ func _process(delta: float) -> void:
 		if low_fuel_indicator and low_fuel_indicator.visible:
 			low_fuel_indicator.visible = false
 			low_fuel_indicator.scale = Vector2.ONE
+
+func _on_gas_down() -> void:
+	Input.action_press("accelerate")
+
+func _on_gas_up() -> void:
+	Input.action_release("accelerate")
+
+func _on_brake_down() -> void:
+	Input.action_press("brake_reverse")
+
+func _on_brake_up() -> void:
+	Input.action_release("brake_reverse")
 
 func _on_nitro_button_down() -> void:
 	Input.action_press("nitro")

@@ -21,6 +21,8 @@ signal distance_updated(new_distance: float)
 signal fuel_updated(current: float, max_fuel: float)
 signal coins_updated(count: int)
 
+@export var fuel_drain_rate: float = 4.0
+
 var current_state: RunState = RunState.READY
 var current_distance: float = 0.0
 var best_distance: float = 0.0
@@ -54,6 +56,7 @@ func _on_vehicle_fuel_changed(curr: float, max_f: float) -> void:
 func _process(delta: float) -> void:
 	if current_state == RunState.PLAYING:
 		run_time += delta
+		consume_fuel(fuel_drain_rate * delta)
 
 func start_run() -> void:
 	current_state = RunState.PLAYING
@@ -125,6 +128,8 @@ func consume_fuel(amount: float) -> void:
 	if is_instance_valid(vehicle_ref) and vehicle_ref.has_method("consume_fuel"):
 		vehicle_ref.consume_fuel(amount)
 	else:
+		if current_fuel <= 0.0:
+			return
 		current_fuel = maxf(0.0, current_fuel - amount)
 		fuel_updated.emit(current_fuel, max_fuel)
 

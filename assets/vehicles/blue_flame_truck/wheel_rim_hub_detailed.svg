@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="140" height="140" viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="rimAlloy" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="35%" stop-color="#e2e8f0"/>
+      <stop offset="70%" stop-color="#94a3b8"/>
+      <stop offset="100%" stop-color="#64748b"/>
+    </linearGradient>
+    <linearGradient id="rimDark" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#334155"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="hubCenter" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#cbd5e1"/>
+      <stop offset="50%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#64748b"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Outer Rim Lip -->
+  <circle cx="70" cy="70" r="68" fill="url(#rimAlloy)" stroke="#0f172a" stroke-width="3"/>
+  <circle cx="70" cy="70" r="61" fill="url(#rimDark)" stroke="#1e293b" stroke-width="2"/>
+
+  <!-- 5 Spokes -->
+  <!-- Spoke 1 (Top: 0 deg) -->
+  <path d="M 65,60 L 63,16 Q 70,14 77,16 L 75,60 Z" fill="url(#rimAlloy)" stroke="#0f172a" stroke-width="1.5"/>
+  <!-- Spoke 2 (72 deg) -->
+  <path d="M 65,60 L 63,16 Q 70,14 77,16 L 75,60 Z" fill="url(#rimAlloy)" stroke="#0f172a" stroke-width="1.5" transform="rotate(72 70 70)"/>
+  <!-- Spoke 3 (144 deg) -->
+  <path d="M 65,60 L 63,16 Q 70,14 77,16 L 75,60 Z" fill="url(#rimAlloy)" stroke="#0f172a" stroke-width="1.5" transform="rotate(144 70 70)"/>
+  <!-- Spoke 4 (216 deg) -->
+  <path d="M 65,60 L 63,16 Q 70,14 77,16 L 75,60 Z" fill="url(#rimAlloy)" stroke="#0f172a" stroke-width="1.5" transform="rotate(216 70 70)"/>
+  <!-- Spoke 5 (288 deg) -->
+  <path d="M 65,60 L 63,16 Q 70,14 77,16 L 75,60 Z" fill="url(#rimAlloy)" stroke="#0f172a" stroke-width="1.5" transform="rotate(288 70 70)"/>
+
+  <!-- Center Hub Disc -->
+  <circle cx="70" cy="70" r="26" fill="url(#rimAlloy)" stroke="#0f172a" stroke-width="2.5"/>
+  <circle cx="70" cy="70" r="16" fill="url(#hubCenter)" stroke="#334155" stroke-width="1.5"/>
+  <circle cx="70" cy="70" r="8" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+
+  <!-- 5 Lug Nuts around hub -->
+  <circle cx="70" cy="49" r="3" fill="#ffffff" stroke="#0f172a" stroke-width="1"/>
+  <circle cx="70" cy="49" r="3" fill="#ffffff" stroke="#0f172a" stroke-width="1" transform="rotate(72 70 70)"/>
+  <circle cx="70" cy="49" r="3" fill="#ffffff" stroke="#0f172a" stroke-width="1" transform="rotate(144 70 70)"/>
+  <circle cx="70" cy="49" r="3" fill="#ffffff" stroke="#0f172a" stroke-width="1" transform="rotate(216 70 70)"/>
+  <circle cx="70" cy="49" r="3" fill="#ffffff" stroke="#0f172a" stroke-width="1" transform="rotate(288 70 70)"/>
+</svg>

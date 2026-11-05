@@ -19,6 +19,10 @@
 [ext_resource type="Texture2D" path="res://assets/ui/controls/pause_button_normal.png" id="17_pause_n"]
 [ext_resource type="Texture2D" path="res://assets/ui/controls/control_button_base.png" id="18_nitro_n"]
 [ext_resource type="Texture2D" path="res://assets/ui/controls/control_button_highlight.png" id="19_nitro_p"]
+[ext_resource type="Texture2D" path="res://assets/effects/nitro/nitro_bottle.png" id="20_nitro_bottle"]
+[ext_resource type="Texture2D" path="res://assets/effects/nitro/nitro_boost.png" id="21_nitro_boost"]
+[ext_resource type="Texture2D" path="res://assets/ui/speedometer/speedometer_racing_background.png" id="22_speedo_bg"]
+[ext_resource type="Texture2D" path="res://assets/ui/speedometer/speedometer_needle_centered.png" id="23_speedo_needle"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hud_glass"]
 bg_color = Color(0.06, 0.09, 0.15, 0.88)
@@ -244,6 +248,13 @@ theme_override_constants/separation = 4
 [node name="NitroHeader" type="HBoxContainer" parent="TopStatsPanel/Margin/VBox/NitroSection"]
 layout_mode = 2
 
+[node name="NitroBottleIcon" type="TextureRect" parent="TopStatsPanel/Margin/VBox/NitroSection/NitroHeader"]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+texture = ExtResource("20_nitro_bottle")
+expand_mode = 1
+stretch_mode = 5
+
 [node name="NitroTitle" type="Label" parent="TopStatsPanel/Margin/VBox/NitroSection/NitroHeader"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.25, 0.88, 1, 1)
@@ -332,32 +343,32 @@ texture_normal = ExtResource("17_pause_n")
 ignore_texture_size = true
 stretch_mode = 5
 
-[node name="RPMGauge" type="Control" parent="."]
+[node name="SpeedometerGauge" type="Control" parent="."]
 layout_mode = 1
 anchors_preset = 3
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -260.0
-offset_top = -120.0
-offset_right = -150.0
-offset_bottom = -10.0
+offset_left = -312.0
+offset_top = -144.0
+offset_right = -192.0
+offset_bottom = -24.0
 grow_horizontal = 0
 grow_vertical = 0
 
-[node name="DialBack" type="TextureRect" parent="RPMGauge"]
+[node name="SpeedDialBack" type="TextureRect" parent="SpeedometerGauge"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("10_rpm_dial")
+texture = ExtResource("22_speedo_bg")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="NeedlePivot" type="Control" parent="RPMGauge"]
+[node name="SpeedNeedlePivot" type="Control" parent="SpeedometerGauge"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -367,23 +378,44 @@ anchor_bottom = 0.5
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="RPMNeedle" type="Sprite2D" parent="RPMGauge/NeedlePivot"]
+[node name="SpeedNeedle" type="Sprite2D" parent="SpeedometerGauge/SpeedNeedlePivot"]
 unique_name_in_owner = true
-rotation = -2.0944
-scale = Vector2(0.25, 0.25)
-texture = ExtResource("11_rpm_needle")
-offset = Vector2(0, -75)
+rotation = -2.35619
+scale = Vector2(0.234, 0.234)
+texture = ExtResource("23_speedo_needle")
 
-[node name="DialFrame" type="TextureRect" parent="RPMGauge"]
+[node name="SpeedDigitalVBox" type="VBoxContainer" parent="SpeedometerGauge"]
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
 anchor_bottom = 1.0
+offset_left = -35.0
+offset_top = -42.0
+offset_right = 35.0
+offset_bottom = -8.0
 grow_horizontal = 2
-grow_vertical = 2
-texture = ExtResource("12_rpm_frame")
-expand_mode = 1
-stretch_mode = 5
+grow_vertical = 0
+theme_override_constants/separation = -2
+alignment = 1
+
+[node name="SpeedDigitalLabel" type="Label" parent="SpeedometerGauge/SpeedDigitalVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("2_font_bold")
+theme_override_font_sizes/font_size = 14
+text = "0"
+horizontal_alignment = 1
+
+[node name="SpeedUnitLabel" type="Label" parent="SpeedometerGauge/SpeedDigitalVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.75, 0.82, 0.9, 0.85)
+theme_override_fonts/font = ExtResource("4_font_narrow")
+theme_override_font_sizes/font_size = 9
+text = "km/h"
+horizontal_alignment = 1
 
 [node name="TouchControls" type="Control" parent="."]
 layout_mode = 1
@@ -400,13 +432,29 @@ layout_mode = 1
 anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
-offset_left = 28.0
-offset_top = -122.0
-offset_right = 120.0
-offset_bottom = -26.0
+offset_left = 32.0
+offset_top = -164.0
+offset_right = 172.0
+offset_bottom = -24.0
 grow_vertical = 0
 texture_normal = ExtResource("13_brake_n")
 texture_pressed = ExtResource("14_brake_p")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="NitroButton" type="TextureButton" parent="TouchControls"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 32.0
+offset_top = -324.0
+offset_right = 172.0
+offset_bottom = -184.0
+grow_vertical = 0
+texture_normal = ExtResource("20_nitro_bottle")
+texture_pressed = ExtResource("20_nitro_bottle")
 ignore_texture_size = true
 stretch_mode = 5
 
@@ -418,50 +466,16 @@ anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -128.0
-offset_top = -122.0
-offset_right = -36.0
-offset_bottom = -26.0
+offset_left = -172.0
+offset_top = -164.0
+offset_right = -32.0
+offset_bottom = -24.0
 grow_horizontal = 0
 grow_vertical = 0
 texture_normal = ExtResource("15_gas_n")
 texture_pressed = ExtResource("16_gas_p")
 ignore_texture_size = true
 stretch_mode = 5
-
-[node name="NitroButton" type="TextureButton" parent="TouchControls"]
-unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = 3
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -126.0
-offset_top = -212.0
-offset_right = -38.0
-offset_bottom = -132.0
-grow_horizontal = 0
-grow_vertical = 0
-texture_normal = ExtResource("18_nitro_n")
-texture_pressed = ExtResource("19_nitro_p")
-ignore_texture_size = true
-stretch_mode = 5
-
-[node name="NitroButtonLabel" type="Label" parent="TouchControls/NitroButton"]
-unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_colors/font_color = Color(0.15, 0.88, 1, 1)
-theme_override_fonts/font = ExtResource("2_font_bold")
-theme_override_font_sizes/font_size = 14
-text = "⚡ NITRO"
-horizontal_alignment = 1
-vertical_alignment = 1
 
 [node name="ControlsTip" type="Label" parent="."]
 layout_mode = 1

@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <radialGradient id="iconBg" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="85%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#020617"/>
+    </radialGradient>
+    <radialGradient id="nitroAura" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#00f2fe" stop-opacity="0.45"/>
+      <stop offset="60%" stop-color="#4facfe" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#00f2fe" stop-opacity="0.0"/>
+    </radialGradient>
+  </defs>
+  <rect x="8" y="8" width="240" height="240" rx="36" fill="url(#iconBg)" stroke="#38bdf8" stroke-width="3"/>
+  <circle cx="128" cy="128" r="95" fill="url(#nitroAura)"/>
+  
+  <!-- Mini stylized cylinder -->
+  <g transform="translate(18, 12) scale(0.68) rotate(20 160 160)">
+    <path d="M 145 130 C 145 95, 255 95, 255 130 L 255 295 C 255 318, 145 318, 145 295 Z" fill="#0284c7" stroke="#38bdf8" stroke-width="4"/>
+    <rect x="146" y="175" width="108" height="50" rx="4" fill="#ffffff"/>
+    <text x="200" y="208" font-family="sans-serif" font-weight="900" font-size="24" fill="#0369a1" text-anchor="middle">NOS</text>
+    <rect x="180" y="80" width="40" height="20" rx="3" fill="#cbd5e1"/>
+    <circle cx="160" cy="72" r="14" fill="#fbbf24" stroke="#d97706" stroke-width="2"/>
+    <line x1="160" y1="72" x2="167" y2="66" stroke="#b91c1c" stroke-width="2.5" stroke-linecap="round"/>
+  </g>
+  <!-- Flame blast on HUD icon -->
+  <path d="M 40 185 C 65 170, 95 180, 115 190 C 85 200, 60 215, 35 205 C 50 195, 45 190, 40 185 Z" fill="#38bdf8" opacity="0.9"/>
+  <path d="M 45 190 C 60 180, 80 185, 95 192 C 75 198, 60 205, 42 198 Z" fill="#ffffff"/>
+</svg>

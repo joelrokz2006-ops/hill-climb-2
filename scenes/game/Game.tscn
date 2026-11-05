@@ -11,6 +11,7 @@
 [ext_resource type="PackedScene" uid="uid://results_screen_001" path="res://scenes/ui/ResultsScreen.tscn" id="9_results_screen"]
 [ext_resource type="AudioStream" path="res://assets/audio/music/background_music_happy_adventure.mp3" id="10_music"]
 [ext_resource type="AudioStream" path="res://assets/audio/ambience/countryside_wind_ambience.wav" id="11_ambience"]
+[ext_resource type="PackedScene" uid="uid://snowfall_manager_001" path="res://scenes/environment/SnowfallManager.tscn" id="12_snowfall"]
 
 [node name="Game" type="Node2D"]
 script = ExtResource("1_game_script")
@@ -54,3 +55,5 @@ visible = false
 
 [node name="ResultsScreen" parent="UILayer" instance=ExtResource("9_results_screen")]
 visible = false
+
+[node name="SnowfallManager" parent="." instance=ExtResource("12_snowfall")]

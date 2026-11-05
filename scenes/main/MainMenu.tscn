@@ -92,6 +92,7 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="ContentVBox" type="VBoxContainer" parent="CenterContainer"]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(460, 0)
 layout_mode = 2
 theme_override_constants/separation = 18
@@ -191,6 +192,17 @@ theme_override_styles/hover = SubResource("StyleBoxTexture_play_n")
 theme_override_styles/pressed = SubResource("StyleBoxTexture_play_p")
 text = "START DRIVE"
 
+[node name="ChangeVehicleButton" type="Button" parent="CenterContainer/ContentVBox/ButtonsVBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.3, 0.9, 1, 1)
+theme_override_fonts/font = ExtResource("4_font_future")
+theme_override_font_sizes/font_size = 15
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_secondary_hover")
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_secondary")
+text = "CHANGE VEHICLE"
+
 [node name="ResetSaveButton" type="Button" parent="CenterContainer/ContentVBox/ButtonsVBox"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 38)
@@ -210,3 +222,85 @@ theme_override_font_sizes/font_size = 13
 theme_override_styles/hover = SubResource("StyleBoxFlat_btn_secondary_hover")
 theme_override_styles/normal = SubResource("StyleBoxFlat_btn_secondary")
 text = "✕  QUIT GAME"
+
+[node name="VehicleSelectPanel" type="PanelContainer" parent="CenterContainer"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(860, 490)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+
+[node name="Margin" type="MarginContainer" parent="CenterContainer/VehicleSelectPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 18
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 18
+
+[node name="VBox" type="VBoxContainer" parent="CenterContainer/VehicleSelectPanel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="HeaderLabel" type="Label" parent="CenterContainer/VehicleSelectPanel/Margin/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.88, 0.28, 1)
+theme_override_fonts/font = ExtResource("4_font_future")
+theme_override_font_sizes/font_size = 22
+text = "SELECT VEHICLE"
+horizontal_alignment = 1
+
+[node name="CarouselRow" type="HBoxContainer" parent="CenterContainer/VehicleSelectPanel/Margin/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 10
+
+[node name="PrevVehicleButton" type="Button" parent="CenterContainer/VehicleSelectPanel/Margin/VBox/CarouselRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(40, 160)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_fonts/font = ExtResource("4_font_future")
+theme_override_font_sizes/font_size = 20
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_secondary_hover")
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_secondary")
+text = "◀"
+
+[node name="ScrollContainer" type="ScrollContainer" parent="CenterContainer/VehicleSelectPanel/Margin/VBox/CarouselRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+horizontal_scroll_mode = 1
+vertical_scroll_mode = 0
+
+[node name="VehicleCardsContainer" type="HBoxContainer" parent="CenterContainer/VehicleSelectPanel/Margin/VBox/CarouselRow/ScrollContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 14
+alignment = 0
+
+[node name="NextVehicleButton" type="Button" parent="CenterContainer/VehicleSelectPanel/Margin/VBox/CarouselRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(40, 160)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_fonts/font = ExtResource("4_font_future")
+theme_override_font_sizes/font_size = 20
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_secondary_hover")
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_secondary")
+text = "▶"
+
+[node name="BackButtonContainer" type="CenterContainer" parent="CenterContainer/VehicleSelectPanel/Margin/VBox"]
+layout_mode = 2
+
+[node name="VehicleSelectBackButton" type="Button" parent="CenterContainer/VehicleSelectPanel/Margin/VBox/BackButtonContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(220, 42)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("4_font_future")
+theme_override_font_sizes/font_size = 15
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_secondary_hover")
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_secondary")
+text = "BACK TO MENU"

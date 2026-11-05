@@ -13,6 +13,7 @@ const DEFAULT_SAVE_DATA: Dictionary = {
 	"runs_played": 0,
 	"sound_volume": 1.0,
 	"music_volume": 1.0,
+	"selected_vehicle_id": "blue_flame_truck",
 	"upgrades": {
 		"engine": 1,
 		"tires": 1,
@@ -77,6 +78,22 @@ static func get_total_coins() -> int:
 static func get_runs_played() -> int:
 	var data := load_save()
 	return int(data.get("runs_played", 0))
+
+static func get_selected_vehicle_id() -> String:
+	var data := load_save()
+	var val: String = str(data.get("selected_vehicle_id", "blue_flame_truck"))
+	var valid_ids := VehicleRegistry.get_vehicle_ids()
+	if val in valid_ids:
+		return val
+	return valid_ids[0] if not valid_ids.is_empty() else "blue_flame_truck"
+
+static func set_selected_vehicle_id(vehicle_id: String) -> bool:
+	var valid_ids := VehicleRegistry.get_vehicle_ids()
+	var default_id := valid_ids[0] if not valid_ids.is_empty() else "blue_flame_truck"
+	var target_id := vehicle_id if vehicle_id in valid_ids else default_id
+	var data := load_save()
+	data["selected_vehicle_id"] = target_id
+	return save_game(data)
 
 static func record_run(distance: float, coins: int) -> Dictionary:
 	var data := load_save()

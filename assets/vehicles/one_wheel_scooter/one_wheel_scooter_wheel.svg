@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <radialGradient id="tireGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="70%" stop-color="#18191c"/>
+      <stop offset="85%" stop-color="#22242a"/>
+      <stop offset="93%" stop-color="#111215"/>
+      <stop offset="100%" stop-color="#08090a"/>
+    </radialGradient>
+    <linearGradient id="treadLug" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#323640"/>
+      <stop offset="100%" stop-color="#131417"/>
+    </linearGradient>
+    <radialGradient id="rimGrad" cx="40%" cy="35%" r="60%">
+      <stop offset="0%" stop-color="#737984"/>
+      <stop offset="40%" stop-color="#434852"/>
+      <stop offset="85%" stop-color="#26292f"/>
+      <stop offset="100%" stop-color="#181a1e"/>
+    </radialGradient>
+    <linearGradient id="hubAccent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0284c7"/>
+      <stop offset="50%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#0369a1"/>
+    </linearGradient>
+  </defs>
+
+  <circle cx="100" cy="100" r="96" fill="url(#tireGrad)" stroke="#0a0b0d" stroke-width="4"/>
+
+  <g id="treads">
+    <rect x="92" y="5" width="16" height="12" rx="2" transform="rotate(0.0 100 100)" fill="url(#treadLug)" stroke="#0c0d0f" stroke-width="1"/>
+    <rect x="92" y="5" width="16" height="12" rx="2" transform="rotate(22.5 100 100)" fill="url(#treadLug)" stroke="#0c0d0f" stroke-width="1"/>
+    <rect x="92" y="5" width="16" height="12" rx="2" transform="rotate(45.0 100 100)" fill="url(#treadLug)" stroke="#0c0d0f" stroke-width="1"/>
+    <rect x="92" y="5" width="16" height="12" rx="2" transform="rotate(67.5 100 100)" fill="url(#treadLug)" stroke="#0c0d0f" stroke-width="1"/>
+    <rect x="92" y="5" width="16" height="12" rx="2" transform="rotate(90.0 100 100)" fill="url(#treadLug)" stroke="#0c0d0f" stroke-width="1"/>
+    <rect x="92" y="5" width="16" height="12" rx="2" transform="rotate(112.5 100 100)" fill="url(#treadLug)" stroke="#0c0d0f" stroke-width="1"/>
+    <rect x="92" y="5" width="16" height="12" rx="2" transform="rotate(135.0 100 100)" fill="url(#treadLug)" stroke="#0c0d0f" stroke-width="1"/>
+    <rect x="92" y="5" width="16" height="12" rx="2" transform="rotate(157.5 100 100)" fill="url(#treadLug)" stroke="#0c0d0f" stroke-width="1"/>
+    <rect x="92" y="5" width="16" height="12" rx="2" transform="rotate(180.0 100 100)" fill="url(#treadLug)" stroke="#0c0d0f" stroke-width="1"/>
+    <rect x="92" y="5" width="16" height="12" rx="2" transform="rotate(202.5 100 100)" fill="url(#treadLug)" stroke="#0c0d0f" stroke-width="1"/>
+    <rect x="92" y="5" width="16" height="12" rx="2" transform="rotate(225.0 100 100)" fill="url(#treadLug)" stroke="#0c0d0f" stroke-width="1"/>
+    <rect x="92" y="5" width="16" height="12" rx="2" transform="rotate(247.5 100 100)" fill="url(#treadLug)" stroke="#0c0d0f" stroke-width="1"/>
+    <rect x="92" y="5" width="16" height="12" rx="2" transform="rotate(270.0 100 100)" fill="url(#treadLug)" stroke="#0c0d0f" stroke-width="1"/>
+    <rect x="92" y="5" width="16" height="12" rx="2" transform="rotate(292.5 100 100)" fill="url(#treadLug)" stroke="#0c0d0f" stroke-width="1"/>
+    <rect x="92" y="5" width="16" height="12" rx="2" transform="rotate(315.0 100 100)" fill="url(#treadLug)" stroke="#0c0d0f" stroke-width="1"/>
+    <rect x="92" y="5" width="16" height="12" rx="2" transform="rotate(337.5 100 100)" fill="url(#treadLug)" stroke="#0c0d0f" stroke-width="1"/>
+  </g>
+
+  <circle cx="100" cy="100" r="82" fill="none" stroke="#2a2c33" stroke-width="2"/>
+  <circle cx="100" cy="100" r="70" fill="none" stroke="#15161a" stroke-width="3"/>
+  <circle cx="100" cy="100" r="56" fill="url(#rimGrad)" stroke="#1c1e22" stroke-width="3"/>
+  <circle cx="100" cy="100" r="54" fill="none" stroke="#8e95a2" stroke-width="1.5" opacity="0.5"/>
+  <circle cx="100" cy="68" r="7" transform="rotate(0 100 100)" fill="#1c1d22" stroke="#4e5460" stroke-width="1.5"/>
+  <circle cx="100" cy="68" r="7" transform="rotate(72 100 100)" fill="#1c1d22" stroke="#4e5460" stroke-width="1.5"/>
+  <circle cx="100" cy="68" r="7" transform="rotate(144 100 100)" fill="#1c1d22" stroke="#4e5460" stroke-width="1.5"/>
+  <circle cx="100" cy="68" r="7" transform="rotate(216 100 100)" fill="#1c1d22" stroke="#4e5460" stroke-width="1.5"/>
+  <circle cx="100" cy="68" r="7" transform="rotate(288 100 100)" fill="#1c1d22" stroke="#4e5460" stroke-width="1.5"/>
+  <circle cx="100" cy="100" r="24" fill="url(#hubAccent)" stroke="#082f49" stroke-width="2"/>
+  <circle cx="100" cy="100" r="16" fill="#1e293b" stroke="#38bdf8" stroke-width="1.5"/>
+  <circle cx="100" cy="100" r="6" fill="#e2e8f0"/>
+</svg>

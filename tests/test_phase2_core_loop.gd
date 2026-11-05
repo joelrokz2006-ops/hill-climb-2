@@ -111,6 +111,7 @@ func _init() -> void:
 	# 5. Test Run Restart
 	print("-> Testing run restart via ResultsScreen...")
 	results_screen._on_retry_pressed()
+	assert(vehicle.current_fuel == vehicle.max_fuel, "Vehicle fuel must reset to maximum (100)")
 	for i in range(10):
 		await process_frame
 		await physics_frame
@@ -118,7 +119,7 @@ func _init() -> void:
 	assert(gm.current_state == 1, "GameManager must reset to PLAYING state (1)")
 	assert(results_screen.visible == false, "ResultsScreen must hide upon restart")
 	assert(absf(vehicle.global_position.x - game.spawn_position.x) < 5.0, "Vehicle must reset to spawn position")
-	assert(vehicle.current_fuel == vehicle.max_fuel, "Vehicle fuel must reset to maximum (100)")
+	assert(vehicle.current_fuel <= vehicle.max_fuel and vehicle.current_fuel >= vehicle.max_fuel - 5.0, "Vehicle fuel must drain during run")
 	assert(gm.current_distance < 0.1, "Run distance must reset near 0")
 	
 	if coin_node:

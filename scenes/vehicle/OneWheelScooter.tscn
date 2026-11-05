@@ -1,0 +1,141 @@
+[gd_scene load_steps=15 format=3 uid="uid://scooter_root_001"]
+
+[ext_resource type="Script" path="res://scripts/vehicle/OneWheelScooterController.gd" id="1_controller"]
+[ext_resource type="Texture2D" path="res://assets/vehicles/effects/exhaust_smoke_particle_01.png" id="2_smoke"]
+[ext_resource type="Texture2D" path="res://assets/vehicles/effects/dust_effects/ground_movement_dust/ground_dust_01.png" id="3_dust"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/engine/engine_idle_loop.wav" id="4_engine"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/vehicle/vehicle_landing_thud.wav" id="5_landing"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/vehicle/tire_rolling_skid_loop.wav" id="6_skid"]
+[ext_resource type="Texture2D" path="res://assets/vehicles/one_wheel_scooter/one_wheel_scooter_body.png" id="7_scooter_body"]
+[ext_resource type="Texture2D" path="res://assets/vehicles/one_wheel_scooter/one_wheel_scooter_wheel.png" id="8_scooter_wheel"]
+[ext_resource type="AudioStream" path="res://assets/audio/sfx/engine/engine_acceleration_rev_high.wav" id="9_turbo"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_chassis"]
+friction = 0.5
+bounce = 0.05
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_wheel"]
+friction = 1.6
+bounce = 0.15
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_wheel"]
+radius = 20.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_chassis"]
+size = Vector2(96, 22)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_crash"]
+radius = 14.0
+
+[node name="OneWheelScooter" type="RigidBody2D"]
+collision_layer = 2
+collision_mask = 1
+mass = 7.0
+physics_material_override = SubResource("PhysicsMaterial_chassis")
+center_of_mass_mode = 1
+center_of_mass = Vector2(0, 8)
+script = ExtResource("1_controller")
+
+[node name="ChassisCollision" type="CollisionShape2D" parent="."]
+position = Vector2(0, -2)
+shape = SubResource("RectangleShape2D_chassis")
+
+[node name="RearWheelMount" type="Marker2D" parent="."]
+position = Vector2(0, 14)
+
+[node name="BodySprite" type="Sprite2D" parent="."]
+position = Vector2(0, -2)
+scale = Vector2(0.2, 0.2)
+texture = ExtResource("7_scooter_body")
+
+[node name="ExhaustParticles" type="CPUParticles2D" parent="."]
+position = Vector2(-42, 4)
+emitting = false
+amount = 12
+lifetime = 0.6
+texture = ExtResource("2_smoke")
+direction = Vector2(-1, -0.4)
+spread = 20.0
+gravity = Vector2(0, -50)
+initial_velocity_min = 40.0
+initial_velocity_max = 90.0
+scale_amount_min = 0.04
+scale_amount_max = 0.08
+color = Color(0.85, 0.85, 0.85, 0.6)
+
+[node name="BoostParticles" type="CPUParticles2D" parent="."]
+position = Vector2(-42, 4)
+emitting = false
+amount = 24
+lifetime = 0.35
+texture = ExtResource("2_smoke")
+direction = Vector2(-1, -0.15)
+spread = 15.0
+gravity = Vector2(0, -30)
+initial_velocity_min = 120.0
+initial_velocity_max = 240.0
+scale_amount_min = 0.06
+scale_amount_max = 0.14
+color = Color(0.15, 0.85, 1.0, 0.95)
+
+[node name="RearDust" type="CPUParticles2D" parent="."]
+position = Vector2(0, 28)
+emitting = false
+amount = 8
+lifetime = 0.4
+texture = ExtResource("3_dust")
+direction = Vector2(-1, -0.2)
+spread = 25.0
+gravity = Vector2(0, 80)
+initial_velocity_min = 30.0
+initial_velocity_max = 70.0
+scale_amount_min = 0.04
+scale_amount_max = 0.08
+color = Color(0.8, 0.7, 0.55, 0.7)
+
+[node name="EngineAudio" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("4_engine")
+volume_db = -6.0
+
+[node name="LandingAudio" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("5_landing")
+volume_db = -3.0
+
+[node name="SkidAudio" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("6_skid")
+volume_db = -80.0
+
+[node name="NitroAudio" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("9_turbo")
+volume_db = -2.0
+pitch_scale = 1.6
+
+[node name="CrashDetector" type="Area2D" parent="."]
+position = Vector2(0, -28)
+collision_layer = 0
+collision_mask = 1
+
+[node name="CrashShape" type="CollisionShape2D" parent="CrashDetector"]
+shape = SubResource("CircleShape2D_crash")
+
+[node name="RearWheel" type="RigidBody2D" parent="."]
+position = Vector2(0, 14)
+collision_layer = 2
+collision_mask = 1
+mass = 2.5
+physics_material_override = SubResource("PhysicsMaterial_wheel")
+contact_monitor = true
+max_contacts_reported = 2
+
+[node name="WheelCollision" type="CollisionShape2D" parent="RearWheel"]
+shape = SubResource("CircleShape2D_wheel")
+
+[node name="WheelSprite" type="Sprite2D" parent="RearWheel"]
+scale = Vector2(0.2, 0.2)
+texture = ExtResource("8_scooter_wheel")
+
+[node name="RearJoint" type="PinJoint2D" parent="."]
+position = Vector2(0, 14)
+node_a = NodePath("..")
+node_b = NodePath("../RearWheel")
+softness = 0.3
