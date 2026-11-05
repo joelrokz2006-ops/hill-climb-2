@@ -6,6 +6,13 @@
 *.translation
 export_presets.cfg
 
+# Build artifacts & packages
+build/
+*.apk
+*.apkm
+*.aab
+*.idsig
+
 # OS specific files
 .DS_Store
 Thumbs.db
