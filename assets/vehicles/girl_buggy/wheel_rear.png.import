@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dwo3xdfmklbt4"
-path="res://.godot/imported/wheel_rear.png-d2ff2d472b2a37c3ddb9f77749fb61a4.ctex"
+path="res://.godot/imported/wheel_rear.png-f13847b8fd997e2d143c040d78bca1e0.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/vehicles/alternate/girl_buggy/wheel_rear.png"
-dest_files=["res://.godot/imported/wheel_rear.png-d2ff2d472b2a37c3ddb9f77749fb61a4.ctex"]
+source_file="res://assets/vehicles/girl_buggy/wheel_rear.png"
+dest_files=["res://.godot/imported/wheel_rear.png-f13847b8fd997e2d143c040d78bca1e0.ctex"]
 
 [params]
 

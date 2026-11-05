@@ -10,12 +10,13 @@ func _init() -> void:
 	# 1. Test VehicleRegistry
 	print("-> Testing VehicleRegistry catalog...")
 	var all_vehicles: Array[Dictionary] = VehicleRegistry.get_all_vehicles()
-	assert(all_vehicles.size() == 3, "Registry must contain 3 vehicles")
+	assert(all_vehicles.size() == 4, "Registry must contain 4 vehicles (got %d)" % all_vehicles.size())
 	print("✓ VehicleRegistry verified: %d vehicles available" % all_vehicles.size())
 	
 	for v in all_vehicles:
 		print("  • [%s]: %s (Cost: %d coins)" % [v["id"], v["display_name"], v["unlock_cost"]])
 		assert(ResourceLoader.exists(v["scene_path"]), "Vehicle scene path must exist: %s" % v["scene_path"])
+		assert(ResourceLoader.exists(v["preview_path"]), "Vehicle preview path must exist: %s" % v["preview_path"])
 	
 	var cost_lvl1 = VehicleRegistry.get_upgrade_cost(1)
 	assert(cost_lvl1 == 50, "Level 1 upgrade cost should be 50")
@@ -36,19 +37,48 @@ func _init() -> void:
 	buggy.queue_free()
 	print("✓ DuneBuggy variation verified")
 	
-	# 3. Test MonsterTruck instantiation
-	print("-> Testing MonsterTruck.tscn instantiation via Registry...")
-	var truck: VehicleController = VehicleRegistry.instantiate_vehicle("monster_truck")
-	assert(truck != null, "MonsterTruck must instantiate cleanly")
-	root.add_child(truck)
-	truck.position = Vector2(200, 320)
-	
+	# 3. Test Removed Vehicles are Not in Registry
+	print("-> Testing that removed vehicles (classic_car, monster_truck, one_wheel_scooter) are absent...")
+	assert(not VehicleRegistry.has_vehicle("classic_car"), "classic_car must not be in VehicleRegistry")
+	assert(not VehicleRegistry.has_vehicle("monster_truck"), "monster_truck must not be in VehicleRegistry")
+	assert(not VehicleRegistry.has_vehicle("one_wheel_scooter"), "one_wheel_scooter must not be in VehicleRegistry")
+	print("✓ Removed vehicles correctly excluded from registry")
+
+	# 3c. Test BlueFlameTruck instantiation
+	print("-> Testing BlueFlameTruck.tscn instantiation via Registry...")
+	var b_truck: VehicleController = VehicleRegistry.instantiate_vehicle("blue_flame_truck")
+	assert(b_truck != null, "BlueFlameTruck must instantiate cleanly")
+	root.add_child(b_truck)
+	b_truck.position = Vector2(400, 320)
 	for i in range(5):
 		await physics_frame
-	
-	assert(truck.mass == 12.0, "MonsterTruck should have heavyweight 12.0 mass")
-	truck.queue_free()
-	print("✓ MonsterTruck variation verified")
+	assert(b_truck.mass == 10.0, "BlueFlameTruck should have mass 10.0")
+	b_truck.queue_free()
+	print("✓ BlueFlameTruck variation verified")
+
+	# 3d. Test OrcRacer instantiation
+	print("-> Testing OrcRacer.tscn instantiation via Registry...")
+	var orc: VehicleController = VehicleRegistry.instantiate_vehicle("orc_racer")
+	assert(orc != null, "OrcRacer must instantiate cleanly")
+	root.add_child(orc)
+	orc.position = Vector2(500, 320)
+	for i in range(5):
+		await physics_frame
+	assert(orc.mass == 7.5, "OrcRacer should have mass 7.5")
+	orc.queue_free()
+	print("✓ OrcRacer variation verified")
+
+	# 3e. Test TrophyTruck instantiation
+	print("-> Testing TrophyTruck.tscn instantiation via Registry...")
+	var trophy: VehicleController = VehicleRegistry.instantiate_vehicle("trophy_truck")
+	assert(trophy != null, "TrophyTruck must instantiate cleanly")
+	root.add_child(trophy)
+	trophy.position = Vector2(600, 320)
+	for i in range(5):
+		await physics_frame
+	assert(trophy.mass == 9.0, "TrophyTruck should have mass 9.0")
+	trophy.queue_free()
+	print("✓ TrophyTruck variation verified")
 	
 	# 4. Test VehicleTest.tscn & Stunt Signals
 	print("-> Loading VehicleTest.tscn...")

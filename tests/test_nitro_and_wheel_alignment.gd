@@ -203,12 +203,11 @@ func test_hud_nitro_integration() -> void:
 	var nitro_bar: ProgressBar = hud.get_node_or_null("%NitroBar")
 	var nitro_label: Label = hud.get_node_or_null("%NitroPercentageLabel")
 	var nitro_button: TextureButton = hud.get_node_or_null("%NitroButton")
-	var nitro_button_label: Label = hud.get_node_or_null("%NitroButtonLabel")
 	
 	assert(nitro_bar != null, "HUD must have %NitroBar")
 	assert(nitro_label != null, "HUD must have %NitroPercentageLabel")
 	assert(nitro_button != null, "HUD must have %NitroButton")
-	assert(nitro_button_label != null, "HUD must have %NitroButtonLabel")
+	assert(nitro_button.texture_normal != null, "NitroButton must have clean artwork texture")
 	
 	# Instantiate a Vehicle and bind it
 	var vehicle_scene = load("res://scenes/vehicle/Vehicle.tscn")

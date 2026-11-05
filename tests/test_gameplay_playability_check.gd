@@ -139,6 +139,7 @@ func _init() -> void:
 	var retry_btn = results.get_node("%RetryButton") as Button
 	assert(is_instance_valid(retry_btn), "RetryButton must exist")
 	retry_btn.emit_signal("pressed")
+	assert(vehicle.current_fuel == 100.0, "Fuel must reset to 100")
 	
 	for i in range(15):
 		await process_frame
@@ -149,7 +150,7 @@ func _init() -> void:
 	print("  -> Vehicle reset position: x=%.2f, y=%.2f" % [vehicle.global_position.x, vehicle.global_position.y])
 	print("  -> gm.current_distance after restart: %.3f m" % gm.current_distance)
 	assert(absf(vehicle.global_position.x - game_scene.spawn_position.x) < 5.0, "Vehicle must reset to spawn")
-	assert(vehicle.current_fuel == 100.0, "Fuel must reset to 100")
+	assert(vehicle.current_fuel <= 100.0 and vehicle.current_fuel >= 95.0, "Fuel must continuously drain during active run")
 	assert(gm.current_distance < 0.2, "Distance must reset to near-zero (was %.2fm)" % gm.current_distance)
 	print("  ✓ Clean restart cycle verified: all physics, metrics, and terrain reset cleanly")
 	

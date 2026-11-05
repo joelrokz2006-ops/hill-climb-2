@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 200" width="540" height="200">
+  <defs>
+    <linearGradient id="railGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="25%" stop-color="#0284c7"/>
+      <stop offset="70%" stop-color="#0369a1"/>
+      <stop offset="100%" stop-color="#0c4a6e"/>
+    </linearGradient>
+    <linearGradient id="gripGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#27272a"/>
+      <stop offset="50%" stop-color="#3f3f46"/>
+      <stop offset="100%" stop-color="#18181b"/>
+    </linearGradient>
+    <linearGradient id="fenderGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#475569"/>
+      <stop offset="30%" stop-color="#334155"/>
+      <stop offset="80%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="alumGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#94a3b8"/>
+      <stop offset="50%" stop-color="#e2e8f0"/>
+      <stop offset="100%" stop-color="#64748b"/>
+    </linearGradient>
+    <radialGradient id="bracketGrad" cx="40%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#64748b"/>
+      <stop offset="60%" stop-color="#334155"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </radialGradient>
+    <filter id="bodyShadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="6" stdDeviation="4" flood-color="#000000" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <g id="scooter_chassis" filter="url(#bodyShadow)">
+    <!-- Center Wheel Fender Arch (Center at 270, 107) -->
+    <path d="M 168 112 C 168 50, 212 10, 270 10 C 328 10, 372 50, 372 112 L 358 112 C 358 60, 318 24, 270 24 C 222 24, 182 60, 182 112 Z"
+          fill="url(#fenderGrad)" stroke="#090d16" stroke-width="2.5"/>
+    <path d="M 195 55 C 230 26, 310 26, 345 55" fill="none" stroke="#38bdf8" stroke-width="3" stroke-linecap="round" opacity="0.8"/>
+
+    <!-- REAR SECTION -->
+    <path d="M 48 108 L 175 108 L 175 125 L 56 125 Z" fill="#18181b" stroke="#090d16" stroke-width="2"/>
+    <path d="M 38 98 L 180 98 L 180 114 L 46 114 Z" fill="url(#railGrad)" stroke="#0369a1" stroke-width="1.5"/>
+    <line x1="42" y1="100" x2="178" y2="100" stroke="#7dd3fc" stroke-width="1.5" opacity="0.7"/>
+    <path d="M 32 94 L 176 96 L 176 102 L 40 102 Z" fill="url(#gripGrad)" stroke="#111" stroke-width="1.5"/>
+    <rect x="55" y="94" width="105" height="3" fill="#52525b" rx="1"/>
+    <path d="M 30 95 L 36 95 L 40 103 L 34 103 Z" fill="#ef4444" stroke="#991b1b" stroke-width="1"/>
+    <circle cx="33" cy="99" r="2" fill="#fca5a5"/>
+
+    <!-- FRONT SECTION -->
+    <path d="M 365 108 L 492 108 L 484 125 L 365 125 Z" fill="#18181b" stroke="#090d16" stroke-width="2"/>
+    <path d="M 360 98 L 502 98 L 494 114 L 360 114 Z" fill="url(#railGrad)" stroke="#0369a1" stroke-width="1.5"/>
+    <line x1="362" y1="100" x2="498" y2="100" stroke="#7dd3fc" stroke-width="1.5" opacity="0.7"/>
+    <path d="M 364 96 L 508 94 L 500 102 L 364 102 Z" fill="url(#gripGrad)" stroke="#111" stroke-width="1.5"/>
+    <rect x="380" y="94" width="105" height="3" fill="#52525b" rx="1"/>
+    <path d="M 504 95 L 510 95 L 506 103 L 500 103 Z" fill="#f0fdf4" stroke="#38bdf8" stroke-width="1"/>
+    <circle cx="505" cy="99" r="2.5" fill="#38bdf8"/>
+
+    <!-- CENTER AXLE BRACKET -->
+    <rect x="175" y="106" width="190" height="10" fill="url(#alumGrad)" stroke="#1e293b" stroke-width="1.5" rx="2"/>
+    <path d="M 235 110 L 252 88 L 288 88 L 305 110 L 290 126 L 250 126 Z" fill="url(#bracketGrad)" stroke="#0f172a" stroke-width="2"/>
+    <circle cx="270" cy="107" r="16" fill="none" stroke="#38bdf8" stroke-width="3"/>
+    <circle cx="270" cy="107" r="20" fill="none" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4,3"/>
+
+    <circle cx="252" cy="96" r="3.5" fill="#cbd5e1" stroke="#334155" stroke-width="1"/>
+    <circle cx="288" cy="96" r="3.5" fill="#cbd5e1" stroke="#334155" stroke-width="1"/>
+    <circle cx="252" cy="120" r="3.5" fill="#cbd5e1" stroke="#334155" stroke-width="1"/>
+    <circle cx="288" cy="120" r="3.5" fill="#cbd5e1" stroke="#334155" stroke-width="1"/>
+  </g>
+</svg>

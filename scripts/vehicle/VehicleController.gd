@@ -109,6 +109,10 @@ signal clean_landed(bonus_coins: int)
 @onready var rear_strut: Line2D = get_node_or_null("RearStrutVisual")
 @onready var front_strut: Line2D = get_node_or_null("FrontStrutVisual")
 
+var nitro_flame: Node2D = null
+var nitro_burst: Sprite2D = null
+var nitro_sparks: CPUParticles2D = null
+
 var current_fuel: float = 100.0
 var is_nitro_active: bool = false
 var is_nitro_requested: bool = false
@@ -149,11 +153,19 @@ func _ready() -> void:
 	_recalculate_upgrades()
 	nitro_changed.emit(current_nitro, max_nitro)
 	
-	if crash_detector:
+	if crash_detector and not crash_detector.body_entered.is_connected(_on_crash_detector_body_entered):
 		crash_detector.body_entered.connect(_on_crash_detector_body_entered)
 	
 	if is_inside_tree() and engine_audio and not engine_audio.playing:
 		engine_audio.play()
+	
+	add_to_group("vehicle")
+	if rear_wheel and not rear_wheel.is_in_group("vehicle"):
+		rear_wheel.add_to_group("vehicle")
+	if front_wheel and not front_wheel.is_in_group("vehicle"):
+		front_wheel.add_to_group("vehicle")
+	
+	_ensure_nitro_visuals()
 
 func _process(_delta: float) -> void:
 	_update_struts()
@@ -198,12 +210,100 @@ func _update_nitro(delta: float) -> void:
 			current_nitro = minf(max_nitro, current_nitro + nitro_recharge_rate * delta)
 			nitro_changed.emit(current_nitro, max_nitro)
 
+func _ensure_nitro_visuals() -> void:
+	if is_instance_valid(nitro_flame):
+		return
+	
+	var exhaust_pos := Vector2(-54, 4)
+	if boost_particles:
+		exhaust_pos = boost_particles.position
+	elif rear_wheel_mount:
+		exhaust_pos = rear_wheel_mount.position + Vector2(-20, -10)
+	
+	# 1. Main Nitro Flame
+	var flame_root := Node2D.new()
+	flame_root.name = "NitroFlame"
+	flame_root.position = exhaust_pos
+	flame_root.visible = false
+	add_child(flame_root)
+	nitro_flame = flame_root
+	
+	var flame_spr := Sprite2D.new()
+	flame_spr.name = "FlameSprite"
+	flame_spr.texture = preload("res://assets/effects/nitro/nitro_flame.png")
+	flame_spr.scale = Vector2(0.35, 0.35)
+	flame_spr.offset = Vector2(-150, 0)
+	flame_root.add_child(flame_spr)
+	
+	# Animated core flame loop using nitro_flame_01, 02, 03
+	var anim_flame := AnimatedSprite2D.new()
+	anim_flame.name = "AnimatedCore"
+	var frames := SpriteFrames.new()
+	frames.add_animation("burn")
+	frames.set_animation_loop("burn", true)
+	frames.set_animation_speed("burn", 15.0)
+	var f1: Texture2D = preload("res://assets/effects/nitro/nitro_flame_01.png")
+	var f2: Texture2D = preload("res://assets/effects/nitro/nitro_flame_02.png")
+	var f3: Texture2D = preload("res://assets/effects/nitro/nitro_flame_03.png")
+	frames.add_frame("burn", f1)
+	frames.add_frame("burn", f2)
+	frames.add_frame("burn", f3)
+	anim_flame.sprite_frames = frames
+	anim_flame.play("burn")
+	anim_flame.rotation = PI
+	anim_flame.position = Vector2(-25, 0)
+	anim_flame.scale = Vector2(0.5, 0.5)
+	flame_root.add_child(anim_flame)
+	
+	# 2. Nitro Flame Burst (activation flare)
+	var burst_spr := Sprite2D.new()
+	burst_spr.name = "NitroBurst"
+	burst_spr.texture = preload("res://assets/effects/nitro/nitro_flame_burst.png")
+	burst_spr.position = exhaust_pos
+	burst_spr.scale = Vector2(0.38, 0.38)
+	burst_spr.offset = Vector2(-140, 0)
+	burst_spr.visible = false
+	add_child(burst_spr)
+	nitro_burst = burst_spr
+	
+	# 3. Nitro Spark Particles
+	var sparks := CPUParticles2D.new()
+	sparks.name = "NitroSparks"
+	sparks.position = exhaust_pos
+	sparks.emitting = false
+	sparks.amount = 16
+	sparks.lifetime = 0.4
+	sparks.texture = preload("res://assets/effects/nitro/nitro_particle_spark.png")
+	sparks.direction = Vector2(-1, 0)
+	sparks.spread = 25.0
+	sparks.gravity = Vector2(0, 40)
+	sparks.initial_velocity_min = 150.0
+	sparks.initial_velocity_max = 280.0
+	sparks.scale_amount_min = 0.15
+	sparks.scale_amount_max = 0.35
+	sparks.color = Color(0.2, 0.85, 1.0, 0.9)
+	add_child(sparks)
+	nitro_sparks = sparks
+
 func _activate_nitro() -> void:
 	is_nitro_active = true
 	nitro_state_changed.emit(true)
 	_apply_wheel_friction(_current_base_friction + nitro_traction_boost)
 	if boost_particles:
 		boost_particles.emitting = true
+	if not is_instance_valid(nitro_flame):
+		_ensure_nitro_visuals()
+	if nitro_flame:
+		nitro_flame.visible = true
+	if nitro_sparks:
+		nitro_sparks.emitting = true
+	if nitro_burst:
+		nitro_burst.visible = true
+		nitro_burst.modulate.a = 1.0
+		var tw := create_tween()
+		if tw:
+			tw.tween_property(nitro_burst, "modulate:a", 0.0, 0.18).from(1.0)
+			tw.tween_callback(func(): if is_instance_valid(nitro_burst): nitro_burst.visible = false)
 	if is_inside_tree() and nitro_audio and not nitro_audio.playing:
 		nitro_audio.play()
 
@@ -214,6 +314,12 @@ func _deactivate_nitro() -> void:
 		_apply_wheel_friction(_current_base_friction)
 		if boost_particles:
 			boost_particles.emitting = false
+		if nitro_flame:
+			nitro_flame.visible = false
+		if nitro_burst:
+			nitro_burst.visible = false
+		if nitro_sparks:
+			nitro_sparks.emitting = false
 		if nitro_audio and nitro_audio.playing:
 			nitro_audio.stop()
 
@@ -330,9 +436,6 @@ func _handle_input(delta: float) -> void:
 			if front_wheel and front_wheel.angular_velocity < active_max_speed:
 				var front_factor: float = clampf((active_max_speed - front_wheel.angular_velocity) / (active_max_speed * 0.25), 0.0, 1.0)
 				front_wheel.apply_torque(active_motor_torque * 0.75 * effective_accel * front_factor)
-			
-			if consumes_fuel:
-				consume_fuel(fuel_burn_rate * delta)
 				
 	elif accel_input < -0.05:
 		# Brake / Reverse
@@ -591,6 +694,8 @@ func deserialize_upgrades(data: Dictionary) -> void:
 
 func consume_fuel(amount: float) -> void:
 	if not consumes_fuel:
+		return
+	if current_fuel <= 0.0:
 		return
 	current_fuel = maxf(0.0, current_fuel - amount)
 	fuel_changed.emit(current_fuel, max_fuel)

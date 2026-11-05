@@ -58,7 +58,7 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="Panel" type="PanelContainer" parent="CenterContainer"]
-custom_minimum_size = Vector2(340, 270)
+custom_minimum_size = Vector2(340, 330)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxTexture_card")
 
@@ -107,6 +107,18 @@ theme_override_font_sizes/font_size = 15
 theme_override_styles/normal = SubResource("StyleBoxTexture_retry")
 theme_override_styles/hover = SubResource("StyleBoxTexture_retry")
 text = "RETRY"
+
+[node name="MainMenuButton" type="Button" parent="CenterContainer/Panel/Margin/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+focus_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("7_font_future")
+theme_override_font_sizes/font_size = 15
+theme_override_styles/normal = SubResource("StyleBoxTexture_retry")
+theme_override_styles/hover = SubResource("StyleBoxTexture_retry")
+text = "MAIN MENU"
 
 [node name="Hint" type="Label" parent="CenterContainer/Panel/Margin/VBox"]
 layout_mode = 2

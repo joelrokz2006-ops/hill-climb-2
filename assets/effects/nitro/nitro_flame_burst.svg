@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 180" width="360" height="180">
+  <defs>
+    <radialGradient id="burstOuter" cx="80%" cy="50%" r="70%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="25%" stop-color="#38bdf8"/>
+      <stop offset="60%" stop-color="#0284c7"/>
+      <stop offset="85%" stop-color="#1e40af" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#1e1b4b" stop-opacity="0.0"/>
+    </radialGradient>
+    <filter id="burstGlow" x="-20%" y="-30%" width="140%" height="160%">
+      <feGaussianBlur stdDeviation="5" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <g filter="url(#burstGlow)">
+    <path d="M 345 90 C 300 30, 220 15, 140 25 C 70 35, 30 65, 10 90 C 30 115, 70 145, 140 155 C 220 165, 300 150, 345 90 Z" fill="url(#burstOuter)"/>
+    <!-- Central white shock flash -->
+    <polygon points="345,90 280,72 160,82 60,90 160,98 280,108" fill="#ffffff" opacity="0.9"/>
+    <ellipse cx="310" cy="90" rx="14" ry="32" fill="#ffffff" opacity="0.85"/>
+    <circle cx="95" cy="45" r="3" fill="#ffffff"/>
+    <circle cx="80" cy="135" r="3" fill="#ffffff"/>
+    <circle cx="40" cy="70" r="2.5" fill="#a5f3fc"/>
+    <circle cx="35" cy="110" r="2.5" fill="#a5f3fc"/>
+  </g>
+</svg>

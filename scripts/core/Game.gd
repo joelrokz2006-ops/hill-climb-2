@@ -5,6 +5,8 @@ extends Node2D
 ## Owns vehicle spawn positioning, distance metric tracking, game-over detection, and local scene resets.
 
 const GameManagerScript = preload("res://scripts/core/GameManager.gd")
+const SaveManager = preload("res://scripts/core/SaveManager.gd")
+const VehicleRegistry = preload("res://scripts/vehicle/VehicleRegistry.gd")
 
 signal return_to_main_menu_requested
 
@@ -34,13 +36,30 @@ func _ready() -> void:
 	_setup_ui()
 	_setup_audio()
 	
+	var snowfall = get_node_or_null("SnowfallManager")
+	if is_instance_valid(snowfall) and is_instance_valid(game_manager):
+		snowfall.bind_game_manager(game_manager)
+	
 	if is_instance_valid(game_manager):
 		game_manager.run_restarted.connect(_on_run_restarted)
 		game_manager.run_finished.connect(_on_run_finished)
 		game_manager.start_run()
 
 func _setup_vehicle() -> void:
-	if vehicle_slot.get_child_count() > 0:
+	var selected_id: String = SaveManager.get_selected_vehicle_id()
+	for child in vehicle_slot.get_children():
+		vehicle_slot.remove_child(child)
+		child.queue_free()
+	
+	var chosen_vehicle: VehicleController = VehicleRegistry.instantiate_vehicle(selected_id)
+	if not is_instance_valid(chosen_vehicle):
+		chosen_vehicle = VehicleRegistry.instantiate_vehicle("blue_flame_truck")
+	
+	if is_instance_valid(chosen_vehicle):
+		chosen_vehicle.name = "Vehicle"
+		vehicle_slot.add_child(chosen_vehicle)
+		vehicle = chosen_vehicle
+	elif vehicle_slot.get_child_count() > 0:
 		vehicle = vehicle_slot.get_child(0)
 	
 	if is_instance_valid(vehicle):
@@ -105,8 +124,11 @@ func _setup_ui() -> void:
 	if is_instance_valid(results_screen) and results_screen.has_method("bind_game_manager"):
 		results_screen.bind_game_manager(game_manager)
 		
-	if is_instance_valid(pause_menu) and pause_menu.has_method("bind_game_manager"):
-		pause_menu.bind_game_manager(game_manager)
+	if is_instance_valid(pause_menu):
+		if pause_menu.has_method("bind_game_manager"):
+			pause_menu.bind_game_manager(game_manager)
+		if pause_menu.has_signal("menu_requested") and not pause_menu.menu_requested.is_connected(exit_to_main_menu):
+			pause_menu.menu_requested.connect(exit_to_main_menu)
 
 func _setup_audio() -> void:
 	if is_instance_valid(music_player):
@@ -219,4 +241,8 @@ func restart_game() -> void:
 func exit_to_main_menu() -> void:
 	if is_instance_valid(game_manager):
 		game_manager.pause_run(false)
+	else:
+		get_tree().paused = false
 	return_to_main_menu_requested.emit()
+	if get_parent() == get_tree().root:
+		get_tree().change_scene_to_file("res://scenes/main/MainMenu.tscn")

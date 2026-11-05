@@ -17,12 +17,19 @@ This document tracks all physical tuning adjustments made to the Hill Climb 2D v
 | **Monster Truck** (Heavy) | `base_brake_torque` | `16,000.0 Nm` | `80,000.0 Nm` | Proportional braking for heavy monster truck chassis. |
 | **Dune Buggy** (Electric Agile) | `base_motor_torque` | `19,000.0 Nm` | `60,000.0 Nm` | Lightweight $7.0\text{ kg}$ chassis accelerates swiftly without instant backflipping. |
 | **Dune Buggy** (Electric Agile) | `base_brake_torque` | `13,000.0 Nm` | `35,000.0 Nm` | Smooth regenerative braking. |
+| **One-Wheel Scooter** (Single-Wheel Gyro) | `base_motor_torque` | `N/A (New)` | `68,000.0 Nm` | Single-wheel drive with direct ground traction and fast acceleration profile. |
+| **One-Wheel Scooter** (Single-Wheel Gyro) | `base_brake_torque` | `N/A (New)` | `38,000.0 Nm` | Responsive regenerative braking. |
+| **One-Wheel Scooter** (Single-Wheel Gyro) | `chassis_mass` | `N/A (New)` | `6.5 kg` | Ultra-compact chassis mass centered directly above single wheel axle. |
+| **One-Wheel Scooter** (Single-Wheel Gyro) | `wheel_mass` | `N/A (New)` | `3.5 kg` | High inertia wheel for gyroscopic ground stabilization. |
+| **One-Wheel Scooter** (Single-Wheel Gyro) | `balance_kp` | `N/A (New)` | `3200.0` | Proportional upright balance restoring gain against pitch deviation. |
+| **One-Wheel Scooter** (Single-Wheel Gyro) | `balance_kd` | `N/A (New)` | `320.0` | Derivative damping gain preventing rotational oscillation and flutter. |
+| **One-Wheel Scooter** (Single-Wheel Gyro) | `tilt_torque` | `N/A (New)` | `4200.0 Nm` | Player-controlled lean torque for stunts, hill pitch matching, and landing alignment. |
 | **All Vehicles** | Landing Trauma Shake | None | Clamped trauma $\le 7\text{ px}$ | Adds responsive camera screen shake on hard landing and crashes. |
 | **All Vehicles** | Clean Landing Bonus | None | $+5\text{ Coins}$ reward | Encourages smooth, level landings from high-altitude jumps. |
 
 ---
 
-## 2. Dynamic Upgrades Formulae (Preserved)
+## 2. Dynamic Upgrades Formulae
 
 All vehicle upgrades dynamically modify base values using the formulas below:
 

@@ -141,13 +141,14 @@ func _init() -> void:
 	print("-> [Points 17-21] Testing restart after out-of-fuel...")
 	game.restart_game()
 	assert(vehicle.linear_velocity.length() < 0.1, "Linear velocity must be 0 immediately upon restart")
+	assert(vehicle.current_fuel == vehicle.max_fuel, "Fuel must be restored to max capacity on restart")
 	for i in range(30):
 		await process_frame
 		await physics_frame
 		
 	assert(gm.current_state == GameManagerScript.RunState.PLAYING, "Game must be PLAYING after restart")
 	assert(vehicle.is_active == true, "Vehicle must be reactivated after restart")
-	assert(vehicle.current_fuel == vehicle.max_fuel, "Fuel must be restored to max capacity on restart")
+	assert(vehicle.current_fuel <= vehicle.max_fuel and vehicle.current_fuel >= vehicle.max_fuel - 5.0, "Fuel must drain continuously during active race")
 	assert(gm.current_distance < 1.0, "Current run distance must reset near 0.0m")
 	assert(results_screen.visible == false, "Results screen must hide on restart")
 	assert(absf(vehicle.global_position.x - game.spawn_position.x) < 5.0, "Vehicle must teleport back to spawn_position")

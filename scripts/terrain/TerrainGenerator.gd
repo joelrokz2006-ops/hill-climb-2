@@ -297,14 +297,48 @@ func _populate_segment_pickups(seg: TerrainSegment) -> void:
 		_spawn_coins_on_segment(seg)
 
 func _spawn_fuel_on_segment(seg: TerrainSegment, local_x: float) -> void:
-	var surface_y := seg.get_surface_y_at(local_x)
+	var safe_y := _calculate_safe_pickup_y(seg, local_x, fuel_surface_clearance, 18.0)
 	var fuel_inst := fuel_scene.instantiate() as Node2D
 	seg.add_child(fuel_inst)
-	# Position strictly above surface Y (- fuel_surface_clearance in downward-positive Y)
-	fuel_inst.position = Vector2(local_x, surface_y - fuel_surface_clearance)
+	fuel_inst.position = Vector2(local_x, safe_y)
 	fuel_inst.add_to_group("pickups")
 	_spawned_pickups.append(fuel_inst)
 	total_fuel_spawned += 1
+
+func _calculate_safe_pickup_y(seg: TerrainSegment, local_x: float, base_clearance: float, half_extent: float = 16.0) -> float:
+	var center_surf_y := seg.get_surface_y_at(local_x)
+	var left_surf_y := seg.get_surface_y_at(maxf(0.0, local_x - half_extent))
+	var right_surf_y := seg.get_surface_y_at(minf(seg.segment_length, local_x + half_extent))
+	# In Godot 2D coordinates, smaller Y is higher in the air.
+	# The highest point of ground across the footprint is minf of the surface Y values.
+	var highest_ground_y := minf(center_surf_y, minf(left_surf_y, right_surf_y))
+	
+	# Target Y maintains at least base_clearance at center and ensures bottom clears highest ground point
+	var safe_y := minf(center_surf_y - base_clearance, highest_ground_y - (half_extent + 6.0))
+	
+	# Verify against collision polygon geometry to ensure no bounding point is inside ground
+	if is_instance_valid(seg.collision_polygon) and not seg.collision_polygon.polygon.is_empty():
+		var poly := seg.collision_polygon.polygon
+		var iterations := 0
+		while iterations < 15:
+			var test_points := [
+				Vector2(local_x, safe_y),
+				Vector2(local_x, safe_y + half_extent),
+				Vector2(local_x - half_extent * 0.7, safe_y + half_extent * 0.7),
+				Vector2(local_x + half_extent * 0.7, safe_y + half_extent * 0.7),
+				Vector2(local_x - half_extent, safe_y),
+				Vector2(local_x + half_extent, safe_y)
+			]
+			var penetrated := false
+			for pt in test_points:
+				if Geometry2D.is_point_in_polygon(pt, poly):
+					penetrated = true
+					break
+			if not penetrated:
+				break
+			safe_y -= 2.0
+			iterations += 1
+	return safe_y
 
 func _spawn_coins_on_segment(seg: TerrainSegment) -> void:
 	var seg_type := seg.segment_type
@@ -319,11 +353,11 @@ func _spawn_coins_on_segment(seg: TerrainSegment) -> void:
 			for i in range(num_coins):
 				var t := float(i) / float(maxi(1, num_coins - 1))
 				var cx := start_x + (t * span)
-				var surface_y := seg.get_surface_y_at(cx)
 				var arc_height := sin(t * PI) * 55.0
+				var safe_y := _calculate_safe_pickup_y(seg, cx, coin_surface_clearance, 16.0)
 				var coin_inst := coin_scene.instantiate() as Node2D
 				seg.add_child(coin_inst)
-				coin_inst.position = Vector2(cx, surface_y - (coin_surface_clearance + arc_height))
+				coin_inst.position = Vector2(cx, safe_y - arc_height)
 				coin_inst.add_to_group("pickups")
 				_spawned_pickups.append(coin_inst)
 				
@@ -334,10 +368,10 @@ func _spawn_coins_on_segment(seg: TerrainSegment) -> void:
 			for i in range(num_coins):
 				var t := float(i) / float(maxi(1, num_coins - 1))
 				var cx := start_x + (t * span)
-				var surface_y := seg.get_surface_y_at(cx)
+				var safe_y := _calculate_safe_pickup_y(seg, cx, coin_surface_clearance, 16.0)
 				var coin_inst := coin_scene.instantiate() as Node2D
 				seg.add_child(coin_inst)
-				coin_inst.position = Vector2(cx, surface_y - coin_surface_clearance)
+				coin_inst.position = Vector2(cx, safe_y)
 				coin_inst.add_to_group("pickups")
 				_spawned_pickups.append(coin_inst)
 				
@@ -348,10 +382,10 @@ func _spawn_coins_on_segment(seg: TerrainSegment) -> void:
 			for i in range(num_coins):
 				var t := float(i) / float(maxi(1, num_coins - 1))
 				var cx := start_x + (t * span)
-				var surface_y := seg.get_surface_y_at(cx)
+				var safe_y := _calculate_safe_pickup_y(seg, cx, coin_surface_clearance, 16.0)
 				var coin_inst := coin_scene.instantiate() as Node2D
 				seg.add_child(coin_inst)
-				coin_inst.position = Vector2(cx, surface_y - coin_surface_clearance)
+				coin_inst.position = Vector2(cx, safe_y)
 				coin_inst.add_to_group("pickups")
 				_spawned_pickups.append(coin_inst)
 

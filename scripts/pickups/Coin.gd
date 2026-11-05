@@ -24,7 +24,10 @@ var _initial_visual_y: float = 0.0
 func _ready() -> void:
 	collision_layer = 4
 	collision_mask = 2 # Vehicle layer
+	monitoring = true
+	monitorable = true
 	body_entered.connect(_on_body_entered)
+	area_entered.connect(_on_area_entered)
 	if is_instance_valid(visual):
 		_initial_visual_y = visual.position.y
 	if is_instance_valid(popup_label):
@@ -42,24 +45,27 @@ func _process(delta: float) -> void:
 			var pulse := (sin(_elapsed * 5.0) * 0.15) + 0.85
 			glow_aura.scale = Vector2(pulse, pulse)
 
+func _is_vehicle(node: Node) -> bool:
+	var curr: Node = node
+	while curr != null and curr != get_tree().root:
+		if curr.is_in_group("vehicle") or curr.has_method("consume_fuel") or curr.has_method("refuel") or curr.name == "Vehicle":
+			return true
+		curr = curr.get_parent()
+	return false
+
 func _on_body_entered(body: Node2D) -> void:
+	if is_collected or not _is_vehicle(body):
+		return
+	_collect()
+
+func _on_area_entered(area: Area2D) -> void:
+	if is_collected or not _is_vehicle(area):
+		return
+	_collect()
+
+func _collect() -> void:
 	if is_collected:
 		return
-	
-	# Verify vehicle or wheel body using duck-typing instead of hard class reference
-	# (avoids parse-time dependency on VehicleController class_name)
-	var is_vehicle_body := false
-	var parent := body.get_parent()
-	if body.has_method("refuel") or body.has_method("consume_fuel"):
-		is_vehicle_body = true
-	elif is_instance_valid(parent) and (parent.has_method("refuel") or parent.has_method("consume_fuel")):
-		is_vehicle_body = true
-	elif body.is_in_group("vehicle") or (is_instance_valid(parent) and parent.is_in_group("vehicle")):
-		is_vehicle_body = true
-	
-	if not is_vehicle_body:
-		return
-		
 	is_collected = true
 	collected.emit(coin_value)
 	
@@ -69,7 +75,8 @@ func _on_body_entered(body: Node2D) -> void:
 		gm.add_coins(coin_value)
 	
 	# Visual & Audio collection feedback
-	collision_shape.set_deferred("disabled", true)
+	if is_instance_valid(collision_shape):
+		collision_shape.set_deferred("disabled", true)
 	if is_instance_valid(audio_player):
 		audio_player.play()
 	if is_instance_valid(visual):
@@ -98,6 +105,11 @@ func _show_popup(text_val: String, color_val: Color) -> void:
 func reset_pickup() -> void:
 	is_collected = false
 	_elapsed = 0.0
+	if is_instance_valid(collision_shape):
+		collision_shape.set_deferred("disabled", false)
+	if is_instance_valid(visual):
+		visual.visible = true
+		visual.position.y = _initial_visual_y
 	collision_shape.set_deferred("disabled", false)
 	if is_instance_valid(visual):
 		visual.visible = true

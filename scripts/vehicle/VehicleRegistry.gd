@@ -4,33 +4,57 @@ extends RefCounted
 ## VehicleRegistry: Central catalog of vehicles, stat profiles, and upgrade configs.
 ## Serves as a completely decoupled contract for Garage, UI, and Level integration.
 
+const ORDERED_IDS: Array[String] = [
+	"blue_flame_truck",
+	"orc_racer",
+	"trophy_truck",
+	"dune_buggy"
+]
+
 const VEHICLES: Dictionary = {
-	"classic_car": {
-		"id": "classic_car",
-		"display_name": "Classic Hill Climber",
-		"description": "Well-balanced red roadster, ideal for mastering hill climbing and smooth landings.",
-		"scene_path": "res://scenes/vehicle/Vehicle.tscn",
+	"blue_flame_truck": {
+		"id": "blue_flame_truck",
+		"display_name": "Blue Flame Truck",
+		"description": "Heavy off-road powerhouse with custom flame side panels, chrome rims, and roaring engine torque.",
+		"scene_path": "res://scenes/vehicle/BlueFlameTruck.tscn",
+		"preview_path": "res://assets/vehicles/blue_flame_truck/vehicle_assembled_preview.png",
 		"unlock_cost": 0,
-		"mass": 8.0,
-		"stat_ratings": {
-			"power": 3,
-			"grip": 3,
-			"suspension": 3,
-			"fuel": 3
-		}
-	},
-	"monster_truck": {
-		"id": "monster_truck",
-		"display_name": "Beast Monster Truck",
-		"description": "Heavyweight brute with massive 28px tires and high-clearance suspension.",
-		"scene_path": "res://scenes/vehicle/MonsterTruck.tscn",
-		"unlock_cost": 250,
-		"mass": 12.0,
+		"mass": 10.0,
 		"stat_ratings": {
 			"power": 5,
 			"grip": 4,
-			"suspension": 5,
+			"suspension": 4,
+			"fuel": 4
+		}
+	},
+	"orc_racer": {
+		"id": "orc_racer",
+		"display_name": "Orc Racer",
+		"description": "Aggressive, high-revving wasteland buggy built for rapid sprints and wild air stunt flips.",
+		"scene_path": "res://scenes/vehicle/OrcRacer.tscn",
+		"preview_path": "res://assets/vehicles/orc_racer/body.png",
+		"unlock_cost": 350,
+		"mass": 7.5,
+		"stat_ratings": {
+			"power": 4,
+			"grip": 4,
+			"suspension": 4,
 			"fuel": 3
+		}
+	},
+	"trophy_truck": {
+		"id": "trophy_truck",
+		"display_name": "Trophy Truck",
+		"description": "Desert baja racing machine with extended suspension travel and superior rugged endurance.",
+		"scene_path": "res://scenes/vehicle/TrophyTruck.tscn",
+		"preview_path": "res://assets/vehicles/trophy_truck/assembled.png",
+		"unlock_cost": 500,
+		"mass": 9.0,
+		"stat_ratings": {
+			"power": 4,
+			"grip": 4,
+			"suspension": 5,
+			"fuel": 4
 		}
 	},
 	"dune_buggy": {
@@ -38,6 +62,7 @@ const VEHICLES: Dictionary = {
 		"display_name": "Electric Dune Buggy",
 		"description": "Ultralight tubular roll-cage racer built for agile airtime, rapid tilts, and stunt flips.",
 		"scene_path": "res://scenes/vehicle/DuneBuggy.tscn",
+		"preview_path": "res://assets/vehicles/alternate/girl_buggy/body.png",
 		"unlock_cost": 450,
 		"mass": 6.0,
 		"stat_ratings": {
@@ -52,7 +77,7 @@ const VEHICLES: Dictionary = {
 ## Returns an array of all vehicle metadata dictionaries
 static func get_all_vehicles() -> Array[Dictionary]:
 	var result: Array[Dictionary] = []
-	for key in ["classic_car", "monster_truck", "dune_buggy"]:
+	for key in ORDERED_IDS:
 		if VEHICLES.has(key):
 			result.append(VEHICLES[key])
 	return result
@@ -63,7 +88,11 @@ static func get_vehicle(id: String) -> Dictionary:
 
 ## Returns all registered vehicle IDs
 static func get_vehicle_ids() -> Array[String]:
-	return ["classic_car", "monster_truck", "dune_buggy"]
+	return ORDERED_IDS.duplicate()
+
+## Returns true if the vehicle ID is recognized
+static func has_vehicle(id: String) -> bool:
+	return VEHICLES.has(id)
 
 ## Instantiates and returns a VehicleController instance for the specified vehicle ID
 static func instantiate_vehicle(id: String) -> VehicleController:

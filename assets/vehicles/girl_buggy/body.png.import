@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://4x6crhui4pue"
-path="res://.godot/imported/body.png-0416bbe26d8416d07378e46f7cc84dd4.ctex"
+path="res://.godot/imported/body.png-1624fe9dee2502181131ebe951bfdcf5.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/vehicles/alternate/girl_buggy/body.png"
-dest_files=["res://.godot/imported/body.png-0416bbe26d8416d07378e46f7cc84dd4.ctex"]
+source_file="res://assets/vehicles/girl_buggy/body.png"
+dest_files=["res://.godot/imported/body.png-1624fe9dee2502181131ebe951bfdcf5.ctex"]
 
 [params]
 

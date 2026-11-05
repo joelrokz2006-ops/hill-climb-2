@@ -24,7 +24,10 @@ var _initial_visual_y: float = 0.0
 func _ready() -> void:
 	collision_layer = 4
 	collision_mask = 2 # Vehicle layer
+	monitoring = true
+	monitorable = true
 	body_entered.connect(_on_body_entered)
+	area_entered.connect(_on_area_entered)
 	if is_instance_valid(visual):
 		_initial_visual_y = visual.position.y
 	if is_instance_valid(popup_label):
@@ -40,35 +43,48 @@ func _process(delta: float) -> void:
 			var pulse := (sin(_elapsed * 4.0) * 0.15) + 0.85
 			glow_aura.scale = Vector2(pulse, pulse)
 
+func _find_vehicle(node: Node) -> Node:
+	var curr: Node = node
+	while curr != null and curr != get_tree().root:
+		if curr.has_method("refuel"):
+			return curr
+		elif curr.is_in_group("vehicle") or curr.name == "Vehicle":
+			var p := curr
+			while p != null and p != get_tree().root:
+				if p.has_method("refuel"):
+					return p
+				p = p.get_parent()
+			return curr
+		curr = curr.get_parent()
+	return null
+
 func _on_body_entered(body: Node2D) -> void:
 	if is_collected:
 		return
-	
-	# Verify vehicle or wheel body using duck-typing instead of hard class reference
-	# (avoids parse-time dependency on VehicleController class_name)
-	var target_vehicle = null
-	var parent := body.get_parent()
-	if body.has_method("refuel"):
-		target_vehicle = body
-	elif is_instance_valid(parent) and parent.has_method("refuel"):
-		target_vehicle = parent
-	elif body.is_in_group("vehicle"):
-		target_vehicle = body
-	elif is_instance_valid(parent) and parent.is_in_group("vehicle"):
-		target_vehicle = parent
-	
-	if target_vehicle == null:
+	var veh = _find_vehicle(body)
+	if veh != null:
+		_collect(veh)
+
+func _on_area_entered(area: Area2D) -> void:
+	if is_collected:
 		return
-		
+	var veh = _find_vehicle(area)
+	if veh != null:
+		_collect(veh)
+
+func _collect(target_vehicle: Node) -> void:
+	if is_collected:
+		return
 	is_collected = true
 	collected.emit(fuel_amount)
 	
 	# Authoritative refuel via VehicleController
-	if target_vehicle.has_method("refuel"):
+	if target_vehicle != null and target_vehicle.has_method("refuel"):
 		target_vehicle.refuel(fuel_amount)
 	
 	# Visual & Audio collection feedback
-	collision_shape.set_deferred("disabled", true)
+	if is_instance_valid(collision_shape):
+		collision_shape.set_deferred("disabled", true)
 	if is_instance_valid(audio_player):
 		audio_player.play()
 	if is_instance_valid(visual):
